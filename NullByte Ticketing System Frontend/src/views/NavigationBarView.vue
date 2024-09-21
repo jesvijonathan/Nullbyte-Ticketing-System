@@ -59,7 +59,7 @@ const more_options = {
     ],
     'Contact': [
         "Contact Us",
-        "Support",
+        "Service",
         "Sales",
         "Careers",
         "Partners",
@@ -82,7 +82,7 @@ const more_options = {
         <div class="navigation_router_container">
             <router-link @mouseenter="handleMouseEnter" to="/">Home</router-link>
             <router-link @mouseenter="handleMouseEnter" to="/about">About</router-link>
-            <router-link @mouseenter="handleMouseEnter" to="/contact">Contact</router-link>
+            <router-link @mouseenter="handleMouseEnter" to="/service">Contact</router-link>
             <router-link @mouseenter="handleMouseEnter" to="/dev">Dev</router-link>
             <router-link to="/login" class="nav_special" @mouseenter="handleOptionsMouseLeave">Login</router-link>
         </div>
