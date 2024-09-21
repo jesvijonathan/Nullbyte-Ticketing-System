@@ -10,6 +10,7 @@ const moreOptionsStyle = ref({
     height: '0',
     width: '0'
 });
+
 const currentOptions = ref('');
 
 const handleMouseEnter = async (event) => {
@@ -29,7 +30,7 @@ const handleMouseEnter = async (event) => {
 const handleMouseLeave = () => {
     moreOptionsStyle.value.opacity = '0';
     moreOptionsStyle.value.filter = 'blur(0.9rem)';
-    moreOptionsStyle.value.zIndex = '-100';
+    moreOptionsStyle.value.height = 
     setTimeout(() => {
         showMoreOptions.value = false;
     }, 300); 
@@ -50,7 +51,7 @@ const more_options = {
         "Investors",
     ],
     'About': [
-        "Our Team",
+        "About WGS",
         "Our Mission",
         "Our Vision",
         "Our Values",
