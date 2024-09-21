@@ -1,0 +1,56 @@
+
+/* import a C:\Users\w136629\Desktop\Nullbyte\NullByte Ticketing System Frontend\src\assets\fonts\Inter-Regular.020a5f75.woff2  font pack from assets */
+@font-face {
+  font-family: 'wl1';
+  font-style: normal;
+  font-weight: 100;
+  src: url('../assets/fonts/Inter-Regular.020a5f75.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'wl2';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../assets/fonts/Inter-ExtraBold.6366fcce.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'wl3';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../assets/fonts/Inter-SemiBold.bce33368.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'wl4';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../assets/fonts/fa-solid-900.2fba33f2.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'wl5';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../assets/fonts/fa-brands-400.22bfab6e.woff2') format('woff2');
+}
+
+* {
+  color : #141317;
+  font-family: wl3;
+  font-size: 1em;
+  font-weight: 400;
+  font-style: normal;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  text-decoration: none;
+  text-transform: none;
+  line-height: 1.5;
+  transition: all 0.1s ease;
+} 
+
+/* define color variabls */
+:root {
+  --primary: #141317;
+  --secondary: #F2F2F2;
+  --tertiary: #333333;
+  --wl: #45beaa;
+  --light_grey: #6868684d;
+}
