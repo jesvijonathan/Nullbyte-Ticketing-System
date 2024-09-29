@@ -24,8 +24,8 @@ createApp(App)
   .use(router)
   .mount("#app");
 
-JOS.init();
-JOS.version();
+ JOS.init();
+ JOS.version();
 
 watch(
     () => router.currentRoute.value,

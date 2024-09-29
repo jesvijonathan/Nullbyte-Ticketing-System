@@ -1,6 +1,6 @@
-<script setup>
+<script>
 import { ref } from 'vue';
-
+import {useAuthStore } from '../stores/auth'
 const showPassword = ref(false);
 
 const handleShowPassword = () => {
@@ -9,6 +9,23 @@ const handleShowPassword = () => {
 
 const blurBackground=false;
 
+// const schema = Yup.object().shape({
+//     username: Yup.string().required('Username is required'),
+//     password: Yup.string().required('Password is required')
+// });
+export default {
+data() {
+  return {
+    email:"",
+    password:"",
+    errors:""
+  };
+},
+methods:{ async onSubmit() {
+    const authStore = useAuthStore();
+    console.log(this.email,this.password)
+    this.errors=await authStore.login(this.email, this.password)
+}}}
 </script>
 
 
@@ -16,24 +33,24 @@ const blurBackground=false;
   <div class="blue_moving_bg" v-if="blurBackground"></div>
   <div class="login-container">
     <!-- <div class="logo"><img src="@/assets/logo.png" alt="Worldline Logo" /></div> -->
-    <h2 class="login_info">Log In to Worldline</h2>
+    <h2 class="login_info">Log In to NullByte</h2>
     <div class="login-form">
       <form>
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" id="email" placeholder="email@example.com" />
+          <input type="email" id="email" name="email" v-model="email" placeholder="email@example.com" />
         </div>
         <div class="form-group">
           <label for="password">Password</label>
           <div class="password-wrapper">
-            <input :type="showPassword ? 'text' : 'password'" id="password" placeholder="password" />
+            <input :type="showPassword ? 'text' : 'password'" name="password" v-model="password" id="password" placeholder="password" />
             <button type="button" class="show-password" @click="handleShowPassword">
               <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" />  
             </button>
-
+            <div class="invalid-feedback">{{ this.errors }}</div>
           </div>
         </div>
-        <button type="submit" class="login-button">Log In</button>
+        <button type="button" @click="onSubmit" class="login-button">Log In</button>
         <a href="#" class="forgot-password">Forgot Password?</a>
       </form>
     </div>

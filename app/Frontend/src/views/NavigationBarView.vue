@@ -1,6 +1,8 @@
 <script setup>
 import { ref, nextTick } from 'vue';
 import logo from '../assets/logo.png';
+import { useAuthStore } from '@/stores/auth';
+const authStore = useAuthStore();
 
 const showMoreOptions = ref(false);
 const moreOptionsStyle = ref({
@@ -84,7 +86,8 @@ const more_options = {
             <router-link @mouseenter="handleMouseEnter" to="/about">About</router-link>
             <router-link @mouseenter="handleMouseEnter" to="/service">Contact</router-link>
             <router-link @mouseenter="handleMouseEnter" to="/dev">Dev</router-link>
-            <router-link to="/login" class="nav_special" @mouseenter="handleOptionsMouseLeave">Login</router-link>
+            <router-link to="/login" @click="authStore.logout" class="nav_special" v-if="authStore.isAuthenticated" @mouseenter="handleOptionsMouseLeave">Logout</router-link>
+            <router-link to="/login" class="nav_special" v-if="!authStore.isAuthenticated" @mouseenter="handleOptionsMouseLeave">Login</router-link>
         </div>
         <div class="nav_more_options_container" @mouseleave="handleOptionsMouseLeave" :style="moreOptionsStyle">
             <div v-for="(option, index) in more_options[currentOptions]" :key="index">
