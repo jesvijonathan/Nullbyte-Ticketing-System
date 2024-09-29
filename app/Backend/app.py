@@ -23,7 +23,7 @@ def authenticate():
 
     logger.info(f"Authenticating user: {username}")
 
-    token = oauth.authenticate_user(username, password)
+    token, error = oauth.authenticate_user(username, password)
     if token:
         return make_response(jsonify({'token': token}), 201)
     else:

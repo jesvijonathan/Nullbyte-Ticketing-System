@@ -59,6 +59,12 @@ methods:{ async onSubmit() {
 
 <style scoped>
 
+.invalid-feedback{
+  color: red;
+  font-size: 0.3rem;
+  text-align: center;
+  margin-top: 1rem;
+}
 .blue_moving_bg{
   position: fixed;
     top: 0;
