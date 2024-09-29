@@ -16,14 +16,12 @@ def create_jwt(username):
     return token
 
 def authenticate_user(username, password):
-    # print(ADMIN_CRED)
-    # print(ADMIN_CRED["username"], ADMIN_CRED["password"])
-    # print(username, password)
-
-    if ADMIN_CRED["username"]==username  and  ADMIN_CRED["password"]==password:
-
-        return create_jwt(username), None
-
+    # Hardcoded entry :
+    if ADMIN_CRED["username"]==username:
+        if ADMIN_CRED["password"]==password:
+            return create_jwt(username), None
+        else:
+            return None, 'Invalid username or password'
     conn = ldap.initialize('ldap://DC01.nullbyte.exe') 
     conn.protocol_version = 3
     conn.set_option(ldap.OPT_REFERRALS, 0)

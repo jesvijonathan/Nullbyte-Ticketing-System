@@ -11,6 +11,6 @@ JWT_ALGORITHM = 'HS256'
 JWT_EXP_DELTA_SECONDS = 36000
 
 ADMIN_CRED=dict({
-    'username':'admin@nigga.com',
+    'username':'nigga@nigga.com',
     'password':'nigga'
 })

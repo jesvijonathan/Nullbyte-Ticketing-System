@@ -1,32 +1,37 @@
-<script>
+<script setup>
 import { ref } from 'vue';
-import {useAuthStore } from '../stores/auth'
+import { useAuthStore } from '../stores/auth';
+
 const showPassword = ref(false);
 
 const handleShowPassword = () => {
   showPassword.value = !showPassword.value;
 };
 
-const blurBackground=false;
+const blurBackground = ref(false);
 
+// Uncomment if Yup validation schema is needed
 // const schema = Yup.object().shape({
-//     username: Yup.string().required('Username is required'),
-//     password: Yup.string().required('Password is required')
+//   username: Yup.string().required('Username is required'),
+//   password: Yup.string().required('Password is required')
 // });
-export default {
-data() {
-  return {
-    email:"",
-    password:"",
-    errors:""
-  };
-},
-methods:{ async onSubmit() {
-    const authStore = useAuthStore();
-    console.log(this.email,this.password)
-    this.errors=await authStore.login(this.email, this.password)
-}}}
+
+let email = ref("");
+let password = ref("");
+let errors = ref("");
+
+async function SubmitLogin() {
+  const authStore = useAuthStore();
+
+  try {
+    errors.value = await authStore.login(email.value, password.value);
+  } catch (error) {
+    errors.value = "Login failed. Please try again.";
+  }
+}
+
 </script>
+
 
 
 <template>
@@ -35,7 +40,7 @@ methods:{ async onSubmit() {
     <!-- <div class="logo"><img src="@/assets/logo.png" alt="Worldline Logo" /></div> -->
     <h2 class="login_info">Log In to NullByte</h2>
     <div class="login-form">
-      <form>
+      <form @submit.prevent="SubmitLogin">
         <div class="form-group">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" v-model="email" placeholder="email@example.com" />
@@ -44,13 +49,13 @@ methods:{ async onSubmit() {
           <label for="password">Password</label>
           <div class="password-wrapper">
             <input :type="showPassword ? 'text' : 'password'" name="password" v-model="password" id="password" placeholder="password" />
-            <button type="button" class="show-password" @click="handleShowPassword">
+            <button type="button" class="show-password" @click="handleShowPassword()">
               <font-awesome-icon :icon="showPassword ? 'eye-slash' : 'eye'" />  
             </button>
-            <div class="invalid-feedback">{{ this.errors }}</div>
+            <div class="invalid-feedback">{{ errors }}</div>
           </div>
         </div>
-        <button type="button" @click="onSubmit" class="login-button">Log In</button>
+        <button type="submit" class="login-button">Log In</button>
         <a href="#" class="forgot-password">Forgot Password?</a>
       </form>
     </div>
@@ -61,9 +66,12 @@ methods:{ async onSubmit() {
 
 .invalid-feedback{
   color: red;
-  font-size: 0.3rem;
-  text-align: center;
+  font-size: 0.8rem;
+  text-align: left;
   margin-top: 1rem;
+  font-weight: light;
+  font-family: wl1;
+  z-index: -1;
 }
 .blue_moving_bg{
   position: fixed;
@@ -170,7 +178,7 @@ body, html {
   position: absolute;
   top: 0;
   right: 0;
-  height: 100%;
+  height: 3rem;
   border: none;
   background: none;
   cursor: pointer;

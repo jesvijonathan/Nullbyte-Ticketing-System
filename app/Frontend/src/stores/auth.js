@@ -23,9 +23,9 @@ export const useAuthStore = defineStore({
               console.log(response)
               if (!response.ok) { 
                 if(response.status==401)
-                return "Invalid credentials"
+                return "Invalid credentials!"
                 else
-                return "Unknown Error Try again later"
+                return "Unknown Error! Try again later"
             }
 
             const user = await response.json(); 
