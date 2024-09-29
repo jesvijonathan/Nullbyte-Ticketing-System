@@ -1,0 +1,2 @@
+id ,Subject                 ,Type ,Description                                                              ,Status ,Priority ,Channel ,Customer_ID ,Product_ID ,Assignie_ID ,Resolution     ,Issue_Date          ,First_Response_Time ,Time_to_Resolution  ,Reopens ,Score ,
+ 1 ,Issue with WebGUI login ,Bug  ,WEBGUI not workey properly issue with login during peak hours of the day ,open   ,       3 ,Email   ,        777 ,        02 ,        911 ,Paralax Effect ,30-09-2024 19:00:00 ,02-10-2024 19:10:00 ,04-10-2024 19:00:00 ,      0 , 3.03 ,

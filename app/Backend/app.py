@@ -29,5 +29,18 @@ def authenticate():
     else:
         return make_response(jsonify({'error': error}), 401 if error == 'Invalid username or password' else 500)
 
+
+# a demo page to pass screenshots
+# and on submit evaluate the screen shot and find the product/division
+@app.route("/vision")
+def vision_test():
+    pass
+
+# get text and other details
+# get product, division, team, issue, summary, issue-level, 
+@app.route("/text")
+def text_test():
+    pass
+
 if __name__ == '__main__':
     app.run(debug=True)
