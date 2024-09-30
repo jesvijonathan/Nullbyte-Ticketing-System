@@ -1,9 +1,9 @@
 from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
-import oauth
-from utils.ldap_wrapper import Lwrapper;
-from config import logger
-
+import datetime
+import jwt
+from ldap_wrapper import Lwrapper;
+from config import *
 app = Flask(__name__)
 CORS(app)
 
@@ -20,8 +20,14 @@ def authenticate():
         return make_response(jsonify({'error': 'email and password are required'}), 400)
 
     logger.info(f"Authenticating user: {username}")
-
-    token = oauth.authenticate_user(username, password)
+    
+    if Lwrapper().Authenticate(username,password):
+        payload = {
+        'sub': username,
+        'iat': datetime.datetime.utcnow(),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_EXP_DELTA_SECONDS)
+    }
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
     if token:
         return make_response(jsonify({'token': token}), 201)
     
