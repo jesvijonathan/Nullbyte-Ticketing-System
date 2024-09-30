@@ -1,0 +1,10 @@
+FROM python:3.10.12-slim-bullseye
+ENV LDAP_SERVER="ldap://DC01.Skibbidi.exe"
+ENV PATH="$PATH:/usr/local/lib/python3.9/site-packages"
+WORKDIR /app
+COPY requirements.txt .
+RUN apt update -y && apt-get install libldap2-dev libsasl2-dev ldap-utils build-essential -y
+RUN pip3 install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 5000
+CMD ["waitress-serve", "--host","0.0.0.0","--port","5000", "app:app"]
