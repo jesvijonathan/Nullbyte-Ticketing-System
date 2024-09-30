@@ -1,13 +1,11 @@
-import logging
 from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
 import oauth
+from utils.ldap_wrapper import Lwrapper;
+from config import logger
 
 app = Flask(__name__)
 CORS(app)
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 @app.route("/sso/auth", methods=["POST"])
 def authenticate():
@@ -23,13 +21,10 @@ def authenticate():
 
     logger.info(f"Authenticating user: {username}")
 
-    token, error = oauth.authenticate_user(username, password)
+    token = oauth.authenticate_user(username, password)
     if token:
         return make_response(jsonify({'token': token}), 201)
-    else:
-        return make_response(jsonify({'error': error}), 401 if error == 'Invalid username or password' else 500)
-
-
+    
 # a demo page to pass screenshots
 # and on submit evaluate the screen shot and find the product/division
 @app.route("/vision")
