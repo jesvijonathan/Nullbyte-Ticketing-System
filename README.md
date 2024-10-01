@@ -1,8 +1,10 @@
 # Nullbyte-Ticketing-System
 
 
-## Setup (Dev)
-### Active Directory server setup instruction
+## Setup
+
+<details>
+<summary>STEP 1: Active Directory Domain Controller</summary>
 
 + Install virtualbox
 + Install latest iso of [Windows Server 2022](https://www.microsoft.com/en-us/evalcenter/download-windows-server-2022?msockid=17947612fb4a6b212c776314fae76acd) or spawn one from any of your favorite service provider
@@ -26,3 +28,11 @@ export CURRENT_DC_PASSWORD='existing_dc_password' # Current password for the Dom
 ```bash
 ansible-playbook ansible-playbook deployment/configs/Setup-DC.yml 
 ```
+</details>
+
+<details>
+<summary>Step 2: Starting Docker Services</summary>
+```bash
+docker compose up
+```
+</details>
