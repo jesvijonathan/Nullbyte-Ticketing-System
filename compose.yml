@@ -1,0 +1,18 @@
+services:
+  web:
+    build: ./app/Frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+  backend:
+    build: ./app/Backend
+    ports:
+      - "5000:5000"
+  sql:
+    build: ./app/Backend/database
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    

@@ -46,5 +46,5 @@ CREATE TABLE IF NOT EXISTS ticket (
     Reopens INT DEFAULT 0,
     Score INT,
     FOREIGN KEY (Customer_ID) REFERENCES customer(id) ON DELETE CASCADE,
-    FOREIGN KEY (Assignie_ID) REFERENCES employee(id) ON DELETE SET NULL
+    FOREIGN KEY (Employee_ID) REFERENCES employee(id) ON DELETE SET NULL
 );

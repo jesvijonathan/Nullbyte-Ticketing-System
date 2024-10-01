@@ -1,0 +1,7 @@
+FROM mysql:9.0
+
+# bad practice let's change it later
+ENV MYSQL_ROOT_PASSWORD=rootpassword 
+COPY create_database.sql /docker-entrypoint-initdb.d/
+
+EXPOSE 3306
