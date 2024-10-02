@@ -1,6 +1,11 @@
 CREATE DATABASE IF NOT EXISTS nullbyte;
 USE nullbyte;
 
+CREATE USER 'nullbyteadmin'@'%' IDENTIFIED BY 'rootpassword';
+GRANT ALL PRIVILEGES ON nullbyte.* TO 'nullbyteadmin'@'%' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+
 CREATE TABLE IF NOT EXISTS customer (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -54,4 +59,4 @@ CREATE TABLE IF NOT EXISTS comments (
     Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     Comment_user INT,
     Comment TEXT
-)
+);

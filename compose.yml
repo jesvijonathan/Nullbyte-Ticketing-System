@@ -9,10 +9,13 @@ services:
     build: ./app/Backend
     ports:
       - "5000:5000"
+    depends_on:
+      - sql
   sql:
     build: ./app/Backend/database
     ports:
       - "3306:3306"
+      - "33060:33060"
     environment:
       MYSQL_ROOT_PASSWORD: root
     
