@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS employee (
 );
 
 CREATE TABLE IF NOT EXISTS ticket (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    Id INT AUTO_INCREMENT PRIMARY KEY,
     Subject VARCHAR(255) NOT NULL,
     Type VARCHAR(100),
     Description TEXT NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS ticket (
     Channel VARCHAR(100),
     Customer_ID INT,
     Product_ID INT,
-    Employee_ID INT,
+    Assignee_ID INT,
     Resolution TEXT,
     Issue_Date DATETIME DEFAULT CURRENT_TIMESTAMP,
     First_Response_Time DATETIME,
@@ -46,5 +46,12 @@ CREATE TABLE IF NOT EXISTS ticket (
     Reopens INT DEFAULT 0,
     Score INT,
     FOREIGN KEY (Customer_ID) REFERENCES customer(id) ON DELETE CASCADE,
-    FOREIGN KEY (Employee_ID) REFERENCES employee(id) ON DELETE SET NULL
+    FOREIGN KEY (Assignee_ID) REFERENCES employee(id) ON DELETE SET NULL
 );
+
+CREATE TABLE IF NOT EXISTS comments (
+    Ticket_id INT NOT NULL,
+    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Comment_user INT,
+    Comment TEXT
+)
