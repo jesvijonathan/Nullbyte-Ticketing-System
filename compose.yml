@@ -1,21 +1,18 @@
 services:
-  web:
-    build: ./app/Frontend
+  sql:
+    build: ./app/Backend/database
     ports:
-      - "80:80"
-    depends_on:
-      - backend
+      - "3306:3306"
+      - "33060:33060"
   backend:
     build: ./app/Backend
     ports:
       - "5000:5000"
     depends_on:
       - sql
-  sql:
-    build: ./app/Backend/database
+  web:
+    build: ./app/Frontend
     ports:
-      - "3306:3306"
-      - "33060:33060"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-    
+      - "80:80"
+    depends_on:
+      - backend

@@ -1,7 +1,11 @@
+DROP DATABASE IF EXISTS nullbyte;
+
 CREATE DATABASE IF NOT EXISTS nullbyte;
 USE nullbyte;
 
-GRANT ALL PRIVILEGES ON nullbyte.* TO 'nullbyteadmin'@'%' IDENTIFIED BY 'rootpassword';
+-- Corrected the GRANT statement for MySQL 8.0 and later
+CREATE USER IF NOT EXISTS 'nullbyteadmin'@'%' IDENTIFIED BY 'rootpassword';
+GRANT ALL PRIVILEGES ON nullbyte.* TO 'nullbyteadmin'@'%';
 FLUSH PRIVILEGES;
 
 CREATE TABLE IF NOT EXISTS customer (
@@ -25,7 +29,7 @@ CREATE TABLE IF NOT EXISTS employee (
     phone VARCHAR(15),
     role VARCHAR(100),
     score INT,
-    manager INT,
+    manager INT DEFAULT NULL,  -- Allow manager to be NULL by default
     gcm INT,
     experience INT,
     FOREIGN KEY (manager) REFERENCES employee(id) ON DELETE SET NULL
@@ -56,5 +60,6 @@ CREATE TABLE IF NOT EXISTS comments (
     Ticket_id INT NOT NULL,
     Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     Comment_user INT,
-    Comment TEXT
+    Comment TEXT,
+    FOREIGN KEY (Ticket_id) REFERENCES ticket(Id) ON DELETE CASCADE  -- Added foreign key for ticket
 );

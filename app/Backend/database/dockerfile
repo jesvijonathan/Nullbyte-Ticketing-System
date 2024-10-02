@@ -1,13 +1,16 @@
 # Use the MySQL base image
 FROM mysql:9.0
 
-ENV MYSQL_ROOT_PASSWORD=rootpassword
+ENV MYSQL_ROOT_PASSWORD=root
 ENV MYSQL_DATABASE=nullbyte
 ENV MYSQL_USER=nullbyteadmin
 ENV MYSQL_PASSWORD=rootpassword
+# ENV MYSQL_OPTIONS="--secure-file-priv="
 
-COPY ./scripts /docker-entrypoint-initdb.d/
-COPY ./data /data/
+RUN mkdir -p /var/lib/mysql-files
+
+COPY ./scripts/*.sql /docker-entrypoint-initdb.d/
+COPY ./data/*.csv /var/lib/mysql-files/
 
 EXPOSE 3306
 
