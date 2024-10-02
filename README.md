@@ -26,13 +26,17 @@ export CURRENT_DC_PASSWORD='existing_dc_password' # Current password for the Dom
 + Run ansible playbook to deploy configure and promote the server to AD-DC
 
 ```bash
-ansible-playbook ansible-playbook deployment/configs/Setup-DC.yml 
+cd deployment/configs/
+ansible-playbook ansible-playbook Setup-DC.yml 
 ```
 </details>
 
 <details>
-<summary>Step 2: Starting Docker Services</summary>
+<summary>STEP 2: Starting Docker Services</summary>
+
 ```bash
-docker compose up
+docker compose up -d # To start all services
+docker compose down --rmi # To stop services
 ```
+
 </details>
