@@ -38,5 +38,17 @@ ansible-playbook ansible-playbook Setup-DC.yml
 docker compose up -d # To start all services
 docker compose down --rmi # To stop services
 ```
+or
+```bash
+sudo docker-compose down
+sudo docker-compose up --build
+```
+
+Connect to database :
+```bash
+mysql -h 127.0.0.1 -P 3306 -u nullbyteadmin -p
+>rootpassword
+```
 
 </details>
+

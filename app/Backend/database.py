@@ -6,22 +6,23 @@ from time import sleep
 from log import *
 from config import * 
 
-# Create the database if it does not exist
-try:
-    connection = pymysql.connect(
-        host=DATABASE_HOST,
-        port=int(DATABASE_PORT),
-        user=DATABASE_USER,
-        password=DATABASE_PASSWORD
-    )
-    logger.info(f"Database '{DATABASE_NAME}' created or already exists.")
-except pymysql.MySQLError as e:
-    logger.error(f"Error creating database: {e}")
-    raise
 
 # Connect to the newly created database
 for _ in range(10):
     try:
+        # Create the database if it does not exist
+        try:
+            connection = pymysql.connect(
+                host=DATABASE_HOST,
+                port=int(DATABASE_PORT),
+                user=DATABASE_USER,
+                password=DATABASE_PASSWORD
+            )
+            logger.info(f"Database '{DATABASE_NAME}' created or already exists.")
+        except pymysql.MySQLError as e:
+            logger.error(f"Error creating database: {e}")
+            raise 
+        
         engine = create_engine(DATABASE_URL)
         Base = declarative_base()
         Base.metadata.create_all(engine)
