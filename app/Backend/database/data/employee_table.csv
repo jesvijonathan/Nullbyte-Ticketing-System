@@ -1,0 +1,12 @@
+name          ,age ,gender ,email                         ,phone      ,role                 ,score ,manager ,gcm ,experience
+Rajashree     ,23  ,female ,Rajashree@nullbyte.exe        ,0420420911 ,Associate Consultant ,4     ,69      ,1   ,2
+Alice Johnson ,30  ,Female ,alice.johnson.emp@example.com ,1234567890 ,Sales                ,85    ,        ,1   ,5
+Bob Smith     ,28  ,Male   ,bob.smith.emp@example.com     ,1234567891 ,Support              ,90    ,1       ,2   ,3
+Charlie Brown ,35  ,Male   ,charlie.brown.emp@example.com ,1234567892 ,Development          ,78    ,1       ,3   ,8
+Daisy White   ,22  ,Female ,daisy.white.emp@example.com   ,1234567893 ,HR                   ,88    ,        ,4   ,2
+Ethan Hunt    ,40  ,Male   ,ethan.hunt.emp@example.com    ,1234567894 ,Management           ,95    ,3       ,5   ,10
+Fiona Green   ,29  ,Female ,fiona.green.emp@example.com   ,1234567895 ,Marketing            ,80    ,2       ,6   ,4
+George Black  ,45  ,Male   ,george.black.emp@example.com  ,1234567896 ,Finance              ,70    ,5       ,7   ,12
+Hannah Brown  ,33  ,Female ,hannah.brown.emp@example.com  ,1234567897 ,Development          ,82    ,3       ,8   ,7
+Ian Wright    ,27  ,Male   ,ian.wright.emp@example.com    ,1234567898 ,Support              ,87    ,4       ,9   ,3
+Julia Roberts ,31  ,Female ,julia.roberts.emp@example.com ,1234567899 ,Sales                ,92    ,5       ,10  ,6

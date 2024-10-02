@@ -1,0 +1,12 @@
+name          ,age ,gender ,email                     ,phone      ,company             ,role           ,score
+Ras Das       , 23 ,female ,ras.das@nullbyte.exe      ,6969420911 ,ICICI               ,Techinal Staff ,    3
+Alice Johnson , 30 ,Female ,alice.johnson@example.com ,1234567890 ,Tech Corp           ,Customer       ,   85
+Bob Smith     , 28 ,Male   ,bob.smith@example.com     ,1234567891 ,Innovate LLC        ,Customer       ,   90
+Charlie Brown , 35 ,Male   ,charlie.brown@example.com ,1234567892 ,NextGen Inc         ,Customer       ,   78
+Daisy White   , 22 ,Female ,daisy.white@example.com   ,1234567893 ,Future Solutions    ,Customer       ,   88
+Ethan Hunt    , 40 ,Male   ,ethan.hunt@example.com    ,1234567894 ,Prime Services      ,Customer       ,   95
+Fiona Green   , 29 ,Female ,fiona.green@example.com   ,1234567895 ,Global Enterprises  ,Customer       ,   80
+George Black  , 45 ,Male   ,george.black@example.com  ,1234567896 ,Visionary Tech      ,Customer       ,   70
+Hannah Brown  , 33 ,Female ,hannah.brown@example.com  ,1234567897 ,Smart Solutions     ,Customer       ,   82
+Ian Wright    , 27 ,Male   ,ian.wright@example.com    ,1234567898 ,Dynamica Industries ,Customer       ,   87
+Julia Roberts , 31 ,Female ,julia.roberts@example.com ,1234567899 ,Innovation Hub      ,Customer       ,   92

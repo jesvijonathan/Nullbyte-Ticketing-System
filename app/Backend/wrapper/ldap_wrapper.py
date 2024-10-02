@@ -1,8 +1,8 @@
 import os
 import time
 import ldap,ldap.asyncsearch
-from config import logger,ADMIN_CRED
-
+from config import *
+from log import *
 
 class Lwrapper:
     def __init__(self):

@@ -5,6 +5,7 @@ from flask import request, make_response, jsonify
 from functools import wraps
 from config import *
 import datetime
+from log import *
 
 auth_ldap=Blueprint('auth',__name__)
 

@@ -1,9 +1,7 @@
 CREATE DATABASE IF NOT EXISTS nullbyte;
 USE nullbyte;
 
-CREATE USER 'nullbyteadmin'@'%' IDENTIFIED BY 'rootpassword';
-GRANT ALL PRIVILEGES ON nullbyte.* TO 'nullbyteadmin'@'%' WITH GRANT OPTION;
-
+GRANT ALL PRIVILEGES ON nullbyte.* TO 'nullbyteadmin'@'%' IDENTIFIED BY 'rootpassword';
 FLUSH PRIVILEGES;
 
 CREATE TABLE IF NOT EXISTS customer (
