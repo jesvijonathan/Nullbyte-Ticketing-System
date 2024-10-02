@@ -67,7 +67,7 @@ async function SubmitLogin() {
 .invalid-feedback{
   color: red;
   font-size: 0.8rem;
-  text-align: left;
+  text-align: center;
   margin-top: 1rem;
   font-weight: light;
   font-family: wl1;

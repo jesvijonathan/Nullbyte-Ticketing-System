@@ -10,9 +10,9 @@ CREATE TABLE IF NOT EXISTS customer (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     age INT,
-    gender ENUM('Male', 'Female', 'Other') NOT NULL,
+    gender ENUM('Male', 'Female'),
     email VARCHAR(255) UNIQUE NOT NULL,
-    phone VARCHAR(15) NOT NULL,
+    phone VARCHAR(15),
     company VARCHAR(255),
     role VARCHAR(100),
     score INT
@@ -22,15 +22,15 @@ CREATE TABLE IF NOT EXISTS employee (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     age INT,
-    gender ENUM('Male', 'Female', 'Other') NOT NULL,
+    gender ENUM('Male', 'Female') NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    phone VARCHAR(15) NOT NULL,
+    phone VARCHAR(15),
     role VARCHAR(100),
     score INT,
-    Manager INT,
-    GCM VARCHAR(100),
-    Experience INT,
-    FOREIGN KEY (Manager) REFERENCES employee(id) ON DELETE SET NULL
+    manager INT,
+    gcm INT,
+    experience INT,
+    FOREIGN KEY (manager) REFERENCES employee(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS ticket (

@@ -1,2 +1,2 @@
-id ,name      ,age ,gender ,email                  ,phone      ,role                 ,score ,Manager   ,GCM ,Experience
-01 ,Rajashree , 23 ,female ,Rajashree@nullbyte.exe ,0420420911 ,Associate Consultant ,    4 ,Shreyansh ,  1 ,         2
+id ,name      ,age ,gender ,email                  ,phone      ,role                 ,score ,manager ,gcm ,experience
+01 ,Rajashree , 23 ,female ,Rajashree@nullbyte.exe ,0420420911 ,Associate Consultant ,    4 ,     69 ,  1 ,         2
