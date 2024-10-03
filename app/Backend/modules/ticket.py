@@ -3,6 +3,8 @@ from flask import request, make_response,jsonify
 from config import *
 from models.db_models import Ticket
 from auth import jwt_required
+from database import session
+from log import logger
 
 ticket=Blueprint('ticket',__name__)
 

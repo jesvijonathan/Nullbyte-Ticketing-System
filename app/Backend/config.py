@@ -20,7 +20,7 @@ ADMIN_CRED = dict({
 })
 
 # Database configuration
-DATABASE_HOST = os.getenv("DATABASE_HOST", "nullbyte-ticketing-system_sql_1")
+DATABASE_HOST = os.getenv("DATABASE_HOST", "nullbyte-ticketing-system-sql-1")
 DATABASE_PORT = os.getenv("DATABASE_PORT", "3306")
 DATABASE_USER = os.getenv("DATABASE_USER", "nullbyteadmin")
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "rootpassword")

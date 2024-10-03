@@ -25,4 +25,5 @@ app.register_blueprint(vision,url_prefix='/v1/vision')
 app.register_blueprint(text,url_prefix='/v1/text')
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
