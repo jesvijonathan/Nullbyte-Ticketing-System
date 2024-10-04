@@ -15,6 +15,10 @@ JWT_EXP_DELTA_SECONDS = 36000
 
 # Admin Creds
 ADMIN_CRED = dict({
+    'username': os.getenv('ADMIN_ACC', 'Administrator@nullbyte.exe'),
+    'password': os.getenv('ADMIN_ACC_PASS', 'rasmiaboobuckerr')
+})
+SVC_CRED = dict({
     'username': os.getenv('SVC_ACC', 'administrator@nullbyte.exe'),
     'password': os.getenv('SVC_ACC_PASS', 'rasmiaboobuckerr')
 })

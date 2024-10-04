@@ -1,0 +1,13 @@
+FirstName,LastName,UserName,OU,Password
+Alice,Smith,asmith,dev,Password123!
+Bob,Johnson,bjohnson,dev,Password123!
+Charlie,Brown,cbrown,svc,Password123!
+Diana,Prince,dprince,svc,Password123!
+Eve,Adams,eadams,mgmt,Password123!
+Frank,Castle,fcastle,mgmt,Password123!
+Grace,Hopper,ghopper,ext,Password123!
+Hank,Pym,hpym,ext,Password123!
+Akileswar,Prathapkumar,akileswar,dev,Password123!
+Jesvi,jonathan,jesvi,dev,Password123!
+Rashmi,Abdulrahim,rasmi,svc,Password123!
+Rajashree,Dinakaran,rajashree,mgmt,Password123!

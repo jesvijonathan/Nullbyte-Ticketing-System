@@ -8,36 +8,31 @@ import datetime
 from log import *
 
 auth_ldap=Blueprint('auth',__name__)
-
+lwrapper=Lwrapper()
 @auth_ldap.post('/auth')
 def authenticate():
     if not request.is_json:
         return make_response(jsonify({'error': 'Request must be JSON'}), 400)
-
     body = request.json
     username = body.get('email')
     password = body.get('password')
 
     if not username or not password:
         return make_response(jsonify({'error': 'email and password are required'}), 400)
-
-    logger.info(f"Authenticating user: {username}")
-    
-    if Lwrapper().Authenticate(username,password):
-        payload = {
-        'sub': username,
-        'iat': datetime.datetime.now(datetime.timezone.utc),
-        'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=JWT_EXP_DELTA_SECONDS)
-    }
-    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
-    if token:
-        return make_response(jsonify({'token': token}), 201)
+    logger.info(f"Authenticating user: {username}")  
+    if lwrapper.Authenticate(username,password):
+        payload=lwrapper.getPayload(username)
+        payload['iat']=datetime.datetime.now(datetime.timezone.utc)
+        payload['exp']=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=JWT_EXP_DELTA_SECONDS)
+        logger.info(payload)
+        token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        if token:
+            return make_response(jsonify({'token': token}), 201)
     
 def jwt_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-
         if 'Authorization' in request.headers:
             token = request.headers['Authorization'].split(" ")[1]
         if not token:
