@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nullbyte Bot</title>
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #connectionStatus {
+            color: green;
+            margin-bottom: 10px;
+        }
+
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 60%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: #e1ffc7;
+            color: #333;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background-color: #d1e0f5;
+            color: #333;
+        }
+
+        input {
+            width: calc(100% - 100px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            background-color: #464646;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Nullbyte Chatbot</h1>
+    <div id="connectionStatus">Status: Connecting...</div>
+    <div id="messages"></div>
+    <input id="messageInput" type="text" placeholder="Type your message here...">
+    <div>
+        <input id="fileInput" type="file" multiple>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <br><br>
+    <div class="created" id="created"></div>
+
+    <script>
+        const socket = io('http://127.0.0.1:5000');
+
+        const messageInput = document.getElementById("messageInput");
+
+        function addMessageToChat(recipient, message, time) {
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message");
+
+            if (recipient === "admin") {
+                messageElement.classList.add("user-message");
+            } else {
+                messageElement.classList.add("bot-message");
+            }
+
+            messageElement.innerHTML = `${recipient}: ${message} <span>(${time})</span>`;
+            document.getElementById("messages").appendChild(messageElement);
+        }
+
+        // Listen for the enter key
+        messageInput.addEventListener("keypress", function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        socket.on('connect', function () {
+            document.getElementById('connectionStatus').innerText = 'Status: Connected';
+            document.getElementById('connectionStatus').style.color = 'green';
+            console.log('Connected to server');
+        });
+
+        socket.on('disconnect', function () {
+            document.getElementById('connectionStatus').innerText = 'Status: Disconnected';
+            document.getElementById('connectionStatus').style.color = 'red';
+            console.log('Disconnected from server');
+        });
+
+        socket.on('response', function (data) {
+            appendMessage('Bot', data.message);
+            console.log('Response:', data.message);
+        });
+
+        socket.on('close_chat', function (data) {
+            console.log('Chat closed:', data);
+            socket.disconnect();
+            const created = document.getElementById('created');
+            created.innerHTML = JSON.stringify(data);
+            created.style.color = 'green';
+        });
+
+        socket.on('live_chat', function(data) {
+            console.log('Live chat history received:', data);
+            if (!data || !data.live_chat) {
+                console.error('No live_chat data received.');
+                return;
+            }
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+        
+            for (const key in data.live_chat) {
+
+                if (data.live_chat.hasOwnProperty(key)) {
+                    const entry = data.live_chat[key];
+                    const sender = entry.recipient === 'admin' ? 'admin' : entry.recipient;
+                    const size = entry.size ? `(${entry.size} bytes)` : '';
+                    if (entry.attachment) {
+                        const attachmentLink = `<a href="data:application/octet-stream;base64,${entry.encoded_file}" download="${entry.attachment}">${entry.attachment}</a>`;
+                        appendMessage(sender, `${attachmentLink}`, entry.time, size);
+                    } else {
+                        appendMessage(sender, entry.message, entry.time,  size);
+                    }
+                }
+            }
+        });
+        
+
+        socket.on('user_attachment_received', function (attachment) {
+            const message = `Attachment received: ${attachment.file_name} (${attachment.size_mb} MB)`;
+            appendMessage('Bot', message);
+        });
+
+        function appendMessage(sender, message, time = '', size = '') {
+            const messagesDiv = document.getElementById('messages');
+            const formattedTime = time ? ` (${new Date(time).toLocaleString('en-GB')})` : '';
+            const formattedSize = size ? ` ${size}` : '';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + (sender === 'admin' ? 'user-message' : 'bot-message');
+            messageDiv.innerHTML = `<strong>${sender}:</strong> ${message} ${formattedSize} ${formattedTime}`;
+
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            let message = messageInput.value.trim();
+            const fileInput = document.getElementById('fileInput');
+            const files = fileInput.files;
+        
+            if (message || files.length > 0) {
+                const attachments = [];
+        
+                // Function to read a file and return a Promise
+                const readFile = (file) => {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = function () {
+                            const fileData = reader.result.split(',')[1];
+                            const attachment = {
+                                file_name: file.name,
+                                file_data: fileData,
+                                size_mb: (file.size / (1024 * 1024)).toFixed(2)
+                            };
+                            resolve(attachment);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                };
+        
+                // Read all files and gather the attachments
+                const fileReadPromises = Array.from(files).map(readFile);
+        
+                // Once all files are read, send the message and attachments
+                Promise.all(fileReadPromises)
+                    .then((results) => {
+                        attachments.push(...results);
+                        sendToServer(message, attachments);
+                    })
+                    .catch((error) => {
+                        console.error("Error reading files:", error);
+                    });
+        
+                messageInput.value = ''; // Clear input
+                fileInput.value = ''; // Clear file input
+            } else {
+                console.log("Message input is empty and no file selected.");
+            }
+        }
+        
+        function sendToServer(message, attachments) {
+            if (message) {
+                console.log(`Sending message: ${message}`);
+                appendMessage('You', message);
+            }
+        
+            if (attachments.length > 0) {
+                for (const attachment of attachments) {
+                    const attachmentMessage = `Attachment sent: ${attachment.file_name} (${attachment.size_mb} MB)`;
+                    appendMessage('You', attachmentMessage);
+                    console.log(`Attachment ${attachment.file_name} sent.`);
+                }
+            }
+        
+            // Send message and attachments to the server
+            socket.emit('user_attachment', { message, attachments });
+        }
+        
+        
+        socket.on('connect_error', function (err) {
+            console.error('Connection failed:', err);
+        });
+
+        socket.on('connect_timeout', function (err) {
+            console.error('Connection timed out:', err);
+        });
+
+        socket.on('error', function (err) {
+            console.error('Error:', err);
+        });
+    </script>
+</body>
+
+</html>

@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, Text, Enum, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 import validator_collection
-from database import Base
+from .database import Base
 
 class Ticket(Base):
     __tablename__ = 'ticket'

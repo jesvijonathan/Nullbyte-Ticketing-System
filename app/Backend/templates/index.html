@@ -1,0 +1,21 @@
+<html>
+<body>
+    <a href="/sso/auth{{token_param}}">Authenticate</a><br>
+    <a href="/sso/list_users{{token_param}}">List Users</a><br>
+    <a href="/v1/ticket/create{{token_param}}">Create Ticket</a><br>
+    <a href="/v1/ticket/modify{{token_param}}">Modify Ticket</a><br>
+    <a href="/v1/vision{{token_param}}">Evaluate Image</a><br>
+    <a href="/v1/text{{token_param}}">Evaluate Text</a><br>
+    <br>
+    <!-- Login Page -->
+    <form action="/sso/auth" method="post" id="login-form">
+        <label for="email">Email:</label><br>
+        <input type="text" id="email" name="email" required><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>    
+</html>

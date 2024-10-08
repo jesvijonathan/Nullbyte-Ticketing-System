@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import pymysql
 from time import sleep
-from log import *
+from modules.log import *
 from config import * 
 
 
@@ -27,7 +27,7 @@ for _ in range(10):
         Base = declarative_base()
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
-        session = Session()
+        db_session = Session()
         logger.info("Database connection established successfully")
         break
     except Exception as e:

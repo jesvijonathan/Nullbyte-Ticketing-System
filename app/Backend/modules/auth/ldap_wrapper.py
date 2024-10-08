@@ -2,7 +2,7 @@ import os
 import time
 import ldap,ldap.asyncsearch
 from config import *
-from log import *
+from modules.log import *
 
 class Lwrapper:
     def __init__(self):
@@ -40,6 +40,8 @@ class Lwrapper:
 
     def Authenticate(self,username,password)->bool:
         if self.admin==username and self.admin_pass==password:
+            return True
+        elif ADMIN_CRED_2["username"]==username and ADMIN_CRED_2["password"]==password:
             return True
         conn = ldap.initialize('ldap://DC01.nullbyte.exe') 
         conn.protocol_version = 3
