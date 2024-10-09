@@ -51,8 +51,6 @@ IT Team
 		except Exception as e:
 			print(e)
 
-		
-		
 	# Function to onboard ticket	
 	def registerComplaint(self)->bool:
 		return True

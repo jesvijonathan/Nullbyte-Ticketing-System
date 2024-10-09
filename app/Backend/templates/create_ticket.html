@@ -4,35 +4,163 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Ticket</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, textarea, select {
+            width: -webkit-fill-available;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        .attachment {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+            font-size: 13px;
+            color: grey;
+        }
+        .attachment:hover{
+            background-color: #f9f9f9;
+        }
+        
+        .remove-attachment {
+            color: red;
+            font-weight: 900;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        #attachmentsList {
+            margin-bottom: 35px;
+        }
+        #autofill{
+            background-color: cyan;
+        }
+        #reset_form{
+            background-color: red;
+        }
+    </style>
     <script>
+        const ticketData = {
+            "chat_id": "tRAFcELKK5xiAK6FAAAD",
+            "ticket_id": "SVC-18193",
+            "user": "admin",
+            "medium": "",
+            "connection": "closed",
+            "text": "",
+            "subject": "wlpfo Transaction Declined for P025 Value 28",
+            "summary": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
+            "attachments": [],
+            "product_type": "wlpfo",
+            "issue_type": "bug",
+            "priority": "high",
+            "story_points": "5",
+            "estimation": "8",
+            "analysis": "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
+            "reply": "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible."
+        };
+
+        function populateForm() {
+            document.getElementById('chatId').value = ticketData.chat_id;
+            document.getElementById('ticketId').value = ticketData.ticket_id;
+            document.getElementById('user').value = ticketData.user;
+            document.getElementById('text').value = ticketData.text;
+            document.getElementById('summary').value = ticketData.summary;
+            document.getElementById('productType').value = ticketData.product_type;
+            document.getElementById('issueType').value = ticketData.issue_type;
+            document.getElementById('priority').value = ticketData.priority;
+            document.getElementById('storyPoints').value = ticketData.story_points;
+            document.getElementById('estimation').value = ticketData.estimation;
+            document.getElementById('analysis').value = ticketData.analysis;
+        }
+
+        function validateForm() {
+            const summary = document.getElementById('summary').value.trim();
+            const description = document.getElementById('text').value.trim();
+
+            if (!summary && !description) {
+                alert('Please fill out either the Summary or Description field.');
+                return false;
+            }
+            return true; 
+        }
+
+        function displayAttachments() {
+            const attachmentsContainer = document.getElementById('attachmentsList');
+            attachmentsContainer.innerHTML = ''; 
+            const files = document.getElementById('attachments').files;
+
+            for (let i = 0; i < files.length; i++) {
+                const attachmentDiv = document.createElement('div');
+                attachmentDiv.classList.add('attachment');
+                attachmentDiv.innerHTML = `
+                    <span>${files[i].name} (${(files[i].size / 1024).toFixed(2)} KB)</span>
+                    <span class="remove-attachment" onclick="removeAttachment(${i})">X</span>
+                `;
+                attachmentsContainer.appendChild(attachmentDiv);
+            }
+        }
+
+        function removeAttachment(index) {
+            const fileInput = document.getElementById('attachments');
+            const dataTransfer = new DataTransfer(); 
+
+            for (let i = 0; i < fileInput.files.length; i++) {
+                if (i !== index) {
+                    dataTransfer.items.add(fileInput.files[i]);
+                }
+            }
+
+            fileInput.files = dataTransfer.files;
+            displayAttachments(); 
+        }
+
         async function submitTicket(event) {
             event.preventDefault();
+            if (!validateForm()) return;
 
-            const ticketData = {
-                Subject: document.getElementById('subject').value,
-                Type: document.getElementById('type').value,
-                Description: document.getElementById('description').value,
-                Status: document.getElementById('status').value,
-                Priority: document.getElementById('priority').value,
-                Channel: document.getElementById('channel').value,
-                Customer_ID: document.getElementById('customerId').value,
-                Product_ID: document.getElementById('productId').value,
-                Assignee_ID: document.getElementById('assigneeId').value,
-                Resolution: document.getElementById('resolution').value,
-                Reopens: document.getElementById('reopens').value,
-            };
+            document.getElementById('result').innerHTML = '<p>Submitting...</p>'; 
+
+            const ticketDataForm = new FormData(document.getElementById('ticketForm'));
+
+            const files = document.getElementById('attachments').files;
+            for (let i = 0; i < files.length; i++) {
+                ticketDataForm.append('attachments', files[i]);
+            }
 
             try {
                 const response = await fetch('/create', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + localStorage.getItem('token'),
                     },
-                    body: JSON.stringify(ticketData),
+                    body: ticketDataForm,
                 });
 
-                const data = await response.json(); 
+                const data = await response.json();
 
                 if (!response.ok) {
                     throw new Error(data.error || 'An error occurred');
@@ -42,53 +170,85 @@
                 console.log('Ticket created:', data.id);
 
                 document.getElementById('ticketForm').reset();
+                displayAttachments();
 
             } catch (error) {
                 console.error('An error occurred during ticket submission:', error);
                 document.getElementById('result').innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
             }
         }
+
+        function resetForm() {
+            document.getElementById('ticketForm').reset(); 
+            displayAttachments(); 
+            document.getElementById('result').innerHTML = '';
+        }
+        window.onload = populateForm;
     </script>
 </head>
 <body>
     <h1>Create a New Ticket</h1>
     <form id="ticketForm" onsubmit="submitTicket(event)">
-        <label for="subject">Subject:</label>
-        <input type="text" id="subject" name="subject" required><br><br>
+        <label for="chatId">Chat ID:</label>
+        <input type="text" id="chatId" name="chatId" disabled readonly>
 
-        <label for="type">Type:</label>
-        <input type="text" id="type" name="type" required><br><br>
+        <label for="ticketId">Ticket ID:</label>
+        <input type="text" id="ticketId" name="ticketId" disabled readonly>
 
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" rows="4" required></textarea><br><br>
+        <label for="user">User:</label>
+        <input type="text" id="user" name="user" disabled readonly>
 
-        <label for="status">Status:</label>
-        <input type="text" id="status" name="status" required><br><br>
+        <label for="text">Description:</label>
+        <textarea id="text" name="text" rows="4"></textarea>
+
+        <label for="summary">Summary:</label>
+        <textarea id="summary" name="summary" rows="4"></textarea>
+
+        <label for="attachments">Attachments:</label>
+        <input type="file" id="attachments" name="attachments" multiple onchange="displayAttachments()">
+        
+        <div id="attachmentsList"></div>
+
+        <label for="productType">Product Type:</label>
+        <select id="productType" name="productType">
+            <option value="webgui">webgui</option>
+            <option value="wlpfo">wlpfo</option>
+            <option value="pass">pass</option>
+            <option value="wlsi">wlsi</option>
+            <option value="other">Other</option>
+        </select>
+
+        <label for="issueType">Issue Type:</label>
+        <select id="issueType" name="issueType">
+            <option value="bug">Bug</option>
+            <option value="error">Error</option>
+            <option value="issue">Issue</option>
+            <option value="story">Story</option>
+            <option value="others">Others</option>
+            <option value="feature">Feature</option>
+        </select>
 
         <label for="priority">Priority:</label>
-        <input type="text" id="priority" name="priority" required><br><br>
+        <select id="priority" name="priority">
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+        </select>
 
-        <label for="channel">Channel:</label>
-        <input type="text" id="channel" name="channel" required><br><br>
+        <label for="storyPoints">Story Points:</label>
+        <input type="number" id="storyPoints" name="storyPoints" min="0">
 
-        <label for="customerId">Customer ID:</label>
-        <input type="text" id="customerId" name="customerId" required><br><br>
+        <label for="estimation">Estimation:</label>
+        <input type="number" id="estimation" name="estimation" min="0">
 
-        <label for="productId">Product ID:</label>
-        <input type="text" id="productId" name="productId" required><br><br>
-
-        <label for="assigneeId">Assignee ID:</label>
-        <input type="text" id="assigneeId" name="assigneeId" required><br><br>
-
-        <label for="resolution">Resolution:</label>
-        <input type="text" id="resolution" name="resolution"><br><br>
-
-        <label for="reopens">Reopens:</label>
-        <input type="number" id="reopens" name="reopens" min="0"><br><br>
+        <label for="analysis">Analysis:</label>
+        <textarea id="analysis" name="analysis" rows="4"></textarea>
 
         <button type="submit">Create Ticket</button>
+        <button id="autofill">Auto Fill</button>
+        <button type="button" id="reset_form" onclick="resetForm()">Reset</button>
     </form>
 
-    <div id="result"></div> 
+    <div id="result"></div>
 </body>
 </html>

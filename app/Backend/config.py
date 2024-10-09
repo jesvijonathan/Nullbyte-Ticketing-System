@@ -1,6 +1,7 @@
 import os
 import secrets
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -109,21 +110,26 @@ json format:
 "enhance": "", receive the text/summary/analysis and enhance the message with better words and better explanation & considering all parameters. 
 }
 """
-google_credentials="""
-{
-  "type": "service_account",
-  "project_id": "silken-fortress-437417-p4",
-  "private_key_id": "c6e7e43d39563d928ddc6bfd02eb17820109ecf5",
-  "private_key": "-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDpLFXAdX8S6bHO\\nETRexiJi/6jhuIzAR6cR9SLrZw6AC9s/dBk63jPoIRas4gcaQM1dUEBLcbs7oCwD\\nxZIO9tcfz79L7LARSOgososnMsReZ99cH7+oIn5wjJQbTguMlrudxhL1eqteV6z+\\nda7fUYrqLVj9ixtmxZ76KqVwOeLV/Caz3J/kPAr+W7memEdWSPFkgR41/jbYwiEh\\n0r+6PPMcBTb5qDknuX4RZZojW2AXbJnsMu8oglUXtvITyJcpk+9wNBGqz4OILLZe\\nii4AmpuzQn98YDEju53XKi2oIgqqn2Aovj5z3FC4XrdVP8MGnnWZ+J3lsQUPHTwy\\n1H22BEElAgMBAAECggEAAzPQGAT/wjP89JT7veXP5kGszAV+Q2FzNosswq8R6H7L\\n26bTIOHuibyImfEUbWR18uyNptZF9ByaoND3alFdZNW0LXgE9rEkZR4HTLoaWdHo\\njqnt9oJwxPLH/EmvCBba4UttimW3/E33ytqKv2JDO5JKCQNpKdkYJPHt1JPVnSA4\\ndUZxB6DoPPQpqpFB8wBmCqeI9/XnApKFVe2pN7zrxnCbPnLqApvUnfLKluc+LIWq\\nE+IjdjFyf18RcpJOejSna1PF6AS3EBMz/bv0ic958EJUI+G+ZVZVOX9auPWPAsK+\\n1qS+clAr7ezvrXfQ+INb15X6+tG7Zmpcxst2NkZaoQKBgQD+59nYlD9sD3+ipK2f\\nVFLmWlFnfVCKQQTCZzAKwI8Qxvv+Xx8/rd9BVG8Sfqt/RHmIKaDg4uezLKeLFRmk\\niB5ePJ0w3o1StYgX20Xk6Jg5ft7UcptcWDwaKCsLPAQcmakyZW2FRrIXdCa3l7zz\\nOt43/axzpxDZpoC7bJmaWAfFxQKBgQDqLJlu9P2tjIzkf2bGvvPr4YQ42Axq4Cmq\\nKWTH3tVX6FPB6hp9Xk8p6TFAXWq4DZv8P8uTc34KqMu3BNIngVqPMTZAcgQd9/36\\nkEU6KEm/yEgn1nz12/P3TOW2Fp3hFPEUFBEPJjXjD2cQhkO2RT73ZhJQjkwb6c4C\\nHb1Eqmej4QKBgQCs3lWJoHgmc5hOl7m7bPdPiv7b3Utqh0+P+2TEVfRwH1I0HxRV\\nHjhi2Lz+4PKzO5/j7L9S4+7YPzdchjG+uCVIKXk89CEJb1zdOPJ8nBToIRdDInok\\nNR6FaqpOUyRCtR7es5SDpv8OEtJS/c/BcDHV7O4v/KPbxyRUdwDwgDS9NQKBgA8K\\nGDyRDW3E9hOCvyYKg33luOkxrvJ6PRLJn8haXldL+30bvOHKWck2Scx5c24oqZj0\\nu+1XYIPsvVCexaR14UwK/BH9gJgwIiaid1+50Kq5gTDVzKa5npyGWsZsA22+O5Fv\\njHztlk5j4dmk1dpx7g5Tht+Xk/nC9VEbedlcHFXhAoGAE/yj1NNPzgiWf5A4TVEX\\nMj1XviGEwi0Oy5Bd1Y/GIzwY+VaR8bSB7xe9TJVkC0A7+Y+tAPl3gQjF6R60XYus\\n5w+fupegXSBgqgHXoFMDkWHtdQrAtvI5X61lCGQnzGEJnZZq/itz2c2TatkDTQY1\\nP3oMvIniJKsO+VhZRniiCWk=\\n-----END PRIVATE KEY-----\\n",
-  "client_email": "nulllbyte@silken-fortress-437417-p4.iam.gserviceaccount.com",
-  "client_id": "101967681156577996906",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/nulllbyte%40silken-fortress-437417-p4.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
-"""
+
+
+google_credentials = os.getenv("GOOGLE_CREDENTIALS", "").strip()
+
+# Check if credentials are not provided or set to "null"
+if not google_credentials or google_credentials == "null":
+    try:
+        with open('./google_credentials.json', 'r') as file:
+            google_credentials = file.read()
+            google_credentials = str(google_credentials)
+    except FileNotFoundError:
+        google_credentials = None
+
+if not google_credentials:
+    raise ValueError("GOOGLE_CREDENTIALS must be set in the environment variables or in ./google_credentials.json")
+
+
+# At this point, google_credentials is guaranteed to be a dictionary
+service_account_info = google_credentials  # Use it directly as it should be a dict now
+
 chatbot_fallback=2 # 0 - only wl_vertex, 1 - only wl_llama, 2 - wl_vertex priority & fallback to wl_llama, 3 - wl_llama priority & fallback to wl_vertex  
 OLLAMA_MODEL = "nullbyte"
 ollama_amnesia = 0 # 0 - no amnesia, 1 - amnesia

@@ -8,6 +8,12 @@ from .log import *
 
 ticket=Blueprint('ticket',__name__)
 
+# @ticket.route('/list',methods=['GET'])
+# @jwt_required
+# def get_all_tickets():
+#     tickets = db_session.query(Ticket).all()
+#     return make_response(jsonify([ticket.serialize() for ticket in tickets]), 200)
+
 @ticket.route('/create',methods=['POST'])
 @jwt_required
 def create_ticket():

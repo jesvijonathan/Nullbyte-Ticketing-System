@@ -36,6 +36,13 @@ app.register_blueprint(text, url_prefix='/text')
 def home():
     return render_template('index.html', token_param="")
 
+# dummy route to test json data from ./dataset/test.json
+@app.route('/test', methods=['GET'])
+def test():
+    with open('dataset/test.json') as f:
+        data = json.load(f)
+    return jsonify(data)
+
 # Socket IO event handling
 @socketio.on('connect')
 @jwt_required
@@ -89,6 +96,7 @@ def disconnect():
     else:
         chat.result["connection"] = "offline"
 
+# cleanup during startup
 if tmp_folders_cleanup:
     if os.path.exists(chats_folder) and os.path.isdir(chats_folder):
             for filename in os.listdir(chats_folder):
