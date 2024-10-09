@@ -16,14 +16,15 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 RUN curl -fsSL https://ollama.com/install.sh | sh
 RUN ollama pull llama3.2
 RUN ollama list
-RUN ollama rm jesvi:latest || true
+RUN ollama rm nullbyte || true
 COPY ./Backend/Modelfile /Modelfile
-RUN ollama create jesvi -f /Modelfile
+RUN ollama create nullbyte -f /Modelfile
 
 EXPOSE 5000
 
 COPY . .
 
-CMD ["bash", "-c", "ollama run jesvi & python3 app.py"]
+# ollama run nullbyte
+CMD ["bash", "-c", "python3 app.py"]
 
 

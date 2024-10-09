@@ -6,5 +6,5 @@ vision=Blueprint('vision',__name__)
 @vision.post('/')
 def vision_test():
     user = session.get('user')
-    print("######################### : ", user)
+    print("######################### vision : ", user)
     return "Vision test: {}".format(user)

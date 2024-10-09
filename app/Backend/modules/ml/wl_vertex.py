@@ -68,11 +68,11 @@ class google_vertex_chat:
             else:
                 merged_msg.append(documents_data_list) 
         
-        print("@@@@@@@@@@: ", merged_msg)
+        # print("@@@@@@@@@@: ", merged_msg)
         result_msg=self.chat.send_message(
             merged_msg,
             generation_config=generation_config,
             safety_settings=safety_settings
         )
-        print("oooooooooo: ", result_msg)
+        # print("oooooooooo: ", result_msg)
         return result_msg

@@ -13,10 +13,11 @@ import random
 import base64
 from werkzeug.utils import secure_filename
 
-
 from vertexai.generative_models import  Part
 from mimetypes import guess_extension
 import mimetypes
+
+import re
 
 # chatbot handler for socketio and manager
 class ChatbotHandler:
@@ -36,7 +37,7 @@ class ChatbotHandler:
         self.fallback= self.initialize_fallback(chatbot_fallback)
         self.fell= False
 
-        self.bucket_dir = "./bucket"
+        self.bucket_dir = chats_folder
         os.makedirs(self.bucket_dir, exist_ok=True)
 
         self.init_chat()
@@ -63,32 +64,37 @@ class ChatbotHandler:
         }
     
         attachments = []  
-    
         if attachments_list:
+            attachment_count = 0
             for attachment in attachments_list:
                 binary_file_data = attachment['file_data']
                 b_file_data = base64.b64decode(attachment['file_data'])
-                google_string, filename, mime = self.parse_attachment(b_file_data, attachment['file_name'])
+                google_string, filename, mime = self.parse_attachment(b_file_data, secure_filename(attachment['file_name']))
+                filename = filename
                 file_path = os.path.join(self.bucket_dir, self.chat_id, filename)
     
-                if google_string:
-                    attachment_count = len(os.listdir(os.path.join(self.bucket_dir, self.chat_id)))
-                    self.history[len(self.history)]["attachment"] = {
-                        "file_id": attachment_count,
-                        "filename": filename,
-                        "path": file_path,
-                        'extension': filename.split('.')[-1] if '.' in filename else '',
-                        'mime_type': mime,
-                        'size': len(b_file_data),
-                    }
+
+                try:
+                    self.history[len(self.history)]["attachment"]
+                except:
+                    self.history[len(self.history)]["attachment"] = {}
+                self.history[len(self.history)]["attachment"][attachment_count] = {
+                "filename": filename,
+                "path": file_path,
+                'extension': filename.split('.')[-1] if '.' in filename else '',
+                'mime_type': mime,
+                'size': len(b_file_data),
+                }
                     
-                print("00000000000:",  binary_file_data, "\n\n", b_file_data)
+                # print("00000000000:",  binary_file_data, "\n\n", b_file_data)
                 attachments.append({
                     "file": file_path,
                     "data": binary_file_data
                  })
+            
+                attachment_count+=1
 
-        print("\n\n\n\n", attachments)
+        # print("\n\n\n\n", attachments)
         if response_msg == "/close" or response_msg == "close":
             self.close_chat()
         elif response_msg == "/change" or response_msg == "change":
@@ -123,6 +129,29 @@ class ChatbotHandler:
     def close_chat(self):
         self.result["connection"]= "closed"
         # logic to add details to db here, for later
+        
+        ticket_folder = "./bucket/tickets"
+        os.makedirs(ticket_folder, exist_ok=True)
+        this_ticket_folder = os.path.join(ticket_folder, self.result["ticket_id"])
+        os.makedirs(this_ticket_folder, exist_ok=True)
+        chat_file = os.path.join(this_ticket_folder, "chat.json")
+        
+        with open(chat_file, "w") as f:
+            json.dump(self.history, f)
+        
+        for key in self.history:
+            if "attachment" in self.history[key]:
+                    attachments = self.history[key]["attachment"]
+                    for attachment in attachments:
+                        try:
+                            attachment_file = os.path.join(this_ticket_folder, attachments[attachment]["filename"])
+                            os.rename(self.history[key]["attachment"][attachment]["path"], attachment_file)
+                            self.history[key]["attachment"][attachment]["path"] = attachment_file
+                        except:
+                            print("Error moving attachment file")
+                            pass
+
+
         self.socketio.emit("close_chat", {"close_chat": self.result}, room=self.socket["sid"])
         # if self.token in sockets:
         #     del sockets[self.token]
@@ -147,27 +176,34 @@ class ChatbotHandler:
         print("falling back to :", self.fallback, "user", self.user)
         self.fell = True
         self.bot = self.fallback
+        # send a msg to user saying that the bot is down, do not store in history, if user says yes then change the bot, else close the chat
+        # user_rep=self.reply_send("The bot is currently down, would you like to switch to {self.fallback} bot?")
+        # if user_rep.lower() != "yes" or user_rep.lower() != "y" or user_rep.lower() != "s":
+        #     self.close_chat()
+
         if self.fallback == "wl_vertex":
             self.chat = wl_vertex.google_vertex_chat()
             self.vertex_generate(str(self.history))
-        else:
+        elif self.fallback == "wl_llama":
             self.chat = wl_llama.OllamaChat()
             self.llama_generate(str(self.history))
+        else:
+            user_rep=self.reply_send("There was an error !")
+            self.close_chat()
         return
 
     def llama_generate(self, message, attachments=None):
         formatted_message = self.format_message(message)
 
         message_payload = {
+            'message': formatted_message,
             'attachments': attachments,
-            'message': formatted_message
         }
 
         try:
             print("Sending message:", message_payload)
             response = self.chat.send_message(message_payload)
             self.handle_response(response)
-            print("Response received successfully:", response)
         except Exception as e:
             print(f"An error occurred: {e}")
             self.fallback_handle()
@@ -175,8 +211,9 @@ class ChatbotHandler:
 
     def vertex_generate(self, message, attachments=None):
         try:
+            print("Sending message:", self.format_message(message))
             response = self.chat.send_message(self.format_message(message), attachments)
-
+            
             if response.candidates:
                 text_response = response.candidates[0].content.parts[0].text
                 self.handle_response(text_response)
@@ -198,8 +235,10 @@ class ChatbotHandler:
         if self.bot == "wl_vertex":
             self.vertex_generate(response_msg, attachment)
         else:
-            self.llama_generate(self.history, attachment)
-
+            if not ollama_amnesia:
+                self.llama_generate(self.history, attachment)
+            else:
+                self.llama_generate(response_msg, attachment)
         return
     
     def handle_response(self, text_response):
@@ -208,11 +247,10 @@ class ChatbotHandler:
         if json_msg_dict:
             self.result.update(json_msg_dict)
             self.reply_send(reply_msg)
-            print(self.result)
-            # Process json_msg to ticket
+            print("Response received successfully:", self.result)
             self.close_chat()
         else:
-            print("No JSON found in the response; processing as plain text.")
+            print("Response received successfully (No JSON found in the response; processing as plain text.):", self.result)
             self.reply_send(reply_msg if reply_msg else text_response)
     
     def reply_send(self, reply_msg):
@@ -237,7 +275,6 @@ class ChatbotHandler:
 
         # Convert file to base64
         with open(file_path, "rb") as f:
-            # get mime type, from file extension
             file_ext = file_path.split('.')[-1]
             mime_type = guess_extension(file_ext) or mimetypes.guess_type(file_path)[0] or "application/octet-stream"
             encoded_file = Part.from_data(
@@ -246,11 +283,6 @@ class ChatbotHandler:
             )
 
         return encoded_file, file_name, mime_type
-    
-#     document1_1 = Part.from_data(
-#     mime_type="text/plain",
-#     data=base64.b64decode("""="""),
-# )
     
     def convert_to_base64(self, file_path):
         """Convert a file to a base64 encoded string."""
@@ -266,18 +298,22 @@ class ChatbotHandler:
         # save the attachment to the bucket
         for attachment in attachment_list:
             """ Receives attachment data from frontend and processes it. """
-            file_name = attachment['file_name']
+            file_name = attachment['file_name'] 
+            file_name = secure_filename(file_name)
             file_data = base64.b64decode(attachment['file_data']) 
             print ("AAAAAAAAAAAAAAAAA", attachment)
             encoded_file, file_name, mime = self.parse_attachment(file_data, file_name)
             self.socketio.emit("attachment_saved", {"message": f"Attachment {file_name} received and saved."}, room=self.socket["sid"])
             
     def extract_json_response(self, text_response):
+        text_response = re.sub(r'//.*?(\r?\n|$)', '\n', text_response)
+    
+        text_response = re.sub(r',\s*([}\]])', r'\1', text_response)
         if "```json" in text_response:
             start_index = text_response.index("```json") + len("```json")
             end_index = text_response.index("```", start_index)
             json_msg = text_response[start_index:end_index].strip()
-        elif '{ "subject":' in text_response:
+        elif "{ \"subject\":" in text_response or '``` { "subject":' in text_response:
             start_index = text_response.index('{ "subject":')
             end_index = text_response.index('}', start_index) + 1
             json_msg = text_response[start_index:end_index].strip()

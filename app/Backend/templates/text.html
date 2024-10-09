@@ -164,61 +164,62 @@
                 return;
             }
             const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML = '';
-
+            messagesDiv.innerHTML = ''; 
+        
             for (const key in data.live_chat) {
                 if (data.live_chat.hasOwnProperty(key)) {
                     const entry = data.live_chat[key];
                     const sender = entry.recipient === 'admin' ? 'admin' : entry.recipient;
+                    
                     if (entry.attachment) {
-                        const attachment = entry.attachment;
-                        const attachmentLink = `<a href="${attachment.path}" download="${attachment.filename}">${attachment.filename}</a>`;
-                        const messageWithAttachment = `${entry.message}<br><br> <b>Attachment</b>: ${attachmentLink}`;
-                        appendMessage(sender, messageWithAttachment, entry.time, `Size: ${attachment.size} bytes`);
+                        const attachmentContent = Object.values(entry.attachment).map(attachment => {
+                            const attachmentLink = `<a href="${attachment.path}" download="${attachment.filename}">${attachment.filename}</a>`;
+                            return `<br><b>Attachment:</b> ${attachmentLink} (${attachment.size} bytes)`;
+                        }).join('');
+        
+                        const messageWithAttachment = `${entry.message}${attachmentContent}`;
+                        appendMessage(sender, messageWithAttachment, entry.time);
                     } else {
                         appendMessage(sender, entry.message, entry.time);
                     }
                 }
             }
         });
+        
 
         socket.on('user_attachment_received', function (attachment) {
             const message = `Attachment received: ${attachment.file_name} (${attachment.size_mb} MB)`;
             appendMessage('Bot', message);
         });
 
-        function appendMessage(sender, message, time = '', size = '') {
+        function appendMessage(sender, message, time = '') {
             const messagesDiv = document.getElementById('messages');
             const formattedTime = time ? ` (${new Date(time).toLocaleString('en-GB')})` : '';
-            const formattedSize = size ? ` ${size}` : '';
-
+        
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message ' + (sender === 'admin' ? 'user-message' : 'bot-message');
-            messageDiv.innerHTML = `<strong>${sender}:</strong> ${message} ${formattedSize} ${formattedTime}`;
-
+            messageDiv.innerHTML = `<strong>${sender}:</strong> ${message} ${formattedTime}`;
+        
             messagesDiv.appendChild(messageDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; 
         }
+        
 
         function sendMessage() {
             const messageInput = document.getElementById('messageInput');
             let message = messageInput.value.trim();
-
-            // Concatenate file input attachments and clipboard attachments
+ 
             const files = [...fileInput.files];
             const attachmentsToSend = [...clipboardAttachments];
 
             if (message || attachmentsToSend.length > 0 || files.length > 0) {
-                // Read file input files
                 const fileReadPromises = files.map(file => readFile(file));
-
-                // Wait for all promises to resolve
                 Promise.all(fileReadPromises)
                     .then((results) => {
                         attachmentsToSend.push(...results);
                         sendToServer(message, attachmentsToSend);
-                        clipboardAttachments = []; // Clear clipboard attachments after sending
-                        attachmentContainer.innerHTML = ''; // Clear the attachment display
+                        clipboardAttachments = [];  
+                        attachmentContainer.innerHTML = ''; 
                     })
                     .catch((error) => {
                         console.error("Error reading files:", error);

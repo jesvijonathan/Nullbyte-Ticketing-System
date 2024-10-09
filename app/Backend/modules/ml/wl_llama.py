@@ -17,12 +17,9 @@ class OllamaChat:
                 for count, attachment in enumerate(message['attachments'], start=1):
                     file_path = attachment['file']
                     binary_file_data = attachment['data']
-
-                    # Write the binary data to the file (if needed for reading)
                     with open(file_path, 'wb') as f:
                         f.write(base64.b64decode(binary_file_data))
 
-                    # Read the file content if it is a supported text type
                     mime_type = guess_type(file_path)[0]
                     if mime_type in ('text/plain', 'text/html', 'text/csv', 'text/xml', 'text/rtf', 'text/richtext', 'application/json'):
                         with open(file_path, 'r') as f:
@@ -30,25 +27,30 @@ class OllamaChat:
                         attachment_info = f"Attachment {count}: {file_content}"
                         attachment_data += attachment_info + "\n"
             
-            # Extracting the last message from admin (user)
             last_message = ""
-            message_history = json.loads(message["message"])
+            message_history = ""
+            try:
+                message_history= json.loads(message["message"])
+            except:
+                pass
 
-            for key in sorted(message_history.keys()):
-                msg = message_history[key]
-                if msg['recipient'] == 'admin':  # Assuming 'admin' is the user
-                    last_message = msg['message']
+            try: 
+                for key in sorted(message_history.keys()):
+                    msg = message_history[key]
+                    if not (msg['recipient'] == "wl_vertex" or msg['recipient'] == "wl_llama"):
+                        last_message = msg['message']
+            except:
+                last_message = message["message"]
 
-            # Creating a chronological history
             history = ""
-            for key in sorted(message_history.keys()):
-                msg = message_history[key]
-                history += f"{msg['recipient']}: {msg['message']}\n"
+            try:
+                for key in sorted(message_history.keys()):
+                    msg = message_history[key]
+                    history += f"{msg['recipient']}: {msg['message']}\n"
+            except:
+                pass
 
-            # Construct text for ollama
             ollama_text = f"{last_message}\n\n{history}\n\n{attachment_data}"
-
-            # Construct command with triple quotes for multiline support
             command = f'ollama run {OLLAMA_MODEL} """{ollama_text}"""'
             print(f"Executing command: {command}")
             response = os.popen(command).read().strip()

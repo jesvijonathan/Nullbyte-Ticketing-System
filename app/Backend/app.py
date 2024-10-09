@@ -1,22 +1,21 @@
 from flask import Flask, request, session, render_template, make_response
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit, send, join_room, leave_room, close_room, rooms, disconnect, Namespace
+from flask_socketio import SocketIO, emit, send, disconnect
 from flask import jsonify
 from flask import request
 import datetime
 import time
 from google.api_core.exceptions import ResourceExhausted
 import json
-from modules.auth.auth import auth_ldap, list_users, jwt_required, cleanup_user
+from modules.auth.auth import auth_ldap, jwt_required, cleanup_user
 from ml_image_eval import vision
-from ml_text_eval import text
+from modules.text import text
 from modules.ml.ml_handler import ChatbotHandler
 from modules.ticket import ticket
 from config import *
-import modules.socketio_handler as socketio_handler
 from modules.log import *
-
-import modules.ml.wl_vertex as wl_vertex
+import base64
+import shutil
 
 
 # Flask configurations
@@ -53,7 +52,7 @@ def connect():
     socketio.emit("live_chat" if chat_history else "message",
                   {"live_chat": chat_history} if chat_history else {"message": {**sockets[token]}},
                   room=sid)
-    
+
 @socketio.on('message')
 @jwt_required
 def message(msg):
@@ -70,7 +69,6 @@ def message(msg):
 def handle_user_attachment(data):
     token = request.cookies.get('session')
     chat_handler = socket_connection[token]
-    chat_handler.handle_attachment(data['attachments'])
     print("######", data)
     socket_connection[token].response_add(data['message'], data['attachments'])
 
@@ -91,15 +89,19 @@ def disconnect():
     else:
         chat.result["connection"] = "offline"
 
+if tmp_folders_cleanup:
+    if os.path.exists(chats_folder) and os.path.isdir(chats_folder):
+            for filename in os.listdir(chats_folder):
+                file_path = os.path.join(chats_folder, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.unlink(file_path)  
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                except Exception as e:
+                    print(f"Failed to delete {file_path}. Reason: {e}")
+
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host="0.0.0.0", port=5000)
-
-
-
-
-# !!!! will be done by today 
-# support for attachements in ml function~
-# enhance api~
-# docker file for ollama~
-# autofill api

@@ -5,18 +5,18 @@
 </head>
 <body>
     <a href="/sso/list_users">List Users</a><br>
-    
+    <br>
     <a href="/v1/ticket/modify">View Tickets</a><br>
     <a href="/v1/ticket/create">Create Ticket</a><br>
     <a href="/v1/ticket/modify">Modify Ticket</a><br>
-    {% comment %} <a href="/v1/vision">Evaluate Image</a><br> {% endcomment %}
-
-    <a href="/v1/text">Chatbot</a><br
-    <a href="/v1/text/enhance_text">Enhance Text</a><br>
-    <a href="/v1/text/fill_ticket">Auto Fill Ticket</a><br>
+  <!--- <a href="/v1/vision">Evaluate Image</a><br> -->
+  <br>
+    <a href="text">Chatbot</a><br>
+    <a href="text/enhance_text">Enhance Text</a><br>
+    <a href="text/fill_ticket">Auto Fill Ticket</a><br>
     
-    >
     <br>
+    Login:
     <form action="/sso/auth" method="post" id="login-form">
         <label for="email">Email:</label><br>
         <input type="text" id="email" name="email" required><br>

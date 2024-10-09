@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Ticket</title>
+    <script>
+        async function submitTicket(event) {
+            event.preventDefault();
+
+            const ticketData = {
+                Subject: document.getElementById('subject').value,
+                Type: document.getElementById('type').value,
+                Description: document.getElementById('description').value,
+                Status: document.getElementById('status').value,
+                Priority: document.getElementById('priority').value,
+                Channel: document.getElementById('channel').value,
+                Customer_ID: document.getElementById('customerId').value,
+                Product_ID: document.getElementById('productId').value,
+                Assignee_ID: document.getElementById('assigneeId').value,
+                Resolution: document.getElementById('resolution').value,
+                Reopens: document.getElementById('reopens').value,
+            };
+
+            try {
+                const response = await fetch('/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    },
+                    body: JSON.stringify(ticketData),
+                });
+
+                const data = await response.json(); 
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'An error occurred');
+                }
+
+                document.getElementById('result').innerHTML = `<p style="color:green;">Ticket created successfully! Ticket ID: ${data.id}</p>`;
+                console.log('Ticket created:', data.id);
+
+                document.getElementById('ticketForm').reset();
+
+            } catch (error) {
+                console.error('An error occurred during ticket submission:', error);
+                document.getElementById('result').innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Create a New Ticket</h1>
+    <form id="ticketForm" onsubmit="submitTicket(event)">
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" required><br><br>
+
+        <label for="type">Type:</label>
+        <input type="text" id="type" name="type" required><br><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" required></textarea><br><br>
+
+        <label for="status">Status:</label>
+        <input type="text" id="status" name="status" required><br><br>
+
+        <label for="priority">Priority:</label>
+        <input type="text" id="priority" name="priority" required><br><br>
+
+        <label for="channel">Channel:</label>
+        <input type="text" id="channel" name="channel" required><br><br>
+
+        <label for="customerId">Customer ID:</label>
+        <input type="text" id="customerId" name="customerId" required><br><br>
+
+        <label for="productId">Product ID:</label>
+        <input type="text" id="productId" name="productId" required><br><br>
+
+        <label for="assigneeId">Assignee ID:</label>
+        <input type="text" id="assigneeId" name="assigneeId" required><br><br>
+
+        <label for="resolution">Resolution:</label>
+        <input type="text" id="resolution" name="resolution"><br><br>
+
+        <label for="reopens">Reopens:</label>
+        <input type="number" id="reopens" name="reopens" min="0"><br><br>
+
+        <button type="submit">Create Ticket</button>
+    </form>
+
+    <div id="result"></div> 
+</body>
+</html>

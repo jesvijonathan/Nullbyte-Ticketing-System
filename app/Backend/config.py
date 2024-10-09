@@ -49,7 +49,7 @@ temperature=0.2
 top_p = 0.8
 default_greet_msg="Hello! How can I help you today?"
 default_reply_msg="Thank you for providing the details. I have created a ticket to investigate the issue."
-instructions_chat="""You are an IT application/expert engineer who has to sort and work on incoming tickets from merchant or clients for worldline\'s products in the payment/fintech industry. start with a greeting and understand the issue, ask specific questions only if required and try to auto fill or get all the details with minimal queries. Have a conversation and when the conversation ends (once the users sends a \'create\' text), provide the json as the last parameter, Do Not provide the json before the conversation ends & keep the conversation natural in a flow. Also give them an option to mention \"create\" to continue creating a ticket (only if the text/description is retrieved from user). Give brief replies. Do not nudge. Upon \"create\" command, just give the json & upon command \"status\", explain what you have understood till now. If any attachment is provided, go through it and analyse it, dont ask the user to explain the logs, understand and retrieve it yourself.
+instructions_chat="""You are an IT application/expert engineer who has to sort and work on incoming tickets from merchant or clients for worldline\'s products in the payment/fintech industry. start with a greeting and understand the issue, ask specific questions only if required and try to auto fill or get all the details with minimal queries. Have a conversation and when the conversation ends (once the users sends a \'create\' or /create command/text ), provide the json as the last parameter, Do Not provide the json before the conversation ends & keep the conversation natural in a flow. Also give them an option to mention \"create\" to continue creating a ticket (only if the text/description is retrieved from user). Give brief replies. Do not nudge. Upon \"create\" command, STRICTLY give just the json & upon command \"status\", explain what you have understood till now. If any attachment is provided, go through it and analyse it, dont ask the user to explain the logs, understand and retrieve it yourself.
 {
 \\\"subject\\\" : \\\"\\\", // Generate the title for provided text, string
 \\\"summary\\\": \\\"\\\", // Generate a summary of the text, with all description, string
@@ -71,6 +71,18 @@ return a <string: give the enhacened description with proper formating and added
 
 /fill_ticket <json: ticket details>
 return a <json: enahance and autofill empty variables with the description/text provided>
+"""
+instruction_analyse_attachments="""receive an attachment and analyse it, describe it, get the error or cause or description from the logs. Do the analysis & try fetching whatever went wrong is is the cause. and give an short explanation.return the json with the analysis and description of the attachment
+
+input : string and attachment
+return result json format:
+{
+"attachment": "", // derived attachement name
+"format": "", // The format of the attachment, string: [\'image\', \'log\', \'text\', \'pdf\', \'doc\', \'others\']
+"details": "" // Do full analysis, file information about the attachent and explain the attachment and give a description about the input file/attachment
+"analysis": "" // Analysis of the issue, what could be the possible cause of the issue, and how can it be resolved from an support or engineer\'s point of view. If an legit error/bug, give solution on worldline\'s product. string
+"reply": "" // Possible reply to the support text. string
+}
 """
 instructions_enhance="""receive an text string and enhance the message with better words and better explanation & considering all parameters. In the end, return one single plain enhanced string""" 
 instructions_autofill="""You are an ai/machine learning system, who has to enhance incoming tickets from merchant/clients or ticketing system for worldline\'s products in the payment/fintech industry. Auto fill or get all the details from provided resources. provide the json as the last parameter, explain properly and naturally.
@@ -113,7 +125,8 @@ google_credentials="""
 }
 """
 chatbot_fallback=2 # 0 - only wl_vertex, 1 - only wl_llama, 2 - wl_vertex priority & fallback to wl_llama, 3 - wl_llama priority & fallback to wl_vertex  
-OLLAMA_MODEL = "jesvi"
+OLLAMA_MODEL = "nullbyte"
+ollama_amnesia = 0 # 0 - no amnesia, 1 - amnesia
 chat_json= {
     "chat_id": "", # 1234567890
     "ticket_id": "", # SVC-123456
@@ -132,3 +145,9 @@ chat_json= {
     "analysis": None, # The issue seems to be related to high-volume EFTPOS transactions routed to overseas acquirers or gateways. This could indicate a bottleneck in communication or processing on either Worldline's end or the acquiring bank's side. Further investigation is needed to pinpoint the exact cause, including reviewing network latency, transaction logs, and potential rate limiting by acquirers.
     "reply": default_reply_msg, # Thank you for providing the details. I have created a ticket to investigate the EFTPOS transaction timeouts you are experiencing with WLPFO for overseas purchases during high TPS. Our team will analyze the issue and provide updates as they become available.
 }
+
+# bucket paths 
+tmp_folders_cleanup=True
+attachment_upload_folder='./bucket/attachments/'
+chats_folder='./bucket/chats/'
+ticket_folder = "./bucket/tickets"
