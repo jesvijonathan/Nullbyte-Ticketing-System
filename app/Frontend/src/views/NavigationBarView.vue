@@ -98,6 +98,11 @@ const more_options = {
 </template>
 
 <style scoped>
+nav
+{
+   position: fixed;
+   top: 0;
+}
 .nav_more_options_container div{
     padding: 1rem 3rem;
     font-size: 0.9rem;

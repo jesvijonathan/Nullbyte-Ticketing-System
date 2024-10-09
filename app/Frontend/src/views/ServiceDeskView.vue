@@ -1,7 +1,9 @@
 <script setup>
+import BreadCrumb from '@/components/BreadCrumb.vue';
 </script>
 
 <template>
+    <BreadCrumb/>
     <div class="service-desk-container">
         <div class="service-desk-header">
         <h2>Service Desk</h2>
