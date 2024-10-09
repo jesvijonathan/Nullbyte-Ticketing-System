@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Text Enhancer</title>
+</head>
+<body>
+    <h1>Text Enhancer</h1>
+    <form id="enhanceForm">
+        <label for="toEnhanceString">Enter text to enhance:</label>
+        <input type="text" id="toEnhanceString" name="to_enhance_string" required>
+        <button type="submit">Enhance Text</button>
+    </form>
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('enhanceForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            let toEnhanceString = document.getElementById('toEnhanceString').value;
+            let response = await fetch('/text/enhance_text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ to_enhance_string: toEnhanceString })
+            });
+
+            let resultDiv = document.getElementById('result');
+            
+            if (response.ok) {
+                let data = await response.json();
+                resultDiv.textContent = `${data.result}`;
+                console.log(data.result);
+            } else {
+                let error = await response.json();
+                resultDiv.textContent = `Error: ${error.error}`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 import imaplib
 import re
-from config import ADMIN_CRED
+from config import *
 import email
 import smtplib
 from email.mime.text import MIMEText
@@ -51,16 +51,14 @@ IT Team
 		except Exception as e:
 			print(e)
 
-		
-		
 	# Function to onboard ticket	
 	def registerComplaint(self)->bool:
 		return True
 
 
 imap_host = 'mail.nullbyte.exe'
-imap_user = ADMIN_CRED['username']
-imap_pass = ADMIN_CRED['password']
+imap_user = ADMIN_CRED['username'] or ADMIN_CRED_2['username'] 
+imap_pass = ADMIN_CRED['password'] or ADMIN_CRED_2['password']
 print(imap_host,imap_user,imap_pass)
 imap = imaplib.IMAP4_SSL(imap_host)
 imap.login(imap_user, imap_pass)

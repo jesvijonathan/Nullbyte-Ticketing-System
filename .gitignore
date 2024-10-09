@@ -1,2 +1,3 @@
 .venv/
 app/Backend/.env
+app/Backend/google_credentials.json

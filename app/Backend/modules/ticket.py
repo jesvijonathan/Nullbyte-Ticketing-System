@@ -1,12 +1,18 @@
 from flask import Blueprint
 from flask import request, make_response,jsonify
 from config import *
-from models.db_models import Ticket
-from auth import jwt_required
-from database import session
-from log import logger
+from .db.db_models import Ticket
+from .auth.auth import jwt_required
+from .db.database import db_session
+from .log import *
 
 ticket=Blueprint('ticket',__name__)
+
+# @ticket.route('/list',methods=['GET'])
+# @jwt_required
+# def get_all_tickets():
+#     tickets = db_session.query(Ticket).all()
+#     return make_response(jsonify([ticket.serialize() for ticket in tickets]), 200)
 
 @ticket.route('/create',methods=['POST'])
 @jwt_required
@@ -30,11 +36,11 @@ def create_ticket():
     )
     try:
         new_ticket.validate()
-        session.add(new_ticket)
-        session.commit()
+        db_session.add(new_ticket)
+        db_session.commit()
         return make_response(jsonify({'id': new_ticket.Id}), 201)
     except Exception as e:
-        session.rollback()
+        db_session.rollback()
         logger.error(e) 
         return make_response(jsonify({'error': str(e)}), 500)
 
@@ -47,7 +53,7 @@ def modify_fields():
     ticket_id = body.get("Id")
     if not ticket_id:
         return make_response(jsonify({'error': 'Ticket ID is required'}), 400)
-    ticket = session.query(Ticket).filter_by(Id=ticket_id).first()
+    ticket = db_session.query(Ticket).filter_by(Id=ticket_id).first()
     if not ticket:
         return make_response(jsonify({'error': 'Ticket not found'}), 404)
     try:
@@ -80,9 +86,9 @@ def modify_fields():
         if "Score" in body:
             ticket.Score = body["Score"]
         ticket.validate()
-        session.commit()
+        db_session.commit()
         return make_response(jsonify({'message': 'Ticket updated successfully'}), 200)
     except Exception as e:
-        session.rollback()
+        db_session.rollback()
         logger.error(e)
         return make_response(jsonify({'error': str(e)}), 500)

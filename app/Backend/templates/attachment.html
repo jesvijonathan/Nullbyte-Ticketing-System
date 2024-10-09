@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attachment Upload</title>
+    <script>
+        async function uploadAttachment(event) {
+            event.preventDefault();
+
+            const formData = new FormData(document.getElementById('uploadForm'));
+
+            console.log('Sending request with form data:', formData);
+
+            try {
+                const response = await fetch('/text/attachment', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                console.log('Response received:', data);
+
+                if (data.error) {
+                    document.getElementById('result').innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
+                    console.error('Error in response:', data.error);
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <p style="color:green;">
+                            Result:<br><br> 
+                            <b>analysis</b>: ${data.result.analysis}<br>
+                            <b>attachment</b>: ${data.result.attachment}<br>
+                            <b>details</b>: ${data.result.details}<br>
+                            <b>format</b>: ${data.result.format}<br>
+                            <b>reply</b>: ${data.result.reply}
+                        </p>`;
+                    console.log('Result:', data.result);
+                }
+
+                document.getElementById('text').value = '';  
+                document.getElementById('file').value = '';  
+
+            } catch (error) {
+                console.error('An error occurred during the request:', error);
+                document.getElementById('result').innerHTML = `<p style="color:red;">An error occurred</p>`;
+            }
+        }
+    </script>
+</head>
+<body>
+    <form id="uploadForm" action="/text/attachment" method="POST" enctype="multipart/form-data" onsubmit="uploadAttachment(event)">
+        <label for="text">Message:</label>
+        <textarea id="text" name="text" rows="4" cols="50" placeholder="Enter your message here"></textarea><br><br>
+
+        <label for="file">Upload Attachment:</label>
+        <input type="file" id="file" name="file"><br><br>
+
+        <input type="hidden" name="chat_id" value="12345"> 
+        <button type="submit">Send</button>
+    </form>
+
+    <div id="result"></div> 
+</body>
+</html>

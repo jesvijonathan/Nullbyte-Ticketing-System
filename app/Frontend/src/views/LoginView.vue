@@ -37,7 +37,7 @@ async function SubmitLogin() {
       <form @submit.prevent="SubmitLogin">
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" id="email" name="email" v-model="email" placeholder="email@example.com" />
+          <input type="text" id="email" name="email" v-model="email" placeholder="email@example.com" />
         </div>
         <div class="form-group">
           <label for="password">Password</label>

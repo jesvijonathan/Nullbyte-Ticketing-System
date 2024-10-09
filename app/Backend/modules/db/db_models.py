@@ -2,7 +2,8 @@ from config import *
 from sqlalchemy import Column, Integer, String, Text, Enum, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
-from database import Base
+import validator_collection
+from .database import Base
 
 class Ticket(Base):
     __tablename__ = 'ticket'

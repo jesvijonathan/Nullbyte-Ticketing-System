@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fill Ticket</title>
+</head>
+<body>
+    <h1>Fill Ticket</h1>
+    <form id="fillTicketForm">
+        <label for="jsonData">Enter JSON data:</label><br>
+        <textarea id="jsonData" name="json_data" rows="20" cols="80" required></textarea><br>
+        <button type="submit">Fill Ticket</button>
+    </form>
+
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('fillTicketForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            let jsonData = document.getElementById('jsonData').value;
+            let resultDiv = document.getElementById('result');
+            resultDiv.textContent = '';
+
+            console.log(jsonData);
+            try {
+                let response = await fetch('/text/fill_ticket', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: jsonData
+                });
+
+                if (!response.ok) {
+                    let error = await response.json();
+                    resultDiv.textContent = `Error: ${error.error}`;
+                } else {
+                    let data = await response.json();
+                    resultDiv.textContent = `Filled Ticket: ${data.result}`;
+                    console.log(data.result);
+                }
+            } catch (error) {
+                resultDiv.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
