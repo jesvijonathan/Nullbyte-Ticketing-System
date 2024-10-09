@@ -42,28 +42,37 @@ safety_settings = [
     ),
 ]
 
-
 # Define the model class
-
 class google_vertex_chat:
-    def __init__(self):
+    def __init__(self,instruction=instructions_chat):
         self.model = GenerativeModel(
             vertex_model,
-            system_instruction=[instructions]
+            system_instruction=[instruction]
         )
         self.chat = self.model.start_chat()
     def send_message(self, message, document=None):
         merged_msg = []
+        
+        documents_data_list= []
+                
+        if document:
+            for doc in document:
+                documents_data_list.append(doc["data"])
     
+        
         if message:
             merged_msg.append(message)
-        if document:
-            if isinstance(document, list):
-                merged_msg.extend(document)
+        if documents_data_list:
+            if isinstance(documents_data_list, list):
+                merged_msg.extend(documents_data_list)
             else:
-                merged_msg.append(document) 
-        return self.chat.send_message(
+                merged_msg.append(documents_data_list) 
+        
+        print("@@@@@@@@@@: ", merged_msg)
+        result_msg=self.chat.send_message(
             merged_msg,
             generation_config=generation_config,
             safety_settings=safety_settings
         )
+        print("oooooooooo: ", result_msg)
+        return result_msg

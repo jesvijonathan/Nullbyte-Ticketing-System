@@ -1,4 +1,4 @@
-from flask import Flask, request, session, render_template
+from flask import Flask, request, session, render_template, make_response
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, send, join_room, leave_room, close_room, rooms, disconnect, Namespace
 from flask import jsonify
@@ -14,6 +14,9 @@ from modules.ml.ml_handler import ChatbotHandler
 from modules.ticket import ticket
 from config import *
 import modules.socketio_handler as socketio_handler
+from modules.log import *
+
+import modules.ml.wl_vertex as wl_vertex
 
 
 # Flask configurations
@@ -26,14 +29,13 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 # Global routes
 app.register_blueprint(auth_ldap, url_prefix='/sso')
-app.register_blueprint(ticket, url_prefix='/v1/ticket')
-app.register_blueprint(vision, url_prefix='/v1/vision')
+app.register_blueprint(ticket, url_prefix='/ticket')
+app.register_blueprint(vision, url_prefix='/vision')
 app.register_blueprint(text, url_prefix='/text')
 
 @app.route('/')
 def home():
     return render_template('index.html', token_param="")
-
 
 # Socket IO event handling
 @socketio.on('connect')
@@ -51,8 +53,7 @@ def connect():
     socketio.emit("live_chat" if chat_history else "message",
                   {"live_chat": chat_history} if chat_history else {"message": {**sockets[token]}},
                   room=sid)
-
-
+    
 @socketio.on('message')
 @jwt_required
 def message(msg):
@@ -65,6 +66,7 @@ def message(msg):
         socketio.emit("message", {"message": "No active session found"}, room=sid)
 
 @socketio.on('user_attachment')
+@jwt_required
 def handle_user_attachment(data):
     token = request.cookies.get('session')
     chat_handler = socket_connection[token]
@@ -97,8 +99,7 @@ if __name__ == '__main__':
 
 
 # !!!! will be done by today 
-# support for attachements in ml function
-# enhance api
+# support for attachements in ml function~
+# enhance api~
+# docker file for ollama~
 # autofill api
-# parsing issue with chat.history object
-# docker file for ollama

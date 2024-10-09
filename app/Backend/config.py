@@ -25,9 +25,10 @@ ADMIN_CRED_2 = dict({
     'password': os.getenv('SVC_ACC_PASS', 'nig')
 })
 
-users = {}
+# dict data | should convert/store to db 
+users = {} # token, userid, 
 users_token = {}
-sockets = {}
+sockets = {} # connection_status, chat_object
 socket_connection = {}
 
 # Database configuration
@@ -39,18 +40,20 @@ DATABASE_NAME = os.getenv("DATABASE_NAME", "nullbyte")
 DATABASE_URL = f"mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 
 
-# Gen AI Config
+# Gen AI/ML Config
 vertex_project_id = "silken-fortress-437417-p4"
-vertex_model="gemini-1.5-pro-001" # gemini-1.5-flash-002 #gemini-1.5-pro-002 #codechat-bison-32k@002
+vertex_model="gemini-1.5-pro-002" # gemini-1.5-flash-002 #gemini-1.5-pro-002 #codechat-bison-32k@002
 server_location = "asia-southeast1"
 max_output_tokens = 1024
 temperature=0.2
 top_p = 0.8
-instructions="""You are an IT application/expert engineer who has to sort and work on incoming tickets from merchant or clients for worldline\'s products in the payment/fintech industry. start with a greeting and understand the issue, ask specific questions only if required and try to auto fill or get all the details with minimal queries. Have a conversation and when the conversation ends (once the users sends a \'create\' text), provide the json as the last parameter, Do Not provide the json before the conversation ends & keep the conversation natural in a flow. Also give them an option to mention \"create\" to continue creating a ticket (only if the text/description is retrieved from user). Give brief replies. Do not nudge. Upon \"create\" command, just give the json & upon command \"status\", explain what you have understood till now.
+default_greet_msg="Hello! How can I help you today?"
+default_reply_msg="Thank you for providing the details. I have created a ticket to investigate the issue."
+instructions_chat="""You are an IT application/expert engineer who has to sort and work on incoming tickets from merchant or clients for worldline\'s products in the payment/fintech industry. start with a greeting and understand the issue, ask specific questions only if required and try to auto fill or get all the details with minimal queries. Have a conversation and when the conversation ends (once the users sends a \'create\' text), provide the json as the last parameter, Do Not provide the json before the conversation ends & keep the conversation natural in a flow. Also give them an option to mention \"create\" to continue creating a ticket (only if the text/description is retrieved from user). Give brief replies. Do not nudge. Upon \"create\" command, just give the json & upon command \"status\", explain what you have understood till now. If any attachment is provided, go through it and analyse it, dont ask the user to explain the logs, understand and retrieve it yourself.
 {
 \\\"subject\\\" : \\\"\\\", // Generate the title for provided text, string
 \\\"summary\\\": \\\"\\\", // Generate a summary of the text, with all description, string
-\\\"attachments\\\": [\\\"attachment_name\\\" : \\\"attachment details\\\"], // Mention the attachment name and details from it, if it is an image get the error/details or the situation, if it is a log file try to get the error or cause or description from the logs. Do the analysis & try fetching whatever went wrong is is the cause. and give an explanation.
+\\\"attachments\\\": [ {\\\"attachment_name\\\" : \\\"The attachement name \\\", \\\"attachment details\\\" :  \\\" analysis, file information about the attachent and issue\\\" } ], // Mention the attachment name and details from it, if it is an image get the error/details or the situation, if it is a log file try to get the error or cause or description from the logs. Do the analysis & try fetching whatever went wrong is is the cause. and give an explanation.
 \\\"product_type\\\": \\\"\\\", // retrieve the product type from the text & attachments, string: [ webgui, wlpfo, pass, wlsi, ]
 \\\"issue_type\\\": \\\"\\\", // retrieve the issue type from the text & attachments, string: [\'bug\', \'error\', \'issue\', \'story\', \'others\', \'feature\', \'enhancement\', \'support\']
 \\\"priority\\\": \\\"\\\", // Analyse the priority from the text & attachments, string: [\'crtical\', \'high\', \'medium\', \'low\']\\
@@ -68,7 +71,31 @@ return a <string: give the enhacened description with proper formating and added
 
 /fill_ticket <json: ticket details>
 return a <json: enahance and autofill empty variables with the description/text provided>
+"""
+instructions_enhance="""receive an text string and enhance the message with better words and better explanation & considering all parameters. In the end, return one single plain enhanced string""" 
+instructions_autofill="""You are an ai/machine learning system, who has to enhance incoming tickets from merchant/clients or ticketing system for worldline\'s products in the payment/fintech industry. Auto fill or get all the details from provided resources. provide the json as the last parameter, explain properly and naturally.
+Strictly just give a json, starting with `{` & ending with `}`
 
+json format:
+{
+"chat_id": "", // do not modify, use the incoming values
+"ticket_id": "", // do not modify, use the incoming values
+"user": "", // do not modify, use the incoming values
+"medium": "", // do not modify, use the incoming values
+"connection: "", // do not modify, use the incoming values
+"text": "", // do not modify, use the incoming values
+"subject" : "", // Generate the title for provided text, string
+"summary": "", // Generate a summary of the text, with all description, string
+"attachments": [] // do not modify, use the incoming values
+"product_type": "", // retrieve the product type from the text & attachments, string: [ webgui, wlpfo, pass, wlsi, ]
+"issue_type": "", // retrieve the issue type from the text & attachments, string: [\'bug\', \'error\', \'issue\', \'story\', \'others\', \'feature\', \'enhancement\', \'support\']
+"priority": "", // Analyse the priority from the text & attachments, string: [\'crtical\', \'high\', \'medium\', \'low\']\\
+"story_points": "", // Analyse the story points from the text & attachments, linked with the priority & ticket type, int: 'n'
+"estimation": "", // Analyse the estimation from the text & attachments, linked with the story points & priority, n hours in int: 'n'
+"analysis": "", // Analysis of the issue, what could be the possible cause of the issue, and how can it be resolved from an support or engineer\'s point of view. If an legit error/bug, give solution on worldline\'s product. string
+"reply": "" // Possible reply to the support text. string
+"enhance": "", receive the text/summary/analysis and enhance the message with better words and better explanation & considering all parameters. 
+}
 """
 google_credentials="""
 {
@@ -85,12 +112,12 @@ google_credentials="""
   "universe_domain": "googleapis.com"
 }
 """
-default_greet_msg="Hello! How can I help you today?"
-default_reply_msg="Thank you for providing the details. I have created a ticket to investigate the issue."
-chat_json=dummy = {
+chatbot_fallback=2 # 0 - only wl_vertex, 1 - only wl_llama, 2 - wl_vertex priority & fallback to wl_llama, 3 - wl_llama priority & fallback to wl_vertex  
+OLLAMA_MODEL = "jesvi"
+chat_json= {
     "chat_id": "", # 1234567890
     "ticket_id": "", # SVC-123456
-    "user": "", # { "username": "user1"}
+    "user": "", # username
     "medium": "", # [ "chat (vertex/ollama)", "email", "form" ]
     "connection": "live", # [ "live", "offline", "closed" ]
     "text": "", # "I am experiencing timeouts with EFTPOS transactions."
@@ -105,24 +132,3 @@ chat_json=dummy = {
     "analysis": None, # The issue seems to be related to high-volume EFTPOS transactions routed to overseas acquirers or gateways. This could indicate a bottleneck in communication or processing on either Worldline's end or the acquiring bank's side. Further investigation is needed to pinpoint the exact cause, including reviewing network latency, transaction logs, and potential rate limiting by acquirers.
     "reply": default_reply_msg, # Thank you for providing the details. I have created a ticket to investigate the EFTPOS transaction timeouts you are experiencing with WLPFO for overseas purchases during high TPS. Our team will analyze the issue and provide updates as they become available.
 }
-chatbot_fallback=2 # 0 - only wl_vertex, 1 - only wl_llama, 2 - wl_vertex priority & fallback to wl_llama, 3 - wl_llama priority & fallback to wl_vertex  
-mime_type_map = {
-    "txt": "text/plain",
-    "pdf": "application/pdf",
-    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "doc": "application/msword",
-    "png": "image/png",
-    "jpg": "image/jpeg",
-    "jpeg": "image/jpeg",
-    "gif": "image/gif",
-    "mp4": "video/mp4",
-    "mp3": "audio/mpeg",
-    "wav": "audio/wav",
-    "csv": "text/csv",
-    "xls": "application/vnd.ms-excel",
-    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "ppt": "application/vnd.ms-powerpoint",
-    "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-}
-
-OLLAMA_MODEL = "jesvi"

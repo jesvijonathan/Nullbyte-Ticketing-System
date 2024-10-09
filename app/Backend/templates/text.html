@@ -47,6 +47,16 @@
             color: #333;
         }
 
+        .attachment-preview {
+            margin: 5px 0;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: inline-block;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
         input {
             width: calc(100% - 100px);
             padding: 10px;
@@ -65,6 +75,17 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        .attachment-container {
+            margin-top: 10px;
+        }
+
+        .attachment-item {
+            border: 1px solid #ccc;
+            margin: 5px;
+            padding: 5px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
@@ -77,13 +98,16 @@
         <input id="fileInput" type="file" multiple>
         <button onclick="sendMessage()">Send</button>
     </div>
+    <div class="attachment-container" id="attachmentContainer"></div>
     <br><br>
     <div class="created" id="created"></div>
 
     <script>
         const socket = io('http://127.0.0.1:5000');
-
         const messageInput = document.getElementById("messageInput");
+        const fileInput = document.getElementById('fileInput');
+        const attachmentContainer = document.getElementById("attachmentContainer");
+        let clipboardAttachments = [];
 
         function addMessageToChat(recipient, message, time) {
             const messageElement = document.createElement("div");
@@ -127,12 +151,13 @@
         socket.on('close_chat', function (data) {
             console.log('Chat closed:', data);
             socket.disconnect();
+
             const created = document.getElementById('created');
             created.innerHTML = JSON.stringify(data);
             created.style.color = 'green';
         });
 
-        socket.on('live_chat', function(data) {
+        socket.on('live_chat', function (data) {
             console.log('Live chat history received:', data);
             if (!data || !data.live_chat) {
                 console.error('No live_chat data received.');
@@ -140,23 +165,22 @@
             }
             const messagesDiv = document.getElementById('messages');
             messagesDiv.innerHTML = '';
-        
-            for (const key in data.live_chat) {
 
+            for (const key in data.live_chat) {
                 if (data.live_chat.hasOwnProperty(key)) {
                     const entry = data.live_chat[key];
                     const sender = entry.recipient === 'admin' ? 'admin' : entry.recipient;
-                    const size = entry.size ? `(${entry.size} bytes)` : '';
                     if (entry.attachment) {
-                        const attachmentLink = `<a href="data:application/octet-stream;base64,${entry.encoded_file}" download="${entry.attachment}">${entry.attachment}</a>`;
-                        appendMessage(sender, `${attachmentLink}`, entry.time, size);
+                        const attachment = entry.attachment;
+                        const attachmentLink = `<a href="${attachment.path}" download="${attachment.filename}">${attachment.filename}</a>`;
+                        const messageWithAttachment = `${entry.message}<br><br> <b>Attachment</b>: ${attachmentLink}`;
+                        appendMessage(sender, messageWithAttachment, entry.time, `Size: ${attachment.size} bytes`);
                     } else {
-                        appendMessage(sender, entry.message, entry.time,  size);
+                        appendMessage(sender, entry.message, entry.time);
                     }
                 }
             }
         });
-        
 
         socket.on('user_attachment_received', function (attachment) {
             const message = `Attachment received: ${attachment.file_name} (${attachment.size_mb} MB)`;
@@ -175,72 +199,72 @@
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
+
         function sendMessage() {
             const messageInput = document.getElementById('messageInput');
             let message = messageInput.value.trim();
-            const fileInput = document.getElementById('fileInput');
-            const files = fileInput.files;
-        
-            if (message || files.length > 0) {
-                const attachments = [];
-        
-                // Function to read a file and return a Promise
-                const readFile = (file) => {
-                    return new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = function () {
-                            const fileData = reader.result.split(',')[1];
-                            const attachment = {
-                                file_name: file.name,
-                                file_data: fileData,
-                                size_mb: (file.size / (1024 * 1024)).toFixed(2)
-                            };
-                            resolve(attachment);
-                        };
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                };
-        
-                // Read all files and gather the attachments
-                const fileReadPromises = Array.from(files).map(readFile);
-        
-                // Once all files are read, send the message and attachments
+
+            // Concatenate file input attachments and clipboard attachments
+            const files = [...fileInput.files];
+            const attachmentsToSend = [...clipboardAttachments];
+
+            if (message || attachmentsToSend.length > 0 || files.length > 0) {
+                // Read file input files
+                const fileReadPromises = files.map(file => readFile(file));
+
+                // Wait for all promises to resolve
                 Promise.all(fileReadPromises)
                     .then((results) => {
-                        attachments.push(...results);
-                        sendToServer(message, attachments);
+                        attachmentsToSend.push(...results);
+                        sendToServer(message, attachmentsToSend);
+                        clipboardAttachments = []; // Clear clipboard attachments after sending
+                        attachmentContainer.innerHTML = ''; // Clear the attachment display
                     })
                     .catch((error) => {
                         console.error("Error reading files:", error);
                     });
-        
-                messageInput.value = ''; // Clear input
-                fileInput.value = ''; // Clear file input
+
+                messageInput.value = '';
+                fileInput.value = '';
             } else {
                 console.log("Message input is empty and no file selected.");
             }
         }
-        
+
+        function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    const fileData = reader.result.split(',')[1];
+                    const attachment = {
+                        file_name: file.name,
+                        file_data: fileData,
+                        size_mb: (file.size / (1024 * 1024)).toFixed(2)
+                    };
+                    resolve(attachment);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
         function sendToServer(message, attachments) {
             if (message) {
                 console.log(`Sending message: ${message}`);
                 appendMessage('You', message);
             }
-        
+
             if (attachments.length > 0) {
                 for (const attachment of attachments) {
-                    const attachmentMessage = `Attachment sent: ${attachment.file_name} (${attachment.size_mb} MB)`;
+                    const attachmentMessage = `Attachment ${attachment.file_name} (${attachment.size_mb} MB)`;
                     appendMessage('You', attachmentMessage);
                     console.log(`Attachment ${attachment.file_name} sent.`);
                 }
             }
-        
-            // Send message and attachments to the server
+
             socket.emit('user_attachment', { message, attachments });
         }
-        
-        
+
         socket.on('connect_error', function (err) {
             console.error('Connection failed:', err);
         });
@@ -252,6 +276,33 @@
         socket.on('error', function (err) {
             console.error('Error:', err);
         });
+
+        document.addEventListener("paste", function (event) {
+            const items = event.clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.kind === "file") {
+                    const file = item.getAsFile();
+                    handleFileUpload(file);
+                }
+            }
+        });
+
+        function handleFileUpload(file) {
+            readFile(file).then(attachment => {
+                clipboardAttachments.push(attachment);
+                displayAttachmentPreview(attachment);
+            }).catch(error => {
+                console.error("Error reading file:", error);
+            });
+        }
+
+        function displayAttachmentPreview(attachment) {
+            const attachmentDiv = document.createElement("div");
+            attachmentDiv.classList.add("attachment-item");
+            attachmentDiv.innerHTML = `<strong>${attachment.file_name}</strong> (${attachment.size_mb} MB)`;
+            attachmentContainer.appendChild(attachmentDiv);
+        }
     </script>
 </body>
 

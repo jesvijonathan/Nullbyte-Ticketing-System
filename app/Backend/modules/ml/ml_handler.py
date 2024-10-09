@@ -61,15 +61,11 @@ class ChatbotHandler:
             'time': datetime.datetime.now().isoformat(),
             'message': response_msg
         }
-        print(response_msg)
     
-        attachments = []  # Initialize attachments as an empty list
+        attachments = []  
     
-        # If there are incoming attachments, process each one 
         if attachments_list:
             for attachment in attachments_list:
-                print("##################", attachment)
-                # Decode file_data from base64
                 binary_file_data = attachment['file_data']
                 b_file_data = base64.b64decode(attachment['file_data'])
                 google_string, filename, mime = self.parse_attachment(b_file_data, attachment['file_name'])
@@ -85,10 +81,12 @@ class ChatbotHandler:
                         'mime_type': mime,
                         'size': len(b_file_data),
                     }
-                    print("$$$$$$$$$$$$$$$", self.history, "\n", binary_file_data, "\n", google_string)
-    
-                # Add attachment to attachments list
-                attachments.append(binary_file_data)
+                    
+                print("00000000000:",  binary_file_data, "\n\n", b_file_data)
+                attachments.append({
+                    "file": file_path,
+                    "data": binary_file_data
+                 })
 
         print("\n\n\n\n", attachments)
         if response_msg == "/close" or response_msg == "close":
@@ -98,11 +96,13 @@ class ChatbotHandler:
                 self.bot = "wl_llama"
                 self.chat = wl_llama.OllamaChat()
                 self.fallback = "wl_vertex"
+                print("changing to llama")
                 self.bot_response(self.history)
             else:
                 self.bot = "wl_vertex"
                 self.chat = wl_vertex.google_vertex_chat()
                 self.fallback = "wl_llama"
+                print("changing to vertex")
                 self.bot_response(self.history)
         else:
             self.bot_response(response_msg, attachments)
@@ -154,44 +154,23 @@ class ChatbotHandler:
             self.chat = wl_llama.OllamaChat()
             self.llama_generate(str(self.history))
         return
-        
 
-    def extract_json_response(self, text_response):
-        """Extracts JSON from the text response and returns the parsed dictionary and reply message."""
-        if "```json" in text_response:
-            start_index = text_response.index("```json") + len("```json")
-            end_index = text_response.index("```", start_index)
-            json_msg = text_response[start_index:end_index].strip()
-        elif '{ "subject":' in text_response:
-            start_index = text_response.index('{ "subject":') + len('{ "subject":')
-            end_index = text_response.index('" }', start_index)
-            json_msg = text_response[start_index:end_index].strip()
-        else:
-            return None, None  # No JSON found
+    def llama_generate(self, message, attachments=None):
+        formatted_message = self.format_message(message)
 
-        json_msg_dict = json.loads(json_msg)
-        reply_msg = json_msg_dict.get("reply") or default_reply_msg
-        return json_msg_dict, reply_msg
+        message_payload = {
+            'attachments': attachments,
+            'message': formatted_message
+        }
 
-    def handle_response(self, text_response):
-        json_msg_dict, reply_msg = self.extract_json_response(text_response)
-
-        if json_msg_dict:
-            self.result.update(json_msg_dict)
-            self.reply_send(reply_msg)
-            print(self.result) 
-            # process json_msg to ticket
-            self.close_chat()
-        else:
-            self.reply_send(text_response)
-
-    def llama_generate(self, message):
-            try:
-                text_response = self.chat.send_message(self.format_message(message))
-                self.handle_response(text_response)
-            except Exception as e:
-                print(f"An error occurred: {e}")
-                self.fallback_handle()
+        try:
+            print("Sending message:", message_payload)
+            response = self.chat.send_message(message_payload)
+            self.handle_response(response)
+            print("Response received successfully:", response)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            self.fallback_handle()
 
 
     def vertex_generate(self, message, attachments=None):
@@ -204,10 +183,13 @@ class ChatbotHandler:
         except ResourceExhausted:
             print("Quota exceeded. Waiting before retrying...")
             self.fallback_handle()
+        except json.JSONDecodeError as e:
+            print(f"JSON decoding error: {e}")
+            self.socketio.emit("message", {"message": "JSON decoding error: " + str(e)}, room=self.socket["sid"])
+            self.fallback_handle()
         except Exception as e:
             print(f"An error occurred: {e}")
-            if e:
-                self.socketio.emit("message", {"message": str(e)}, room=self.socket["sid"])
+            self.socketio.emit("message", {"message": str(e)}, room=self.socket["sid"])
             self.fallback_handle()
 
     
@@ -216,9 +198,22 @@ class ChatbotHandler:
         if self.bot == "wl_vertex":
             self.vertex_generate(response_msg, attachment)
         else:
-            self.llama_generate(response_msg)
+            self.llama_generate(self.history, attachment)
 
         return
+    
+    def handle_response(self, text_response):
+        json_msg_dict, reply_msg = self.extract_json_response(text_response)
+    
+        if json_msg_dict:
+            self.result.update(json_msg_dict)
+            self.reply_send(reply_msg)
+            print(self.result)
+            # Process json_msg to ticket
+            self.close_chat()
+        else:
+            print("No JSON found in the response; processing as plain text.")
+            self.reply_send(reply_msg if reply_msg else text_response)
     
     def reply_send(self, reply_msg):
         # bot reply
@@ -276,3 +271,25 @@ class ChatbotHandler:
             print ("AAAAAAAAAAAAAAAAA", attachment)
             encoded_file, file_name, mime = self.parse_attachment(file_data, file_name)
             self.socketio.emit("attachment_saved", {"message": f"Attachment {file_name} received and saved."}, room=self.socket["sid"])
+            
+    def extract_json_response(self, text_response):
+        if "```json" in text_response:
+            start_index = text_response.index("```json") + len("```json")
+            end_index = text_response.index("```", start_index)
+            json_msg = text_response[start_index:end_index].strip()
+        elif '{ "subject":' in text_response:
+            start_index = text_response.index('{ "subject":')
+            end_index = text_response.index('}', start_index) + 1
+            json_msg = text_response[start_index:end_index].strip()
+        else:
+            # No JSON found, returning the plain text response
+            return None, text_response.strip()
+
+        try:
+            json_msg_dict = json.loads(json_msg)
+            reply_msg = json_msg_dict.get("reply") or default_reply_msg
+            return json_msg_dict, reply_msg
+        except json.JSONDecodeError as e:
+            print(f"JSON decoding error: {e}")
+            print(f"Problematic JSON: {json_msg}")
+            return None, text_response.strip()
