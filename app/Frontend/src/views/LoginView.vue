@@ -10,12 +10,6 @@ const handleShowPassword = () => {
 
 const blurBackground = ref(false);
 
-// Uncomment if Yup validation schema is needed
-// const schema = Yup.object().shape({
-//   username: Yup.string().required('Username is required'),
-//   password: Yup.string().required('Password is required')
-// });
-
 let email = ref("");
 let password = ref("");
 let errors = ref("");
