@@ -72,16 +72,29 @@ export default defineComponent({
         return { borderRight: '0.33rem solid grey' }; // Grey for open status
       } else if (status.toLowerCase() === 'closed') {
         return { borderRight: '0.33rem solid #46BEAA' }; // Green for closed status
+      } else if (status.toLowerCase() === 'in progress') {
+        return { borderRight: '0.33rem solid #FFD700' }; // blue for in progress status
+      }else if (status.toLowerCase() === 'waitng for information') {
+        return { borderRight: '0.33rem solid #3159a0' }; // Brighter blue for hover
       } else {
         return { borderRight: '0.33rem solid #8B3939' }; // Red for any other status
       }
     },
+    // yellow
+    // FFFF00  3159a0
+    // bright yellow
+    // FFD700   397aed
+    
     getHoverBorderColor(status) {
       if (status.toLowerCase() === 'open') {
         return { borderRight: '0.33rem solid #b3b3b3' }; // Brighter grey for hover
       } else if (status.toLowerCase() === 'closed') {
         return { borderRight: '0.33rem solid #00FFE3' }; // Brighter green for hover
-      } else {
+      } else if (status.toLowerCase() === 'in progress') {
+        return { borderRight: '0.33rem solid #FFFF00' }; // Brighter blue for hover
+      } else if (status.toLowerCase() === 'waitng for information') {
+        return { borderRight: '0.33rem solid #397aed' }; // Brighter blue for hover
+      }else {
         return { borderRight: '0.33rem solid #FF0303' }; // Brighter red for hover
       }
     }
