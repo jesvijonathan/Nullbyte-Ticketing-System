@@ -129,9 +129,11 @@ nav
     color: var(--tertiary);
     text-align: center;
     cursor: pointer;
+
 }
 .nav_more_options_container div a{
     transition: 0.1s ease-in-out;
+    color: CADETBLUE;
 }
 .nav_more_options_container div:hover {
     background-color: var(--wl);
@@ -179,7 +181,8 @@ nav
     align-items: center;
     align-content: center;
     flex-wrap: nowrap;
-    flex-direction: row
+    flex-direction: row;
+    
 }
 
 .navigation_router_container a {
