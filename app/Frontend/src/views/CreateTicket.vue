@@ -54,13 +54,13 @@ const removeAttachment = (index) => {
                     <div class="input_cont">
                         <label for="description">Description</label>
                         <textarea type="text" placeholder="Enter your description" class="input_field desc"
-                            id="description"></textarea>
+                            id="description" required></textarea>
                     </div>
 
                     <div class="input_cont">
                         <label for="attachments">Analysis</label>
                         <textarea type="text" placeholder="Enter the analysis" class="input_field desc"
-                            id="analysis"></textarea>
+                            id="analysis" style="height: 3rem;"></textarea>
 
 
                         <div class="input_cont_2">
@@ -287,7 +287,7 @@ select {
     flex-wrap: nowrap;
     align-content: center;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     /* gap: 1rem; */
     margin-top: 2rem;
     margin: 2rem 4rem;

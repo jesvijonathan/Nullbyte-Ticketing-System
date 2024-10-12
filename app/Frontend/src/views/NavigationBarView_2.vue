@@ -50,29 +50,26 @@ const more_options = {
     'Chatbot': [
         "WL Vertex AI",
         "WL LLama",
+        "AutoFill",
+        "Document Analyser",
     ],
     'Tickets': [
-        "About WGS",
-        "Our Mission",
-        "Our Vision",
-        "Our Values",
-        "Our Services",
+        "Create Ticket",
+        "View Tickets",
+        "Approval"
     ],
     'Dashboard': [
-        "Contact Us",
-        "Service",
-        "Sales",
-        "Careers",
-        "Partners",
-        "Locations",
+        "Analytics",
+        "Reports",
+        "Alerts",
+        "Help Desk",
     ],
     'Settings': [
-        "API",
-        "SDK",
-        "Documentation",
-        "Tutorials",
-        "Community",
-        "Blog",
+        "Profile",
+        "Account",
+        "Notifications",
+        "Security",
+        "Logout",
     ],
 };
 </script>

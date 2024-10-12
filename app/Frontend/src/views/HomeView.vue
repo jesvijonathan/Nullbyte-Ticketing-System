@@ -23,19 +23,20 @@ import AboutImg from '@/assets/About.png';
 
 
 const tiles = [
-    { title: 'Create Tickets', image: CreateTicketImg },
-    { title: 'Ticket', image: TicketImg },
-    { title: 'Inbox', image: InboxImg },
-    { title: 'Chatbot', image: ChatbotImg },
-    { title: 'Report', image: ReportImg },
-    { title: 'Alert', image: AlertImg },
-    { title: 'Help Desk', image: HelpDeskImg },
-    { title: 'Profile', image: ProfileImg },
-    { title: 'About', image: AboutImg }
+    { title: 'Create Tickets', image: CreateTicketImg, link: '/create_ticket' },
+    { title: 'Ticket', image: TicketImg, link: '/ticket' },
+    { title: 'Inbox', image: InboxImg, link: '/inbox' },
+    { title: 'Chatbot', image: ChatbotImg, link: '/chatbot' },
+    { title: 'Report', image: ReportImg, link: '/report' },
+    { title: 'Alert', image: AlertImg, link: '/alert' },
+    { title: 'Help Desk', image: HelpDeskImg, link: '/helpdesk' },
+    { title: 'Profile', image: ProfileImg, link: '/profile' },
+    { title: 'About', image: AboutImg, link: '/about' },
 ];
 
 const handleTileClick = (title) => {
-router.push({ name: 'Complaint', params: { title } });
+    const tile = tiles.find(tile => tile.title === title);
+    router.push(tile.link);
 };
 
 
