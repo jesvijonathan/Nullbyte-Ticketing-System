@@ -3,28 +3,28 @@ import datetime
 import time
 from google.api_core.exceptions import ResourceExhausted
 from flask_socketio import SocketIO, emit, send, join_room, leave_room, close_room, rooms, disconnect, Namespace
-
+from modules.ticket import BotAdmin
 import json
 import modules.ml.wl_vertex as wl_vertex
 import modules.ml.wl_llama as wl_llama
 from config import *
 import random
-
+from modules.log import logger
 import base64
 from werkzeug.utils import secure_filename
-
 from vertexai.generative_models import  Part
 from mimetypes import guess_extension
 import mimetypes
-
+from modules.db.db_models import Attachment
 import re
 
 # chatbot handler for socketio and manager
 class ChatbotHandler:
-    def __init__(self, token, socketio):
+    def __init__(self, token, socketio,payload):
         self.socketio= socketio
         self.token= token
         self.user= users[token]
+        self.customer_id= payload["upn"]
         self.socket= sockets[token]
         self.chat_id= self.socket["sid"]
         self.history = {}
@@ -43,7 +43,9 @@ class ChatbotHandler:
         self.init_chat()
 
     def initialize_bot(self, fallback_option):
+        print("Starting Bot")
         if fallback_option in [0, 2]:
+            print("Starting Vertex")
             return "wl_vertex", wl_vertex.google_vertex_chat()
         else:
             return "wl_llama", wl_llama.OllamaChat()
@@ -129,10 +131,18 @@ class ChatbotHandler:
     def close_chat(self):
         self.result["connection"]= "closed"
         # logic to add details to db here, for later
+        print("\n\nresult starts here:")
+        res=self.result
+        tid=BotAdmin().create_ticket(res)['id']
+        if[tid]:
+            self.result["ticket_id"]=str(tid)
+        print(res)
+        print("\n\nresult ends here:")
         
         ticket_folder = "./bucket/tickets"
         os.makedirs(ticket_folder, exist_ok=True)
-        this_ticket_folder = os.path.join(ticket_folder, self.result["ticket_id"])
+        
+        this_ticket_folder = os.path.join(ticket_folder, "SVC-" + self.result["ticket_id"])
         os.makedirs(this_ticket_folder, exist_ok=True)
         chat_file = os.path.join(this_ticket_folder, "chat.json")
         
@@ -147,6 +157,9 @@ class ChatbotHandler:
                             attachment_file = os.path.join(this_ticket_folder, attachments[attachment]["filename"])
                             os.rename(self.history[key]["attachment"][attachment]["path"], attachment_file)
                             self.history[key]["attachment"][attachment]["path"] = attachment_file
+                            print("\n\n\nattachment issue starts here:")
+                            Attachment().addAttachment(self.result["ticket_id"], attachment_file)
+                            print("\n\n\nattachment issue ends here:")
                         except:
                             print("Error moving attachment file")
                             pass

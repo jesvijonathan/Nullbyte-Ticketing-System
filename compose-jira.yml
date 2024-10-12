@@ -1,0 +1,16 @@
+services:
+  sql:
+    build: ./app/Backend/database
+    ports:
+      - "3306:3306"
+      - "33060:33060"
+    volumes:
+      - /tmp/mysql_data:/var/lib/mysql
+  jira:
+    build: ./app/Backend/jira
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sql
+    volumes:  
+      - /tmp/jira-home:/var/atlassian/jira

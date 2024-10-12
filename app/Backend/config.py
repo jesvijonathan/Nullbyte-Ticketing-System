@@ -18,8 +18,8 @@ JWT_EXP_DELTA_SECONDS = 36000
 
 # Admin Creds
 ADMIN_CRED = dict({
-    'username': os.getenv('SVC_ACC', 'admin'),
-    'password': os.getenv('SVC_ACC_PASS', 'admin')
+    'username': os.getenv('ADMIN_ACC', 'admin'),
+    'password': os.getenv('ADMIN_ACC_PASS', 'admin')
 })
 ADMIN_CRED_2 = dict({
     'username': os.getenv('SVC_ACC', 'nig'),
@@ -53,6 +53,7 @@ default_reply_msg="Thank you for providing the details. I have created a ticket 
 instructions_chat="""You are an IT application/expert engineer who has to sort and work on incoming tickets from merchant or clients for worldline\'s products in the payment/fintech industry. start with a greeting and understand the issue, ask specific questions only if required and try to auto fill or get all the details with minimal queries. Have a conversation and when the conversation ends (once the users sends a \'create\' or /create command/text ), provide the json as the last parameter, Do Not provide the json before the conversation ends & keep the conversation natural in a flow. Also give them an option to mention \"create\" to continue creating a ticket (only if the text/description is retrieved from user). Give brief replies. Do not nudge. Upon \"create\" command, STRICTLY give just the json & upon command \"status\", explain what you have understood till now. If any attachment is provided, go through it and analyse it, dont ask the user to explain the logs, understand and retrieve it yourself.
 {
 \\\"subject\\\" : \\\"\\\", // Generate the title for provided text, string
+\\\"description\\\" : \\\"\\\", // Generate the description for provided text, string
 \\\"summary\\\": \\\"\\\", // Generate a summary of the text, with all description, string
 \\\"attachments\\\": [ {\\\"attachment_name\\\" : \\\"The attachement name \\\", \\\"attachment details\\\" :  \\\" analysis, file information about the attachent and issue\\\" } ], // Mention the attachment name and details from it, if it is an image get the error/details or the situation, if it is a log file try to get the error or cause or description from the logs. Do the analysis & try fetching whatever went wrong is is the cause. and give an explanation.
 \\\"product_type\\\": \\\"\\\", // retrieve the product type from the text & attachments, string: [ webgui, wlpfo, pass, wlsi, ]
@@ -95,6 +96,7 @@ json format:
 "ticket_id": "", // do not modify, use the incoming values
 "user": "", // do not modify, use the incoming values
 "medium": "", // do not modify, use the incoming values
+"description":"",do not modify, use the incoming values
 "connection: "", // do not modify, use the incoming values
 "text": "", // do not modify, use the incoming values
 "subject" : "", // Generate the title for provided text, string
@@ -137,6 +139,7 @@ chat_json= {
     "chat_id": "", # 1234567890
     "ticket_id": "", # SVC-123456
     "user": "", # username
+    "description":"",#description
     "medium": "", # [ "chat (vertex/ollama)", "email", "form" ]
     "connection": "live", # [ "live", "offline", "closed" ]
     "text": "", # "I am experiencing timeouts with EFTPOS transactions."
@@ -157,3 +160,11 @@ tmp_folders_cleanup=True
 attachment_upload_folder='./bucket/attachments/'
 chats_folder='./bucket/chats/'
 ticket_folder = "./bucket/tickets"
+
+# Jira Configs
+
+JIRA_CRED = dict({
+    'username': os.getenv("JIRA_ADMIN",'jiraadmin'),
+    'password': os.getenv("JIRA_PASS", 'Skibbidi@42069'),
+    'server': os.getenv("JIRA_SERVER", 'http://localhost:8080')
+})

@@ -16,6 +16,7 @@ from config import *
 from modules.log import *
 import base64
 import shutil
+import modules.db.db_models as db_models
 
 
 # Flask configurations
@@ -46,12 +47,13 @@ def test():
 # Socket IO event handling
 @socketio.on('connect')
 @jwt_required
-def connect():
+def connect(payload):
     sid = request.sid
+    print(f"User connected: {sid}")
     token = request.cookies.get('session')
     if token not in sockets:
         sockets[token] = {"sid": sid, "connected": True, "history": {}}
-        socket_connection[token] = ChatbotHandler(token, socketio)
+        socket_connection[token] = ChatbotHandler(token, socketio,payload)
     sockets[token]["sid"] = sid 
     sockets[token]["connected"] = True
 

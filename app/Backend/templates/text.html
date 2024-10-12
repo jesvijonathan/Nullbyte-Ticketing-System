@@ -86,12 +86,19 @@
             padding: 5px;
             border-radius: 5px;
         }
+
+        #loadingIndicator {
+            display: none;
+            color: blue;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
 <body>
     <h1>Nullbyte Chatbot</h1>
     <div id="connectionStatus">Status: Connecting...</div>
+    <div id="loadingIndicator">Sending...</div>
     <div id="messages"></div>
     <input id="messageInput" type="text" placeholder="Type your message here...">
     <div>
@@ -103,7 +110,7 @@
     <div class="created" id="created"></div>
 
     <script>
-        const socket = io('http://127.0.0.1:5000');
+        const socket = io(`${window.location.origin}`);
         const messageInput = document.getElementById("messageInput");
         const fileInput = document.getElementById('fileInput');
         const attachmentContainer = document.getElementById("attachmentContainer");
@@ -123,7 +130,6 @@
             document.getElementById("messages").appendChild(messageElement);
         }
 
-        // Listen for the enter key
         messageInput.addEventListener("keypress", function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -151,7 +157,6 @@
         socket.on('close_chat', function (data) {
             console.log('Chat closed:', data);
             socket.disconnect();
-
             const created = document.getElementById('created');
             created.innerHTML = JSON.stringify(data);
             created.style.color = 'green';
@@ -165,7 +170,7 @@
             }
             const messagesDiv = document.getElementById('messages');
             messagesDiv.innerHTML = ''; 
-        
+
             for (const key in data.live_chat) {
                 if (data.live_chat.hasOwnProperty(key)) {
                     const entry = data.live_chat[key];
@@ -176,7 +181,7 @@
                             const attachmentLink = `<a href="${attachment.path}" download="${attachment.filename}">${attachment.filename}</a>`;
                             return `<br><b>Attachment:</b> ${attachmentLink} (${attachment.size} bytes)`;
                         }).join('');
-        
+
                         const messageWithAttachment = `${entry.message}${attachmentContent}`;
                         appendMessage(sender, messageWithAttachment, entry.time);
                     } else {
@@ -185,7 +190,6 @@
                 }
             }
         });
-        
 
         socket.on('user_attachment_received', function (attachment) {
             const message = `Attachment received: ${attachment.file_name} (${attachment.size_mb} MB)`;
@@ -203,17 +207,18 @@
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight; 
         }
-        
 
         function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
-            let message = messageInput.value.trim();
- 
+            const message = messageInput.value.trim();
             const files = [...fileInput.files];
             const attachmentsToSend = [...clipboardAttachments];
 
             if (message || attachmentsToSend.length > 0 || files.length > 0) {
                 const fileReadPromises = files.map(file => readFile(file));
+                
+                // Show loading indicator
+                document.getElementById('loadingIndicator').style.display = 'block';
+
                 Promise.all(fileReadPromises)
                     .then((results) => {
                         attachmentsToSend.push(...results);
@@ -223,6 +228,10 @@
                     })
                     .catch((error) => {
                         console.error("Error reading files:", error);
+                    })
+                    .finally(() => {
+                        // Hide loading indicator
+                        document.getElementById('loadingIndicator').style.display = 'none';
                     });
 
                 messageInput.value = '';

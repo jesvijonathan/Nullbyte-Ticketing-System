@@ -3,11 +3,13 @@ import jwt
 from flask import Blueprint, request, make_response, jsonify
 import datetime
 from .ldap_wrapper import Lwrapper
-from ..log import logger
+from modules.log import *
 from config import *
 # from flask import session
 
 auth_ldap = Blueprint('auth', __name__)
+lwrapper=Lwrapper()
+
 
 @auth_ldap.post('/auth')
 def authenticate():
@@ -15,34 +17,41 @@ def authenticate():
         body = request.json
     else:
         body = request.form
+
     username = body.get('email')
     password = body.get('password')
+    payload = {}
 
     if not username or not password:
-        return make_response(jsonify({'error': 'Email and password are required'}), 400)
+        return make_response(jsonify({'error': 'email and password are required'}), 400)
 
     logger.info(f"Authenticating user: {username}")
 
-    if Lwrapper().Authenticate(username, password):
-        payload = {
-            'sub': username,
-            'iat': datetime.datetime.now(datetime.timezone.utc),
-            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=1)
+    if username == ADMIN_CRED['username'] and password == ADMIN_CRED['password']:
+        payload = {'username': 'Administrator', 'ou': [], 'upn': 'administrator@nullbyte.exe'}
+    elif lwrapper.Authenticate(username, password):
+        payload = lwrapper.getPayload(username)
+
+    payload['iat'] = datetime.datetime.now(datetime.timezone.utc)
+    payload['exp'] = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=JWT_EXP_DELTA_SECONDS)
+    logger.info(payload)
+
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    if token:
+        response = make_response(jsonify({'token': token, 'message': 'Authentication successful'}), 201)
+        response.set_cookie('session', token, httponly=True, secure=True)
+        if username in users_token:
+            del users[users_token[username]]
+        users_token[username] = token
+        users[token] = {
+            'username': username,
+            'added': payload.get('iat'),
+            'exp': payload.get('exp'),
         }
-        token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
-        if token:
-            response = make_response(jsonify({'token': token, 'message': 'Authentication successful'}), 201)
-            response.set_cookie('session', token, httponly=True, secure=True)
-            if username in users_token:
-                del users[users_token[username]]
-            users_token[username] = token
-            users[token] = {
-                'username': username,
-                'added': payload.get('iat'),
-                'exp': payload.get('exp'),
-            }
-            logger.info(f"Session user set to: {username} {token}")
-            return response
+        logger.info(f"Session user set to: {username} {token}")
+        return response
+
     return make_response(jsonify({'error': 'Invalid credentials'}), 401)
 
 def cleanup_user(token=None, user_id=None):
@@ -63,16 +72,23 @@ def jwt_required(f):
         if 'Authorization' in request.headers:
             token = request.headers['Authorization'].split(" ")[1]
         elif 'session' in request.cookies:
-            print("Session Cookie: ", request.cookies['session'])
+            logging.debug("Session Cookie: %s", request.cookies['session'])
             token = request.cookies['session']
+        
         if not token:
-            return jsonify({'message': 'Token is missing!'}), 401 
+            return jsonify({'message': 'Token is missing!'}), 401
+        
         try:
             data = jwt.decode(token, JWT_SECRET, JWT_ALGORITHM)
+            logging.debug("Decoded JWT data: %s", data)
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired!'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Invalid token!'}), 401
+
+        # Check if the decorated function accepts 'payload' as a keyword argument
+        if 'payload' in f.__code__.co_varnames:
+            kwargs['payload'] = data  # Store payload in kwargs if the function accepts it
 
         return f(*args, **kwargs)
 
