@@ -1,57 +1,57 @@
+<script setup>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+
+const current_path = {
+  "NULLBYTE": "/",
+  "DASHBOARD": "/dashboard",
+}
+
+
+</script>
+
 <template>
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li v-for="(item, index) in breadcrumbs" :key="index" class="breadcrumb-item">
-          <router-link v-if="index < breadcrumbs.length - 1" :to="item.path">
-            {{ item.name }}
-          </router-link>
-          <span v-else>{{ item.name }}</span>
-        </li>
-      </ol>
-    </nav>
-  </template>
+  <ul class="breadcrumb">
+    <li class="breadcrumb-item" v-for="(path, title) in current_path" :key="title">
+      <router-link :to="path">{{ title }}</router-link>
+    </li>
+  </ul>    
+</template>
   
-  <script>
-  import { computed } from 'vue';
-  import { useRoute } from 'vue-router';
-  
-  export default {
-    name: 'Breadcrumb',
-    setup() {
-      const route = useRoute();
-  
-      const breadcrumbs = computed(() => {
-        return route.meta.breadcrumb || [];
-      });
-  
-      return {
-        breadcrumbs
-      };
-    }
-  }
-  </script>
+
   
   <style scoped>
   .breadcrumb {
     list-style: none;
     display: flex;
-    padding:10px;
-    color:black;
+    margin: 0rem 3.4rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.8rem;
+    margin-top: 1rem;
+    font-family: wl1;
+    font-weight: 100;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.1rem;
+
+  }
+
+  .breadcrumb *{
+    
+    color: #7d8987;
   }
   
-  .breadcrumb-item {
-    margin-right: 2px;
-    transition: transform 0.3s, color 0.3s;
+  .breadcrumb-item:hover *{
+text-decoration: underline;
   }
   
-  .breadcrumb-item:hover {
-    transform: scale(1.1); 
-    text-emphasis-color: green;
-  }
   
   .breadcrumb-item::before {
-    content: '/';
-    margin-left: 2px;
+    content: '/';    
+    padding:0.1rem;
   }
   
   .breadcrumb-item:last-child::after {

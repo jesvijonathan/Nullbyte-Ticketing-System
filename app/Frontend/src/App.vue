@@ -3,13 +3,14 @@
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import NavigationBarView from './views/NavigationBarView.vue' 
+import NavigationBarView2 from './views/NavigationBarView_2.vue' 
 
 const route = useRoute()
 </script>
 
 <template>
   
-  <NavigationBarView />
+
   <body>
     <router-view />
   </body>

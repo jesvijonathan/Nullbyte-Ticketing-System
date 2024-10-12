@@ -5,28 +5,33 @@ import SidePane from '@/components/SidePane.vue';
 import router  from '../router/';
 import BreadCrumb from '@/components/BreadCrumb.vue';
 import NavigationBarView from '@/views/NavigationBarView.vue' 
+import NavigationBarView2 from '@/views/NavigationBarView_2.vue' 
 
 
 const authStore = useAuthStore();
 
-import CreateTicket from '@/assets/createTicket.svg';
-import Ticket from '@/assets/Ticket.png';
-import Inbox from '@/assets/Inbox.png';
-import Chatbot from '@/assets/chatbot.svg';
-import Report from '@/assets/Report.png';
-import Alert from '@/assets/Alert.png';
-import HelpDesk from '@/assets/Service.png';
-import Profile from '@/assets/Profile.png';
+import CreateTicketImg from '@/assets/createTicket.svg';
+import TicketImg from '@/assets/Ticket.png';
+import InboxImg from '@/assets/Inbox.png';
+import ChatbotImg from '@/assets/chatbot.svg';
+import ReportImg from '@/assets/Report.png';
+import AlertImg from '@/assets/Alert.png';
+import HelpDeskImg from '@/assets/Service.png';
+import ProfileImg from '@/assets/Profile.png';
+import AboutImg from '@/assets/About.png';
+
+
 
 const tiles = [
-    { title: 'Create Tickets', image: CreateTicket },
-    { title: 'Ticket', image: Ticket },
-    { title: 'Inbox', image: Inbox },
-    { title: 'Chatbot', image: Chatbot },
-    { title: 'Report', image: Report },
-    { title: 'Alert', image: Alert },
-    { title: 'Help Desk', image: HelpDesk },
-    { title: 'Profile', image: Profile }
+    { title: 'Create Tickets', image: CreateTicketImg },
+    { title: 'Ticket', image: TicketImg },
+    { title: 'Inbox', image: InboxImg },
+    { title: 'Chatbot', image: ChatbotImg },
+    { title: 'Report', image: ReportImg },
+    { title: 'Alert', image: AlertImg },
+    { title: 'Help Desk', image: HelpDeskImg },
+    { title: 'Profile', image: ProfileImg },
+    { title: 'About', image: AboutImg }
 ];
 
 const handleTileClick = (title) => {
@@ -35,6 +40,8 @@ router.push({ name: 'Complaint', params: { title } });
 </script>
 
 <template>
+      <!-- <NavigationBarView /> -->
+      <NavigationBarView2 />
     <div class="home-container">
         <SidePane/>
         <div class="main-pane">
@@ -57,12 +64,13 @@ router.push({ name: 'Complaint', params: { title } });
     display: flex;
     flex-direction: row;
     overflow: hidden;
+    height: fill-available;
+    height: 90vh;
 
 }
 .tile-container {
     display: flex;
     flex-wrap: wrap; 
-    justify-content: center;
-    margin-top: 20px; 
+    justify-content: center; 
 }
 </style>
