@@ -6,12 +6,22 @@ import NavigationBarView from './views/NavigationBarView.vue'
 import NavigationBarView2 from './views/NavigationBarView_2.vue' 
 
 const route = useRoute()
+
+// if load compelte, show the view
+import Loader from './components/loader.vue'
+
+const isLoadComplete = false;
+// computed(() => {
+//   return true
+// })
+
 </script>
 
 <template>
   
 
   <body>
+    <Loader/>
     <router-view />
   </body>
 </template>

@@ -72,5 +72,7 @@ router.push({ name: 'Complaint', params: { title } });
     display: flex;
     flex-wrap: wrap; 
     justify-content: center; 
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 </style>

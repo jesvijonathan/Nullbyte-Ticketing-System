@@ -12,7 +12,8 @@ const moreOptionsStyle = ref({
     left: '0',
     opacity: '0',
     height: '0',
-    width: '0'
+    width: '0',
+    zIndex: '-99',
 });
 
 const currentOptions = ref('');
@@ -34,25 +35,21 @@ const handleMouseEnter = async (event) => {
 const handleMouseLeave = () => {
     moreOptionsStyle.value.opacity = '0';
     moreOptionsStyle.value.filter = 'blur(0.9rem)';
-    moreOptionsStyle.value.height = 
-    setTimeout(() => {
-        showMoreOptions.value = false;
-    }, 300); 
+    moreOptionsStyle.value.height = "0";
+
 };
 
 const handleOptionsMouseLeave = () => {
     handleMouseLeave();
+        setTimeout(() => {
+        showMoreOptions.value = false;
+    }, 300); 
 };
 
 const more_options = {
     'Chatbot': [
-        "More About Worldline",
-        "Products",
-        "Development",
-        "2024 Q1 Roadmap",
-        "2024 Q2 Roadmap",
-        "Financials",
-        "Investors",
+        "WL Vertex AI",
+        "WL LLama",
     ],
     'Tickets': [
         "About WGS",
@@ -88,13 +85,13 @@ const more_options = {
             <router-link @mouseenter="handleMouseEnter" to="/tickets">Tickets</router-link>
             <router-link @mouseenter="handleMouseEnter" to="/dashboard">Dashboard</router-link>
             <router-link @mouseenter="handleMouseEnter" to="/settings">Settings</router-link>
-                <div class="nav_profile"><img class="nav_profile_img" :src="ProfileImg" alt="Profile" title="Profile" /></div>
+                <div class="nav_profile"  @mouseenter="handleOptionsMouseLeave"><div style="display: none;">Profile</div><img class="nav_profile_img" :src="ProfileImg" alt="Profile" title="Profile" /></div>
         </div>
-        <!-- <div class="nav_more_options_container" @mouseleave="handleOptionsMouseLeave" :style="moreOptionsStyle">
+        <div class="nav_more_options_container" @mouseleave="handleOptionsMouseLeave" :style="moreOptionsStyle">
             <div v-for="(option, index) in more_options[currentOptions]" :key="index">
                 <router-link :to="option" class="jos">{{ option }}</router-link>
             </div>
-        </div> -->
+        </div>
     </div>
 </template>
 
@@ -145,9 +142,8 @@ nav
 }
 .nav_more_options_container {
     position: absolute;
-    margin-top: 2rem;
-    background-color: white;
-    z-index: 999;
+    margin-top: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease-in-out;
     padding-bottom: 1rem; 
     overflow: hidden;
@@ -158,8 +154,7 @@ nav
 }
 
 .navigation_bar {
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10rem);
+    background-color: rgb(255, 255, 255);
     padding: 2rem 3rem;
     display: flex;
     justify-content: space-between;
