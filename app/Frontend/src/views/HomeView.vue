@@ -37,6 +37,12 @@ const tiles = [
 const handleTileClick = (title) => {
 router.push({ name: 'Complaint', params: { title } });
 };
+
+
+let bread_path_json={
+    "NULLBYTE": "/",
+    "DASHOARD": "/dashboard",
+} 
 </script>
 
 <template>
@@ -45,7 +51,7 @@ router.push({ name: 'Complaint', params: { title } });
     <div class="home-container">
         <SidePane/>
         <div class="main-pane">
-        <BreadCrumb/>
+        <BreadCrumb :data="bread_path_json"/>
         <div class="tile-container">
             <Tile v-for="(tile, index) in tiles" :key="index" :title="tile.title" :image="tile.image" @tile-clicked="handleTileClick"/>
         </div>
@@ -60,12 +66,13 @@ router.push({ name: 'Complaint', params: { title } });
     flex-direction: column;
 }
 .home-container {
-    justify-content: center;
+    justify-content: flex-start;
     display: flex;
     flex-direction: row;
     overflow: hidden;
     height: fill-available;
     height: 90vh;
+
 
 }
 .tile-container {

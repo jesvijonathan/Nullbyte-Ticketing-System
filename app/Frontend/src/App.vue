@@ -19,9 +19,8 @@ const isLoadComplete = false;
 
 <template>
   
-
+<Loader/>
   <body>
-    <Loader/>
     <router-view />
   </body>
 </template>

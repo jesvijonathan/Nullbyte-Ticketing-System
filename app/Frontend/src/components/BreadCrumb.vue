@@ -1,12 +1,18 @@
 <script setup>
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
 
-const current_path = {
-  "NULLBYTE": "/",
-  "DASHBOARD": "/dashboard",
-}
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true
+  }
+});
 
+const current_path = computed(() => {
+  return props.data;  
+});
+
+console.log(current_path.value);
 
 </script>
 
@@ -17,45 +23,39 @@ const current_path = {
     </li>
   </ul>    
 </template>
-  
 
-  
-  <style scoped>
-  .breadcrumb {
-    list-style: none;
-    display: flex;
-    margin: 0rem 3.4rem;
-    margin-bottom: 0.3rem;
-    font-size: 0.8rem;
-    margin-top: 1rem;
-    font-family: wl1;
-    font-weight: 100;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-content: center;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 0.1rem;
+<style scoped>
+.breadcrumb {
+  list-style: none;
+  display: flex;
+  margin: 0rem 3.4rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+  margin-top: 1rem;
+  font-family: wl1;
+  font-weight: 100;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.1rem;
+}
 
-  }
+.breadcrumb * {
+  color: #7d8987;
+}
 
-  .breadcrumb *{
-    
-    color: #7d8987;
-  }
-  
-  .breadcrumb-item:hover *{
-text-decoration: underline;
-  }
-  
-  
-  .breadcrumb-item::before {
-    content: '/';    
-    padding:0.1rem;
-  }
-  
-  .breadcrumb-item:last-child::after {
-    content: '';
-  }
-  </style>
-  
+.breadcrumb-item:hover * {
+  text-decoration: underline;
+}
+
+.breadcrumb-item::before {
+  content: '/';    
+  padding: 0.1rem;
+}
+
+.breadcrumb-item:last-child::after {
+  content: '';
+}
+</style>

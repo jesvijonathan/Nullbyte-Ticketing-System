@@ -135,7 +135,8 @@ export default {
     left: 0;
     flex-direction: column;
     justify-content: space-between;
-    width: 50rem;
+    width: 20rem;
+    min-width: 20rem;
     /* height: 100%; */
     /* overflow: hidden; */
     background-color: #272727;
