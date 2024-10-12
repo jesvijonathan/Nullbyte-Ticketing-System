@@ -111,6 +111,7 @@ export default defineComponent({
 .splitter {
   margin: 0.4rem 0rem 1rem 0rem;
   border: 0.1rem solid #79797971;
+
 }
 
 .ticket_name_det {

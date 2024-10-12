@@ -74,7 +74,7 @@ export default {
             {{ item }}
           </div>
         </div>
-        <div v-if="$route.path === '/dashboard'">
+        <div class="create_con" v-if="$route.path === '/dashboard'">
           <div  
             @click="handleClick()" 
             :key="CreateTicket" 
@@ -82,7 +82,7 @@ export default {
             Create Ticket
           </div>
           <hr style="
-    margin-bottom: 2rem;">
+    margin-bottom: 1rem; width: 14rem;border: 0.08rem solid #818181;">
           </div>
           <SidePaneItem class="side_panel_item" v-for="ticket in TicketItems" :key="ticket.TicketNo" :ticket="ticket"/>
         
@@ -92,9 +92,23 @@ export default {
   </template>
   
   <style scoped>
+  .create_con{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+  }
 .powered-by{
   font-family: 'wl1';
   font-size: 1rem;
+}
+.sp{    
+  height: 82vh;
+  overflow: overlay;    
+  padding-right: 2.4rem;
+
 }
 
   .sp-footer{
@@ -105,6 +119,7 @@ export default {
     gap: 0.55rem;    
     transform: scale(1);  
     cursor: pointer;
+    padding-right: 2.4rem;
   }
   .sp-footer:hover .nulllfont{
     transform: skew(-17deg);
@@ -130,7 +145,8 @@ export default {
     /* overflow-y: auto; */
     flex-wrap: nowrap;
     height: fill-available;
-    /* width: 17rem; */
+    /* width: 17rem; */    
+    padding: 1rem 0rem 1rem 2.4rem;
     overflow-x: inherit;
   }
   
@@ -144,6 +160,7 @@ export default {
     border-radius: 10px;
     margin: 1.3rem 2rem 2rem 2rem;
     cursor: pointer;
+    width: 15rem;
   }
   
   .side-pane-title-elements:hover {
@@ -153,17 +170,17 @@ export default {
   
 
   /* slim scroll bar for   .side-pane */
-.side-pane::-webkit-scrollbar {
+.sp::-webkit-scrollbar {
   width: 0.4rem;
 }
-.side-pane::-webkit-scrollbar-thumb {
+.sp::-webkit-scrollbar-thumb {
   background-color: #4a4a4a;
   border-radius: 1rem;
 }
-.side-pane::-webkit-scrollbar-thumb:hover {
+.sp::-webkit-scrollbar-thumb:hover {
   background-color: #818181;
 }
-.side-pane::-webkit-scrollbar-track {
+.sp::-webkit-scrollbar-track {
   background-color: #272727;
 }
 
