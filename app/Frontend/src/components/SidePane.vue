@@ -130,7 +130,8 @@ export default {
     /* overflow-y: auto; */
     flex-wrap: nowrap;
     height: fill-available;
-    width: 17rem;
+    /* width: 17rem; */
+    overflow-x: inherit;
   }
   
   .side-pane-title-elements {
@@ -150,6 +151,24 @@ export default {
     background-color: #46BEAA;
   }
   
+
+  /* slim scroll bar for   .side-pane */
+.side-pane::-webkit-scrollbar {
+  width: 0.4rem;
+}
+.side-pane::-webkit-scrollbar-thumb {
+  background-color: #4a4a4a;
+  border-radius: 1rem;
+}
+.side-pane::-webkit-scrollbar-thumb:hover {
+  background-color: #818181;
+}
+.side-pane::-webkit-scrollbar-track {
+  background-color: #272727;
+}
+
+
+
 
   </style>
   
