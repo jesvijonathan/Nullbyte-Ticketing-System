@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import request, make_response, jsonify, render_template
 from werkzeug.utils import secure_filename
 from config import *
-from .db.db_models import Ticket, Employee,Customer,Attachment
+from .db.db_models import Ticket, Employee,Customer,Attachment,Comment
 from .auth.auth import jwt_required
 from .db.database import db_session
 from .log import *
@@ -34,34 +34,50 @@ def get_all_tickets(*args, **kwargs):
 
 @ticket.route('/create', methods=['POST'])
 @jwt_required
-def create_ticket(*args, **kwargs):
-    if not request.is_json:
-        return make_response(jsonify({'error': 'Request must be JSON'}), 400)
-
-    body = request.json
-    new_ticket = Ticket(
-        Subject=body.get("Subject"),
-        Summary=body.get("Summary"),
-        Analysis=body.get("Analysis"),
-        Type=body.get("Type"),
-        Description=body.get("Description"),
-        Status=body.get("Status"),
-        Priority=body.get("Priority"),
-        Issue_Type=body.get("Issue_Type"),
-        Channel=body.get("Channel"),
-        Customer_ID=body.get("Customer_ID"),
-        Product_ID=body.get("Product_ID"),
-        Medium=body.get("Medium"),
-        Team=body.get("Team"),
-        Assignee_ID=body.get("Assignee_ID"),
-        Resolution=body.get("Resolution"),
-        Issue_Date=body.get("Issue_Date"),
-        First_Response_Time=body.get("First_Response_Time"),
-        Time_to_Resolution=body.get("Time_to_Resolution"),
-        Reopens=body.get("Reopens"),
-        Story_Points=body.get("Story_Points"),
-        Score=body.get("Score")
-    )
+def create_ticket(payload):
+    # if not request.is_json:
+    #     return make_response(jsonify({'error': 'Request must be JSON'}), 400)
+    comments = []
+    if 'comments' in request.form:
+        for comment in request.form.getlist('comments'):
+            Comment_user = Customer().getIDfromEmail(payload['upn'])
+            Comment_text = comment
+            new_comment = Comment(Comment_user=Comment_user, Comment=Comment_text)
+            comments.append(new_comment)
+    
+    if 'id' in request.form and comments:
+        ticket_id = request.form.get('id')
+        ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
+        if ticket:
+            ticket.comments.extend(comments)
+            db_session.commit()
+            return make_response(jsonify({'message': 'Comment added successfully'}), 200)
+    elif 'id' not in request.form:
+        new_ticket = Ticket(
+            Subject=request.form.get("subject"),
+            Summary=request.form.get("summary"),
+            Analysis=request.form.get("analysis"),
+            Type=request.form.get("type"),
+            Description=request.form.get("description"),
+            Status=request.form.get("status"),
+            Priority=request.form.get("priority"),
+            Issue_Type=request.form.get("issue_type"),
+            Channel=request.form.get("channel"),
+            Customer_ID=Customer().getIDfromEmail(payload['upn']),
+            Product_ID=request.form.get("product_type"),
+            Medium=request.form.get("medium"),
+            Team=request.form.get("team"),
+            Assignee_ID=request.form.get("assignee"),
+            Resolution=request.form.get("Resolution"),
+            Issue_Date=request.form.get("created"),
+            First_Response_Time=request.form.get("First_Response_Time"),
+            Time_to_Resolution=request.form.get("estimation"),
+            Reopens=request.form.get("reopens"),
+            Story_Points=request.form.get("story_points"),
+            comments=comments
+        )
+    else:
+        return make_response(jsonify({'error': 'Ticket ID is required to add comments. If creating a new ticket, do not include a ticket ID.'}), 400)
     try:
         validation_error = new_ticket.validate()
         if validation_error:
@@ -170,30 +186,33 @@ def addattachment():
     ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
     if not ticket:
         return make_response(jsonify({'error': 'Ticket not found'}), 404)
-    full_ticket_id='SVC-'+str(ticket_id)
-    if 'file' not in request.files:
-        return make_response(jsonify({'error': 'No file part'}), 400)
+    full_ticket_id = 'SVC-' + str(ticket_id)
     
-    file = request.files['file']
-    if file.filename == '':
-        return make_response(jsonify({'error': 'No selected file'}), 400)
+    if 'files' not in request.files:
+        return make_response(jsonify({'error': 'No files part'}), 400)
     
-    if file:
-        try:
-            filename = secure_filename(file.filename)
-            ticket_folder = "./bucket/tickets"
-            os.makedirs(ticket_folder, exist_ok=True)
-            this_ticket_folder = os.path.join(ticket_folder, str(full_ticket_id))
-            os.makedirs(this_ticket_folder, exist_ok=True)
-            writefile=os.path.join(this_ticket_folder, filename)
-            file.save(writefile)
-            print(f"File saved to {this_ticket_folder}")
-            Attachment().addAttachment(ticket_id,writefile)
-            return make_response(jsonify({'message': 'File uploaded successfully'}), 200)
-        except Exception as e:
-            logger.error(f"Error saving file: {e}")
-            return make_response(jsonify({'error': 'File upload failed'}), 500)
-
+    files = request.files.getlist('files')
+    if not files or all(file.filename == '' for file in files):
+        return make_response(jsonify({'error': 'No selected files'}), 400)
+    
+    try:
+        ticket_folder = "./bucket/tickets"
+        os.makedirs(ticket_folder, exist_ok=True)
+        this_ticket_folder = os.path.join(ticket_folder, str(full_ticket_id))
+        os.makedirs(this_ticket_folder, exist_ok=True)
+        
+        for file in files:
+            if file and file.filename != '':
+                filename = secure_filename(file.filename)
+                writefile = os.path.join(this_ticket_folder, filename)
+                file.save(writefile)
+                print(f"File saved to {this_ticket_folder}")
+                Attachment().addAttachment(ticket_id, writefile)
+        
+        return make_response(jsonify({'message': 'Files uploaded successfully'}), 200)
+    except Exception as e:
+        logger.error(f"Error saving files: {e}")
+        return make_response(jsonify({'error': 'File upload failed'}), 500)
 class BotAdmin:
         def create_ticket(self,ticket):
             description = ticket.get("description")
@@ -209,12 +228,11 @@ class BotAdmin:
                 Summary=ticket.get("summary"),
                 Analysis=analysis,
                 Description=description,
-                # Attachments=ticket.get("attachments"),
                 Customer_ID=Customer().getIDfromEmail(ticket.get("user")),
                 Medium=ticket.get("medium"),
                 Issue_Type=ticket.get("issue_type"),
                 Channel=ticket.get("connection"),
-                #Assignee_ID=1, //needed to be implemented based on scoring mechanism
+                Assignee_ID=self.setAssignee(),#, //needed to be implemented based on scoring mechanism
                 Product_ID=ticket.get("product_id"),  
                 Priority=ticket.get("priority"),
                 Story_Points=ticket.get("story_points"),
@@ -231,3 +249,6 @@ class BotAdmin:
                 db_session.rollback()
                 logger.error(e)
                 return {'error': str(e)}
+        def setAssignee(self) -> int:
+            # //logic to assign ticket to employee based on scoring mechanism
+            return 1

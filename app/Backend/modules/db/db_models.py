@@ -33,6 +33,7 @@ class Ticket(Base):
     attachments = relationship("Attachment", back_populates="ticket")
     customer = relationship("Customer", back_populates="tickets")
     assignee = relationship("Employee", back_populates="assigned_tickets")
+    comments = relationship("Comment", back_populates="ticket", cascade="all, delete-orphan")
 
     def serialize(self, keys=None):
         data = {
@@ -183,35 +184,26 @@ class Attachment(Base):
             db_session.rollback()
             logger.error(f"Error adding attachment: {e}")
             return {'error': str(e)}
-    
-    class Session(Base):
-        __tablename__ = 'session'
-        Token = Column(Text, primary_key=True, nullable=False)
-        Sid = Column(String(255), nullable=False)
-        sockets = relationship("Socket", back_populates="session", cascade="all, delete-orphan")
+class Comment(Base):
+    __tablename__ = 'comments'
+    Comment_id = Column(Integer, primary_key=True, autoincrement=True)
+    Ticket_id = Column(Integer, ForeignKey('ticket.Ticket_Id', ondelete='CASCADE'), nullable=False)
+    Timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    Comment_user = Column(Integer, nullable=False)
+    Comment = Column(Text, nullable=False)
 
-        def serialize(self, keys=None):
-            data = {
-                'Token': self.Token,
-                'Sid': self.Sid
-            }
-            
-            if keys:
-                return {key: data[key] for key in keys if key in data}
-            return data
+    # Define relationship to Ticket
+    ticket = relationship("Ticket", back_populates="comments")
 
-    class Socket(Base):
-        __tablename__ = 'sockets'
-        Sid = Column(String(255), ForeignKey('session.Sid', ondelete='CASCADE'), primary_key=True)
-        History = Column(Text)
-        session = relationship("Session", back_populates="sockets")
-
-        def serialize(self, keys=None):
-            data = {
-                'Sid': self.Sid,
-                'History': self.History
-            }
-            
-            if keys:
-                return {key: data[key] for key in keys if key in data}
-            return data
+    def serialize(self, keys=None):
+        data = {
+            'Comment_id': self.Comment_id,
+            'Ticket_id': self.Ticket_id,
+            'Timestamp': self.Timestamp.isoformat() if self.Timestamp else None,
+            'Comment_user': self.Comment_user,
+            'Comment': self.Comment
+        }
+        
+        if keys:
+            return {key: data[key] for key in keys if key in data}
+        return data
