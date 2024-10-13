@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import request, make_response, jsonify, render_template
 from werkzeug.utils import secure_filename
 from config import *
-from .db.db_models import Ticket, Employee,Customer
+from .db.db_models import Ticket, Employee,Customer,Attachment
 from .auth.auth import jwt_required
 from .db.database import db_session
 from .log import *
@@ -170,7 +170,7 @@ def addattachment():
     ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
     if not ticket:
         return make_response(jsonify({'error': 'Ticket not found'}), 404)
-    ticket_id='SVC-'+str(ticket_id)
+    full_ticket_id='SVC-'+str(ticket_id)
     if 'file' not in request.files:
         return make_response(jsonify({'error': 'No file part'}), 400)
     
@@ -183,10 +183,12 @@ def addattachment():
             filename = secure_filename(file.filename)
             ticket_folder = "./bucket/tickets"
             os.makedirs(ticket_folder, exist_ok=True)
-            this_ticket_folder = os.path.join(ticket_folder, str(ticket_id))
+            this_ticket_folder = os.path.join(ticket_folder, str(full_ticket_id))
             os.makedirs(this_ticket_folder, exist_ok=True)
-            file.save(os.path.join(this_ticket_folder, filename))
+            writefile=os.path.join(this_ticket_folder, filename)
+            file.save(writefile)
             print(f"File saved to {this_ticket_folder}")
+            Attachment().addAttachment(ticket_id,writefile)
             return make_response(jsonify({'message': 'File uploaded successfully'}), 200)
         except Exception as e:
             logger.error(f"Error saving file: {e}")
