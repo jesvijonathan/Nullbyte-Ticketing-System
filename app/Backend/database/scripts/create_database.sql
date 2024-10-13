@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS customer (
     role VARCHAR(100),
     score INT
 );
+ALTER TABLE customer AUTO_INCREMENT = 0;
 
 CREATE TABLE IF NOT EXISTS employee (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -32,19 +33,18 @@ CREATE TABLE IF NOT EXISTS employee (
     experience INT,
     FOREIGN KEY (manager) REFERENCES employee(id) ON DELETE SET NULL
 );
-
+ALTER TABLE employee AUTO_INCREMENT = 0;
 CREATE TABLE IF NOT EXISTS ticket (
     Ticket_Id INT AUTO_INCREMENT PRIMARY KEY,
     Chat_Id VARCHAR(50),
     Subject VARCHAR(255) NOT NULL,
-    Summary VARCHAR(255) NOT NULL,
+    Summary TEXT NOT NULL,
     Analysis TEXT,
-    Attachments BLOB,
     Type VARCHAR(100),
-    Description TEXT NOT NULL,
-    Status ENUM('Open', 'In Progress', 'Closed', 'Reopened') NOT NULL,
-    Priority ENUM('Low', 'Medium', 'High') NOT NULL,
-    Issue_Type VARCHAR(50),
+    Description TEXT,
+    Status ENUM('open', 'progress', 'closed', 'reopened') DEFAULT 'open',
+    Priority ENUM('critical','high','medium', 'low') DEFAULT 'medium',
+    Issue_Type ENUM('bug', 'error', 'issue', 'story', 'others', 'feature', 'enhancement', 'support') DEFAULT 'issue',
     Channel VARCHAR(100),
     Customer_ID INT,
     Product_ID VARCHAR(100),
@@ -58,10 +58,16 @@ CREATE TABLE IF NOT EXISTS ticket (
     Reopens INT DEFAULT 0,
     Story_Points INT,
     Score INT,
-    FOREIGN KEY (Customer_ID) REFERENCES customer(id) ON DELETE CASCADE,
+    FOREIGN KEY (Customer_ID) REFERENCES customer(id) ON DELETE SET NULL,
     FOREIGN KEY (Assignee_ID) REFERENCES employee(id) ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS attachments(
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Ticket_Id INT,
+    url TEXT,
+    FOREIGN KEY (Ticket_Id) REFERENCES ticket(Ticket_Id) ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS comments (
     Ticket_id INT NOT NULL,
