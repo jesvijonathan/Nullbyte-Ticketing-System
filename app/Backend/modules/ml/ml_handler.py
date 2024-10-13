@@ -23,14 +23,14 @@ class ChatbotHandler:
     def __init__(self, token, socketio,payload):
         self.socketio= socketio
         self.token= token
-        self.user= users[token]
+        self.user= payload['upn']
         self.customer_id= payload["upn"]
         self.socket= sockets[token]
         self.chat_id= self.socket["sid"]
         self.history = {}
         self.result= chat_json
         self.result["chat_id"]= self.chat_id
-        self.result["user"]= self.user["username"]
+        self.result["user"]= payload['upn']
         self.result["ticket_id"]= "SVC-" + str(random.randint(10000, 99999))
 
         self.bot, self.chat= self.initialize_bot(chatbot_fallback)
@@ -60,7 +60,7 @@ class ChatbotHandler:
     def response_add(self, response_msg, attachments_list=None):
         # User response
         self.history[len(self.history) + 1] = {
-            'recipient': self.user["username"],
+            'recipient': self.user,
             'time': datetime.datetime.now().isoformat(),
             'message': response_msg
         }

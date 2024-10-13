@@ -1,5 +1,6 @@
 from flask import Blueprint
-from flask import request, make_response,jsonify,render_template
+from flask import request, make_response, jsonify, render_template
+from werkzeug.utils import secure_filename
 from config import *
 from .db.db_models import Ticket, Employee,Customer
 from .auth.auth import jwt_required
@@ -42,7 +43,6 @@ def create_ticket(*args, **kwargs):
         Subject=body.get("Subject"),
         Summary=body.get("Summary"),
         Analysis=body.get("Analysis"),
-        Attachments=body.get("Attachments"),
         Type=body.get("Type"),
         Description=body.get("Description"),
         Status=body.get("Status"),
@@ -160,6 +160,37 @@ def get_ticket(*args, **kwargs):
         return make_response(jsonify({'error': 'Ticket not found'}), 404)
     return make_response(jsonify(ticket.serialize()), 200)
 
+@ticket.route('/attachments/add', methods=['POST'])
+@jwt_required
+def addattachment():
+    ticket_id = request.form.get('ticket_id')
+    if not ticket_id:
+        return make_response(jsonify({'error': 'Ticket ID is required'}), 400)
+    
+    ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
+    if not ticket:
+        return make_response(jsonify({'error': 'Ticket not found'}), 404)
+    ticket_id='SVC-'+str(ticket_id)
+    if 'file' not in request.files:
+        return make_response(jsonify({'error': 'No file part'}), 400)
+    
+    file = request.files['file']
+    if file.filename == '':
+        return make_response(jsonify({'error': 'No selected file'}), 400)
+    
+    if file:
+        try:
+            filename = secure_filename(file.filename)
+            ticket_folder = "./bucket/tickets"
+            os.makedirs(ticket_folder, exist_ok=True)
+            this_ticket_folder = os.path.join(ticket_folder, str(ticket_id))
+            os.makedirs(this_ticket_folder, exist_ok=True)
+            file.save(os.path.join(this_ticket_folder, filename))
+            print(f"File saved to {this_ticket_folder}")
+            return make_response(jsonify({'message': 'File uploaded successfully'}), 200)
+        except Exception as e:
+            logger.error(f"Error saving file: {e}")
+            return make_response(jsonify({'error': 'File upload failed'}), 500)
 
 class BotAdmin:
         def create_ticket(self,ticket):

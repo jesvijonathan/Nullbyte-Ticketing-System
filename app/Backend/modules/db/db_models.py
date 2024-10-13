@@ -183,3 +183,35 @@ class Attachment(Base):
             db_session.rollback()
             logger.error(f"Error adding attachment: {e}")
             return {'error': str(e)}
+    
+    class Session(Base):
+        __tablename__ = 'session'
+        Token = Column(Text, primary_key=True, nullable=False)
+        Sid = Column(String(255), nullable=False)
+        sockets = relationship("Socket", back_populates="session", cascade="all, delete-orphan")
+
+        def serialize(self, keys=None):
+            data = {
+                'Token': self.Token,
+                'Sid': self.Sid
+            }
+            
+            if keys:
+                return {key: data[key] for key in keys if key in data}
+            return data
+
+    class Socket(Base):
+        __tablename__ = 'sockets'
+        Sid = Column(String(255), ForeignKey('session.Sid', ondelete='CASCADE'), primary_key=True)
+        History = Column(Text)
+        session = relationship("Session", back_populates="sockets")
+
+        def serialize(self, keys=None):
+            data = {
+                'Sid': self.Sid,
+                'History': self.History
+            }
+            
+            if keys:
+                return {key: data[key] for key in keys if key in data}
+            return data
