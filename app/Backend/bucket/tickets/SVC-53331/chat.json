@@ -1,1 +1,33 @@
-{"1": {"recipient": "wl_vertex", "time": "2024-10-09T21:52:27.670787", "message": "Hello! How can I help you today?"}, "2": {"recipient": "admin", "time": "2024-10-09T21:52:32.155105", "message": "", "attachment": {"0": {"filename": "log.txt", "path": "./bucket/chats/nD94jLywg2TKka5lAAAD/log.txt", "extension": "txt", "mime_type": "text/plain", "size": 4382}, "1": {"filename": "Invalid_LoginID.jpg", "path": "./bucket/chats/nD94jLywg2TKka5lAAAD/Invalid_LoginID.jpg", "extension": "jpg", "mime_type": "image/jpeg", "size": 31031}}}, "3": {"recipient": "wl_vertex", "time": "2024-10-09T21:52:46.683341", "message": "Thank you for providing the logs.  We see the failed login attempts and the instance management activities.  To help us troubleshoot further, could you please confirm the username you were using to log in?  In the meantime, we can initiate a password reset for you. Please provide the email address associated with your account."}}
+{
+    "1": {
+        "recipient": "wl_vertex",
+        "time": "2024-10-09T21:52:27.670787",
+        "message": "Hello! How can I help you today?"
+    },
+    "2": {
+        "recipient": "admin",
+        "time": "2024-10-09T21:52:32.155105",
+        "message": "",
+        "attachment": {
+            "0": {
+                "filename": "log.txt",
+                "path": "./bucket/chats/nD94jLywg2TKka5lAAAD/log.txt",
+                "extension": "txt",
+                "mime_type": "text/plain",
+                "size": 4382
+            },
+            "1": {
+                "filename": "Invalid_LoginID.jpg",
+                "path": "./bucket/chats/nD94jLywg2TKka5lAAAD/Invalid_LoginID.jpg",
+                "extension": "jpg",
+                "mime_type": "image/jpeg",
+                "size": 31031
+            }
+        }
+    },
+    "3": {
+        "recipient": "wl_vertex",
+        "time": "2024-10-09T21:52:46.683341",
+        "message": "Thank you for providing the logs.  We see the failed login attempts and the instance management activities.  To help us troubleshoot further, could you please confirm the username you were using to log in?  In the meantime, we can initiate a password reset for you. Please provide the email address associated with your account."
+    }
+}

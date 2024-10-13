@@ -1,8 +1,10 @@
 <script setup>
 import BreadCrumb from '@/components/BreadCrumb.vue';
 import NavigationBarView2 from '@/views/NavigationBarView_2.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import SidePane from '@/components/SidePane.vue';
+import LoaderToast from '@/components/LoaderToast.vue';
+import { faLeaf } from '@fortawesome/free-solid-svg-icons';
 
 let bread_path_json = {
     "NULLBYTE": "/",
@@ -22,11 +24,106 @@ const handleFileChange = (event) => {
 const removeAttachment = (index) => {
     attachments.value.splice(index, 1);
 };
+
+
+const loading = ref(true);
+
+const get_ticket_url = "http://localhost:5000/get_ticket";
+const get_incomplete_ticket_url = "http://localhost:5000/get_incomplete_ticket";
+// const auto_fill_url = "http://localhost:5000/text/fill_ticket";
+const auto_fill_url = "http://localhost:5000/get_autofill";
+
+
+let ticket_data = ref({
+    "chat_id": "",
+    "ticket_id": "",
+    "user": "",
+    "medium": "",
+    "connection": "",
+    "text": "",
+    "subject": "",
+    "summary": "",
+    "attachments": [],
+    "product_type": "",
+    "issue_type": "",
+    "priority": "",
+    "story_points": "",
+    "estimation": "",
+    "analysis": "",
+    "reply": "",
+    "assingee": "",
+    "status": "",
+    "created": "",
+    "updated": "",
+    "comments": [
+    ],
+    "logged_hrs": [
+    ]
+});
+
+onMounted(() => {
+    console.log('mounted');
+    fetch(get_incomplete_ticket_url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            ticket_data.value = data;
+        });
+    console.log(ticket_data.value);
+    loading.value = false;
+});
+
+const autoFill = () => {
+    loading.value = true;
+    
+    console.log(attachments.value.length);
+    fetch(auto_fill_url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            ticket_data.value = data;
+        });
+
+    loading.value = false;
+};
+
+const reset_form = () => {
+    loading.value = true;
+    ticket_data.value = {
+        "chat_id": "",
+        "ticket_id": "",
+        "user": "",
+        "medium": "",
+        "connection": "",
+        "text": "",
+        "subject": "",
+        "summary": "",
+        "attachments": [],
+        "product_type": "",
+        "issue_type": "",
+        "priority": "",
+        "story_points": "",
+        "estimation": "",
+        "analysis": "",
+        "reply": "",
+        "assingee": "",
+        "status": "",
+        "created": "",
+        "updated": "",
+        "comments": [
+        ],
+        "logged_hrs": [
+        ]
+    };
+
+    attachments.value = [];
+    loading.value = false;
+};
 </script>
 
 
 <template>
-
+    <LoaderToast :loading="loading" />
     <!-- <NavigationBarView /> -->
     <NavigationBarView2 />
     <div class="home-container">
@@ -35,16 +132,16 @@ const removeAttachment = (index) => {
             <BreadCrumb :data="bread_path_json" />
 
             <div class="tile-container ">
-                <h1 class="main_title">Create Ticket</h1>
+                <h1 class="main_title">Create Ticket<div class="ticket_id">{{ ticket_data.ticket_id }}</div></h1>
                 <div class="creat_form_cont">
                     <div class="input_cont_2 attach_cont">
 
                         <div class="input_cont">
                             <label for="title">Title</label>
-                            <input type="text" placeholder="Enter your name" class="input_field" id="title">
+                            <input type="text" placeholder="Enter your name" class="input_field" id="title" v-model="ticket_data.subject">
                         </div>
 
-                        <button class="btn_cancel ai_button">
+                        <button class="btn_cancel ai_button" @click="autoFill">
                             <img src="https://img.icons8.com/?size=100&id=i9i0mLdBTSia&format=png&color=000000"
                                 alt="cancel" />Auto Fill
                         </button>
@@ -52,34 +149,46 @@ const removeAttachment = (index) => {
                     </div>
 
                     <div class="input_cont">
-                        <label for="description">Description</label>
-                        <textarea type="text" placeholder="Enter your description" class="input_field desc"
-                            id="description" required></textarea>
+                        <label for="attachments">Summmary</label>
+                        <textarea type="text" placeholder="Summary" class="input_field desc" id="analysis" v-model="ticket_data.summary"
+                            style="height: 3rem;"
+                            readonly disabled
+                            ></textarea>
                     </div>
 
                     <div class="input_cont">
+                        <label for="description">Description</label>
+                        <textarea type="text" placeholder="Enter your description" class="input_field desc"
+                            id="description" v-model="ticket_data.text" 
+                            required
+                            ></textarea>
+                    </div>
+
+
+                    <div class="input_cont">
+
                         <label for="attachments">Analysis</label>
-                        <textarea type="text" placeholder="Enter the analysis" class="input_field desc"
-                            id="analysis" style="height: 3rem;"></textarea>
+                        <textarea type="text" placeholder="Enter the analysis" class="input_field desc" id="analysis" v-model="ticket_data.analysis"
+                            style="height: 4rem;"></textarea>
 
 
                         <div class="input_cont_2">
                             <div class="input_cont">
                                 <label for="created_by">Created By </label>
                                 <input type="text" placeholder="Enter the name of the person" class="input_field"
-                                    id="created_by">
+                                    id="created_by" v-model="ticket_data.user">
                             </div>
                             <div class="input_cont">
                                 <label for="assingee">Assigned To</label>
                                 <input type="text" placeholder="Enter the name of the person" class="input_field"
-                                    id="assingee">
+                                    id="assingee" v-model="ticket_data.assingee">
                             </div>
                         </div>
 
                         <div class="input_cont_2">
                             <div class="input_cont">
                                 <label for="ticket_type">Ticket Type</label>
-                                <select name="ticket_type" class="input_field" id="ticket_type">
+                                <select name="ticket_type" class="input_field" id="ticket_type" v-model="ticket_data.issue_type">
                                     <option value="bug">Bug</option>
                                     <option value="feature">Feature</option>
                                     <option value="story">Story</option>
@@ -91,7 +200,7 @@ const removeAttachment = (index) => {
                             </div>
                             <div class="input_cont">
                                 <label for="priority">Priority</label>
-                                <select name="ticket_type" class="input_field" id="ticket_type">
+                                <select name="ticket_type" class="input_field" id="ticket_type" v-model="ticket_data.priority">
                                     <option value="low">Low</option>
                                     <option value="medium">Medium</option>
                                     <option value="high">High</option>
@@ -107,7 +216,7 @@ const removeAttachment = (index) => {
                 </div> -->
                             <div class="input_cont">
                                 <label for="ticket_type">Product</label>
-                                <select name="ticket_type" class="input_field" id="ticket_type">
+                                <select name="ticket_type" class="input_field" id="ticket_type" v-model="ticket_data.product_type">
                                     <option value="wlpfo">WLPFO</option>
                                     <option value="webgui">WebGUI</option>
                                     <option value="wlsi">WLSI</option>
@@ -121,7 +230,7 @@ const removeAttachment = (index) => {
                             <div class="input_cont">
                                 <label for="assingee">Assigned To</label>
                                 <input type="text" placeholder="Enter the name of the person" class="input_field"
-                                    id="assingee">
+                                    id="assingee" v-model="ticket_data.assingee">
                             </div>
                         </div>
 
@@ -130,12 +239,12 @@ const removeAttachment = (index) => {
                             <div class="input_cont">
                                 <label for="estimation">Estimated Time</label>
                                 <input type="number" placeholder="Enter the estimated time" class="input_field"
-                                    id="estimation">
+                                    id="estimation" v-model="ticket_data.estimation">
                             </div>
                             <div class="input_cont">
                                 <label for="ticket_type">Story Points</label>
                                 <input type="number" placeholder="Enter the story points" class="input_field"
-                                    id="story_points">
+                                    id="story_points" v-model="ticket_data.story_points">
 
                             </div>
                         </div>
@@ -156,7 +265,7 @@ const removeAttachment = (index) => {
                                         <div v-for="(file, index) in attachments" :key="index" class="attachment-item">
 
                                             <span class="f_size_con">{{ file.name }} <div class="f_size">({{ (file.size
-                                                    / 1024).toFixed(2) }} KB)</div></span>
+                                                / 1024).toFixed(2) }} KB)</div></span>
                                             <button @click="removeAttachment(index)" class="btn_cancel_file"></button>
                                         </div>
                                     </div>
@@ -171,7 +280,7 @@ const removeAttachment = (index) => {
                                 <button class="btn_cancel">
                                     <img src="https://img.icons8.com/ios/50/000000/cancel.png" alt="cancel" />
                                 </button>
-                                <button class="btn_cancel">
+                                <button class="btn_cancel" @click="reset_form">
                                     <!-- reset -->
                                     <img src="https://img.icons8.com/ios/50/000000/refresh.png" alt="cancel" />
                                 </button>
@@ -301,6 +410,18 @@ select {
     font-weight: 900;
     /* width: 90%; */
     width: 80%;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-content: center;
+    align-items: baseline;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+.ticket_id{
+    font-size: 0.8rem;
+    font-weight: 100;
+    color: rgb(197, 197, 197);
 }
 
 .main-pane {

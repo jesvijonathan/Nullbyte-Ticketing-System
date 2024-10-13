@@ -37,12 +37,35 @@ app.register_blueprint(text, url_prefix='/text')
 def home():
     return render_template('index.html', token_param="")
 
+
+
+
 # dummy route to test json data from ./dataset/test.json
 @app.route('/test', methods=['GET'])
 def test():
     with open('dataset/test.json') as f:
         data = json.load(f)
     return jsonify(data)
+
+@app.route('/get_ticket', methods=['GET'])
+def get_ticket():
+    with open('dataset/ticket.json') as f:
+        data = json.load(f)
+    return jsonify(data)
+
+@app.route('/get_incomplete_ticket', methods=['GET'])
+def get_incomplete_ticket():
+    with open('dataset/ticket_not.json') as f:
+        data = json.load(f)
+    return jsonify(data)
+
+@app.route('/get_autofill', methods=['GET'])
+def get_autofill():
+    with open('dataset/ticket.json') as f:
+        data = json.load(f)
+    return jsonify(data)
+
+
 
 # Socket IO event handling
 @socketio.on('connect')

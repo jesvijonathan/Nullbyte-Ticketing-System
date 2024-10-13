@@ -43,8 +43,8 @@ onMounted(() => {
     check_loaded.value = true;
 });
 
-let feq = ref("0.2s")
-// let feq = ref("0.7s")
+// let feq = ref("0.2s")
+let feq = ref("0.7s")
 
 </script>
 
