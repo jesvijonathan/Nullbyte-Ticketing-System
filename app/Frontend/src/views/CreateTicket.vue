@@ -15,10 +15,14 @@ let bread_path_json = {
 const attachments = ref([]);
 
 const handleFileChange = (event) => {
+    
+    loading.value = true;
     const files = Array.from(event.target.files);
     attachments.value.push(...files);
 
     event.target.value = '';
+    
+    loading.value = false;
 };
 
 const removeAttachment = (index) => {
@@ -62,6 +66,8 @@ let ticket_data = ref({
 });
 
 onMounted(() => {
+    
+    loading.value = true;
     console.log('mounted');
     fetch(get_incomplete_ticket_url)
         .then(response => response.json())
@@ -148,7 +154,7 @@ const reset_form = () => {
 
                     </div>
 
-                    <div class="input_cont">
+                    <div class="input_cont" v-if="ticket_data.summary">
                         <label for="attachments">Summmary</label>
                         <textarea type="text" placeholder="Summary" class="input_field desc" id="analysis" v-model="ticket_data.summary"
                             style="height: 3rem;"

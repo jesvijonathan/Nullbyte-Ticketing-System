@@ -4,7 +4,7 @@
     "user": "admin",
     "medium": "",
     "connection": "closed",
-    "text": "",
+    "text": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
     "subject": "wlpfo Transaction Declined for P025 Value 28",
     "summary": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
     "attachments": [

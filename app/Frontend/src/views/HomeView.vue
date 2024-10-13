@@ -24,7 +24,7 @@ import AboutImg from '@/assets/About.png';
 
 const tiles = [
     { title: 'Create Tickets', image: CreateTicketImg, link: '/create_ticket' },
-    { title: 'Ticket', image: TicketImg, link: '/ticket' },
+    { title: 'Ticket', image: TicketImg, link: '/list_tickets' },
     { title: 'Inbox', image: InboxImg, link: '/inbox' },
     { title: 'Chatbot', image: ChatbotImg, link: '/chatbot' },
     { title: 'Report', image: ReportImg, link: '/report' },

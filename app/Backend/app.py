@@ -65,6 +65,12 @@ def get_autofill():
         data = json.load(f)
     return jsonify(data)
 
+@app.route('/get_tickets', methods=['GET'])
+def get_tickets():
+    with open('dataset/tickets.json') as f:
+        data = json.load(f)
+    return jsonify(data)
+
 
 
 # Socket IO event handling
