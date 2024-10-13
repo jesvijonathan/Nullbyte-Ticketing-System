@@ -67,12 +67,6 @@ def cleanup_user(token=None, user_id=None):
 def jwt_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
-
-        
-        # bypass jwt check if testing
-        return f(*args, **kwargs)
-
         if 'Authorization' in request.headers:
             token = request.headers['Authorization'].split(" ")[1]
         elif 'session' in request.cookies:
