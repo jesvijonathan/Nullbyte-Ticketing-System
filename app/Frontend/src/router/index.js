@@ -35,6 +35,15 @@ const router = createRouter({
       }
     },
     {
+      path: '/list_tickets',
+      name: 'tickets',
+      component: () => import('../views/ViewTickets.vue'),
+      meta: {
+        breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }, { name: 'Service', path: '/service' }],
+        requiresAuth: true
+      }
+    },
+    {
       path: '/service',
       name: 'service',
       component: () => import('../views/ServiceDeskView.vue'),

@@ -1,13 +1,27 @@
 name,age,gender,email,phone,role,score,manager,gcm,experience
-Unassigned,0,Male,unassigned@nullbyte.com,,unassigned,0,1,0,1
-Rajashree,23,Female,Rajashree@nullbyte.exe,0420420911,Associate Consultant,4,69,1,2
-Alice Johnson,30,Female,alice.johnson.emp@example.com,1234567890,Sales,85,,1,5
-Bob Smith,28,Male,bob.smith.emp@example.com,1234567891,Support,90,1,2,3
-Charlie Brown,35,Male,charlie.brown.emp@example.com,1234567892,Development,78,1,3,8
-Daisy White,22,Female,daisy.white.emp@example.com,1234567893,HR,88,,4,2
-Ethan Hunt,40,Male,ethan.hunt.emp@example.com,1234567894,Management,95,3,5,10
-Fiona Green,29,Female,fiona.green.emp@example.com,1234567895,Marketing,80,2,6,4
-George Black,45,Male,george.black.emp@example.com,1234567896,Finance,70,5,7,12
-Hannah Brown,33,Female,hannah.brown.emp@example.com,1234567897,Development,82,3,8,7
-Ian Wright,27,Male,ian.wright.emp@example.com,1234567898,Support,87,4,9,3
-Julia Roberts,31,Female,julia.roberts.emp@example.com,1234567899,Sales,92,5,10,6
+Unassigned,0,Male,unassigned.name.dev@nullbyte.exe,9876543210,unassigned,0,1,0,1
+Admin,78,Male,adiministrator.admin.mgmt@nullbyte.exe,2345678901,Admin,0,0,0,0
+Akileswar Prathapkumar,22,Male,akileswar.prathapkumar.dev@nullbyte.exe,8345678912,Development,92,4,2,2
+Alice Smith,30,Female,alice.smith.dev@nullbyte.com,5678901234,Development,85,2,1,5
+Bob Jhonson,28,Male,bob.johnson.dev@nullbyte.exe,1234567891,Development,90,1,2,3
+Charlie Brown,35,Male,charlie.brown.svc@nullbyte.exe,6789012345,Service,78,1,3,8
+Daisy White,22,Female,daisy.white.ext@nullbyte.exe,7890123456,External,88,4,4,2
+Diana Prince,24,Female,diana.prince.svc@nullbyte.exe,9876512345,Service,70,2,4,9
+Ethan Hunt,40,Male,ethan.hunt.mgmt@nullbyte.exe,4567890123,Management,95,3,5,10
+Eve Adams,27,Female,eve.adams.mgmt@nullbyte.exe,9123456789,Management,65,3,3,3
+Fiona Green,29,Female,fiona.green.svc@nullbyte.exe,8901234567,Service,80,2,6,4
+Frank Castle,34,Male,frank.castle.mgmt@nullbyte.exe,9988776655,Management,82,4,4,5
+George Black,45,Male,george.black.dev@nullbyte.exe,9012345678,Development,70,5,3,12
+Grace Hopper,45,Male,grace.hopper.svc@nullbyte.exe,8899001122,Service,90,3,1,15
+Hank Pym,33,Male,hank.pym.ext@nullbyte.exe,7766554433,Scrum leader,58,1,3,2
+Hannah Brown,33,Female,hannah.brown.mgmt@nullbyte.exe,1234567890,Management,82,3,6,7
+Ian Wright,27,Male,ian.wright.svc@nullbyte.exe,1357924680,Service,87,4,5,3
+Jesvi Jonathan,21,Male ,jesvi.jonathan.dev@nullbyte.exe,9654321876,Development,75,2,4,3
+Julia Roberts,31,Female,julia.roberts.mgmt@nullbyte.exe,2468013579,Management,92,5,4,6
+Karan Mehta,28,Male,karan.mehta.dev@nullbyte.exe,8765432101,Development,75,2,4,5
+Nikhil Sharma,26,Female,nikhil.sharma.svc@nullbyte.exe,8765123450,Analyst,65,2,3,3
+Rajashree,23,Female,rajashree.dinakran.dev@nullbyte.exe,4204209119,Associate Engineer,93,3,2,2
+Rashmi Abdulrahim,77,Female,rashmi.abdulrahim.ext@nullbyte.exe,7865432190,Manager,80,3,5,22
+Sanya Verma,32,Female,anya.verma.mgmt@nullbyte.exe,9876543210,Team Lead,85,4,5,6
+,,,,,,,,,
+,,,,,,,,,
