@@ -71,8 +71,30 @@ CREATE TABLE IF NOT EXISTS attachments(
 
 CREATE TABLE IF NOT EXISTS comments (
     Ticket_id INT NOT NULL,
+    Comment_id INT AUTO_INCREMENT PRIMARY KEY,
     Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     Comment_user INT,
     Comment TEXT,
-    FOREIGN KEY (Ticket_id) REFERENCES ticket(Ticket_Id) ON DELETE CASCADE  -- Added foreign key for ticket
+    FOREIGN KEY (Ticket_id) REFERENCES ticket(Ticket_Id) ON DELETE CASCADE  
+);
+
+-- CREATE TABLE IF NOT EXIST worklog (
+--     Id INT AUTO_INCREMENT PRIMARY KEY,
+--     Ticket_Id INT,
+--     Worklog_User INT,
+--     Worklog_Date DATETIME DEFAULT CURRENT_TIMESTAMP,
+--     Worklog_Hours INT,
+--     Worklog TEXT,
+--     FOREIGN KEY (Ticket_Id) REFERENCES ticket(Ticket_Id) ON DELETE CASCADE
+--     FOREIGN KEY (Worklog_User) REFERENCES employee(id) ON DELETE SET NULL
+-- );
+CREATE TABLE IF NOT EXISTS worklog (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Ticket_Id INT,
+    Worklog_User INT,
+    Worklog_Date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Worklog_Hours INT,
+    Worklog TEXT,
+    FOREIGN KEY (Ticket_Id) REFERENCES ticket(Ticket_Id) ON DELETE CASCADE,
+    FOREIGN KEY (Worklog_User) REFERENCES employee(id) ON DELETE SET NULL
 );

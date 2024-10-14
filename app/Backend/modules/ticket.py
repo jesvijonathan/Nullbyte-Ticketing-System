@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import request, make_response, jsonify, render_template
 from werkzeug.utils import secure_filename
 from config import *
-from .db.db_models import Ticket, Employee,Customer,Attachment,Comment
+from .db.db_models import Ticket, Employee,Customer,Attachment,Comment,Worklog
 from .auth.auth import jwt_required
 from .db.database import db_session
 from .log import *
@@ -35,9 +35,23 @@ def get_all_tickets(*args, **kwargs):
 @ticket.route('/create', methods=['POST'])
 @jwt_required
 def create_ticket(payload):
-    # if not request.is_json:
-    #     return make_response(jsonify({'error': 'Request must be JSON'}), 400)
     comments = []
+    attachments= []
+    ticket_id = None
+    ticket = None
+    # if id is there we are just updating the ticket with comments, attachments and worklog
+    if 'id' in request.form:
+        ticket_id = request.form.get('id')
+        print(ticket_id)   
+        try:
+            ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
+            print("ticket",end=": ")
+            if not ticket:
+                return make_response(jsonify({'error': 'Ticket not found'}), 404)
+        except Exception as e:
+            logger.error(f"Error fetching ticket: {e}")
+            return make_response(jsonify({'error': 'Failed to fetch ticket? does ticket exist'}), 500)
+    
     if 'comments' in request.form:
         for comment in request.form.getlist('comments'):
             Comment_user = Customer().getIDfromEmail(payload['upn'])
@@ -45,14 +59,61 @@ def create_ticket(payload):
             new_comment = Comment(Comment_user=Comment_user, Comment=Comment_text)
             comments.append(new_comment)
     
-    if 'id' in request.form and comments:
-        ticket_id = request.form.get('id')
-        ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
-        if ticket:
-            ticket.comments.extend(comments)
+    if 'worklog' in request.form:
+        for worklog in request.form.getlist('worklog'):
+            Worklog_user = Customer().getIDfromEmail(payload['upn'])
+            Worklog_text = worklog
+            Worklog_hours = request.form.get('worklog_hours', type=int)
+            new_worklog = Worklog(
+                Worklog_User=Worklog_user,
+                Worklog=Worklog_text,
+                Worklog_Hours=Worklog_hours
+            )
+            db_session.add(new_worklog)
             db_session.commit()
-            return make_response(jsonify({'message': 'Comment added successfully'}), 200)
-    elif 'id' not in request.form:
+
+    files=request.files.getlist('files')
+    if not all(file.filename == '' for file in files):
+        try:
+            ticket_folder = "./bucket/tickets"
+            os.makedirs(ticket_folder, exist_ok=True)
+            this_ticket_folder = os.path.join(ticket_folder, str(ticket_id))
+            os.makedirs(this_ticket_folder, exist_ok=True)
+            
+            for file in files:
+                if file and file.filename != '':
+                    filename = secure_filename(file.filename)
+                    writefile = os.path.join(this_ticket_folder, filename)
+                    file.save(writefile)
+                    print(f"File saved to {this_ticket_folder}")
+                    new_attachment = Attachment(url=writefile)
+                    attachments.append(new_attachment)
+        except Exception as e:
+            logger.error(f"Error saving files: {e}")
+            return make_response(jsonify({'error': 'File upload failed'}), 500)
+    print(ticket_id)   
+    if ticket_id and len(comments) == 0 and len(attachments) == 0:
+        return make_response(jsonify({'error': 'Comments or attachments are required to update ticket if only id is provided'}), 400)
+    elif ticket_id:
+        try:
+            print(ticket)
+            print(comments)
+            if ticket is not None and len(comments) > 0:
+                print(comments)
+                ticket.comments.extend(comments)
+                db_session.commit()
+                print("comments added")
+            if ticket is not None and len(attachments) > 0:
+                print(attachments)
+                ticket.attachments.extend(attachments)
+                db_session.commit()
+                print("attachments added")
+            return make_response(jsonify({'message': 'Data added successfully'}), 200)
+        except Exception as e:
+            db_session.rollback()
+            logger.error(f"Error updating ticket: {e}")
+            return make_response(jsonify({'error': 'Failed to update ticket'}), 500)
+    elif not ticket_id and request.form:
         new_ticket = Ticket(
             Subject=request.form.get("subject"),
             Summary=request.form.get("summary"),
@@ -74,17 +135,43 @@ def create_ticket(payload):
             Time_to_Resolution=request.form.get("estimation"),
             Reopens=request.form.get("reopens"),
             Story_Points=request.form.get("story_points"),
-            comments=comments
+            comments=comments,
+            attachments=attachments
         )
+        try:
+            validation_error = new_ticket.validate()
+            if validation_error:
+                return make_response(jsonify({'error': validation_error}), 400)
+            db_session.add(new_ticket)
+            db_session.commit()
+            return make_response(jsonify({'id': new_ticket.Ticket_Id}), 201)
+        except Exception as e:
+            db_session.rollback()
+            logger.error(e)
+            return make_response(jsonify({'error': str(e)}), 500)
     else:
-        return make_response(jsonify({'error': 'Ticket ID is required to add comments. If creating a new ticket, do not include a ticket ID.'}), 400)
+        return make_response(jsonify({'error': 'Ticket ID is required to add comments. If creating a new ticket, do not include a ticket ID. To create new ticket pass form data without id'}), 400)
+
+@ticket.route('/logwork', methods=['POST'])
+@jwt_required
+def log_work(payload):
+    Worklog_User = Employee().getIDfromEmail(payload['upn'])
+    if not request.is_json:
+        return make_response(jsonify({'error': 'Request must be JSON'}), 400)
+
+    body = request.json
+    ticket_id = body.get("ticket_id")
+    worklog = body.get("worklog")
+    worklog_hours = body.get("worklog_hours")
+    worklog_date = body.get("worklog_date")
+    ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
+    if not ticket:
+        return make_response(jsonify({'error': 'Ticket not found'}), 404)
+    print(ticket)
+    db_session.add(Worklog(Ticket_Id=ticket_id, Worklog_User=Worklog_User, Worklog=worklog, Worklog_Hours=worklog_hours, Worklog_Date=worklog_date))
     try:
-        validation_error = new_ticket.validate()
-        if validation_error:
-            return make_response(jsonify({'error': validation_error}), 400)
-        db_session.add(new_ticket)
         db_session.commit()
-        return make_response(jsonify({'id': new_ticket.Ticket_Id}), 201)
+        return make_response(jsonify({'message': 'Worklog added successfully'}), 201)
     except Exception as e:
         db_session.rollback()
         logger.error(e)

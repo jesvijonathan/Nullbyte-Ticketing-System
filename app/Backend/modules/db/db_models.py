@@ -34,33 +34,36 @@ class Ticket(Base):
     customer = relationship("Customer", back_populates="tickets")
     assignee = relationship("Employee", back_populates="assigned_tickets")
     comments = relationship("Comment", back_populates="ticket", cascade="all, delete-orphan")
+    worklogs = relationship("Worklog", back_populates="ticket", cascade="all, delete-orphan")
 
     def serialize(self, keys=None):
         data = {
-            'Ticket_Id': self.Ticket_Id,
-            'Chat_Id': self.Chat_Id,
-            'Subject': self.Subject,
-            'Summary': self.Summary,
-            'Analysis': self.Analysis,
-            'Type': self.Type,
-            'Description': self.Description,
-            'Status': self.Status,
-            'Priority': self.Priority,
-            'Issue_Type': self.Issue_Type,
-            'Channel': self.Channel,
-            'Customer_ID': self.Customer_ID,
-            'Product_ID': self.Product_ID,
-            'Medium': self.Medium,
-            'Team': self.Team,
-            'Assignee_ID': self.Assignee_ID,
-            'Resolution': self.Resolution,
-            'Issue_Date': self.Issue_Date.isoformat() if self.Issue_Date else None,
-            'First_Response_Time': self.First_Response_Time.isoformat() if self.First_Response_Time else None,
-            'Time_to_Resolution': self.Time_to_Resolution,
-            'Reopens': self.Reopens,
-            'Story_Points': self.Story_Points,
-            'Score': self.Score,
-            'attachments': [attachment.serialize()["url"] for attachment in self.attachments]
+            'ticket_id': self.Ticket_Id,
+            'chat_id': self.Chat_Id,
+            'subject': self.Subject,
+            'summary': self.Summary,
+            'analysis': self.Analysis,
+            'type': self.Type,
+            'description': self.Description,
+            'status': self.Status,
+            'priority': self.Priority,
+            'issue_type': self.Issue_Type,
+            'channel': self.Channel,
+            'customer_id': self.Customer_ID,
+            'product_id': self.Product_ID,
+            'medium': self.Medium,
+            'team': self.Team,
+            'assignee_id': self.Assignee_ID,
+            'resolution': self.Resolution,
+            'issue_date': self.Issue_Date.isoformat() if self.Issue_Date else None,
+            'first_response_time': self.First_Response_Time.isoformat() if self.First_Response_Time else None,
+            'time_to_resolution': self.Time_to_Resolution,
+            'reopens': self.Reopens,
+            'story_points': self.Story_Points,
+            'score': self.Score,
+            'attachments': list(set([attachment.serialize()["url"] for attachment in self.attachments])),
+            'comments': [comment.serialize() for comment in self.comments],
+            'worklogs': [worklog.serialize() for worklog in self.worklogs]
         }
         
         if keys:
@@ -152,6 +155,11 @@ class Employee(Base):
         if keys:
             return {key: data[key] for key in keys if key in data}
         return data
+    def getIDfromEmail(self, email):
+        print("Email: ", email)
+        employee = db_session.query(Employee).filter_by(email=email).first()
+        print(employee.id if employee else 1)
+        return employee.id if employee else 1
 
 class Attachment(Base):
     __tablename__ = 'attachments'
@@ -197,13 +205,38 @@ class Comment(Base):
 
     def serialize(self, keys=None):
         data = {
-            'Comment_id': self.Comment_id,
-            'Ticket_id': self.Ticket_id,
-            'Timestamp': self.Timestamp.isoformat() if self.Timestamp else None,
-            'Comment_user': self.Comment_user,
-            'Comment': self.Comment
+            'comment_id': self.Comment_id,
+            'ticket_id': self.Ticket_id,
+            'timestamp': self.Timestamp.isoformat() if self.Timestamp else None,
+            'comment_user': self.Comment_user,
+            'comment': self.Comment
         }
         
         if keys:
             return {key: data[key] for key in keys if key in data}
         return data
+    
+class Worklog(Base):
+        __tablename__ = 'worklog'
+        Id = Column(Integer, primary_key=True, autoincrement=True)
+        Ticket_Id = Column(Integer, ForeignKey('ticket.Ticket_Id', ondelete='CASCADE'), nullable=False)
+        Worklog_User = Column(Integer, ForeignKey('employee.id', ondelete='SET NULL'), nullable=False)
+        Worklog_Date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+        Worklog_Hours = Column(Integer, nullable=False)
+        Worklog = Column(Text, nullable=False)
+
+        ticket = relationship("Ticket", back_populates="worklogs")
+        user = relationship("Employee")
+
+        def serialize(self, keys=None):
+            data = {
+                'id': self.Id,
+                'worklog_user': self.Worklog_User,
+                'worklog_date': self.Worklog_Date.isoformat() if self.Worklog_Date else None,
+                'worklog_hours': self.Worklog_Hours,
+                'worklog': self.Worklog
+            }
+            
+            if keys:
+                return {key: data[key] for key in keys if key in data}
+            return data
