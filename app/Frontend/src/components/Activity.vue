@@ -70,16 +70,23 @@ const addComment = () => {
 <style scoped>
 .comment-input {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
+    gap: 0.5vw;
+    margin-top: 1vw;
+    width: -webkit-fill-available;
+    position: fixed;
+    bottom: 0;
+    padding-bottom: 1.6vw;
+    width: 20vw;
+    background-color: white;
 }
 
 .comment-input input {
     width: 100%;
-    padding: 0.5rem;
-    border: 0.1rem solid #c4c4c4;
-    border-radius: 0.3rem;
-    font-size: 0.6rem;
+    /* padding: 0.5vw; */
+    border: 0.1vw solid #c4c4c4;
+    border-radius: 0.3vw;
+    font-size: 0.6vw;
+    padding: 0vw 0.5vw;
     font-family: 'wl1';
     color: #333;
 }
@@ -90,11 +97,11 @@ const addComment = () => {
 }
 
 .comment-input button {
-    padding: 0.5rem 1rem;
+    padding: 0.5vw 1vw;
     color: white;
     border: none;
-    border-radius: 0.3rem;
-    font-size: 0.6rem;
+    border-radius: 0.3vw;
+    font-size: 0.6vw;
     cursor: pointer;
     background-color: #63636347;
 }
@@ -108,14 +115,22 @@ const addComment = () => {
 }
 
 .comments-container {
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-top: 1rem;
+    padding: 1vw;
+    padding-bottom: 1.8vw;
+    border-radius: 0.5vw;
+    margin-top: 0vw;
+    height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
 }
 
 h3 {
-    font-size: 0.5rem;
-    margin-bottom: 1rem;
+    font-size: 0.5vw;
+    margin-bottom: 1vw;
     color: #333;
 }
 
@@ -123,20 +138,21 @@ h3 {
     list-style-type: none;
     padding: 0;
     display: flex;
-    gap: 1rem;
+    gap: 1vw;
     flex-direction: column;
     flex-wrap: nowrap;
     align-content: flex-start;
     justify-content: flex-start;
     align-items: flex-start;
-    min-height: 10rem;
-    max-height: 10rem;
+
+    max-height: webkit-fill-available;
     overflow-y: auto;
     overflow-x: hidden;
-    padding-right: 1rem;
+    padding-right: 1vw;
+    height: calc(100% - 2.8vw);
 }
 .comment-list::-webkit-scrollbar {
-    width: 0.3rem;
+    width: 0.3vw;
     display: none;
 }
 
@@ -145,7 +161,7 @@ h3 {
 }
 .comment-list::-webkit-scrollbar-thumb {
     background-color: #c4c4c4;
-    border-radius: 0.25rem;
+    border-radius: 0.25vw;
 }
 .comment-list::-webkit-scrollbar-track {
     background-color: #f5f5f5;
@@ -153,10 +169,10 @@ h3 {
 
 
 .comment-item {
-    /* border-bottom: 0.1rem solid #525252; */
-    border-bottom: 0.01rem solid #c4c4c467;
-    width: 18rem;
-    padding-bottom: 0.3rem;
+    /* border-bottom: 0.1vw solid #525252; */
+    border-bottom: 0.01vw solid #c4c4c467;
+    width: 18vw;
+    padding-bottom: 0.3vw;
 }
 
 /* last .comment-item remove border  */
@@ -171,42 +187,42 @@ h3 {
 
 .comment-header {
     display: flex;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5vw;
     align-items: baseline;
     flex-direction: row;
     flex-wrap: nowrap;
     align-content: center;
     justify-content: flex-start;
-    gap: 0.2rem;
+    gap: 0.2vw;
 
 }
 
 .comment-user {
     font-weight: bold;
     color: #27a295;
-    font-size: 0.8rem;
+    font-size: 0.8vw;
     font-family: wl2;
 }
 
 .comment-date {
-    font-size: 0.4rem;
+    font-size: 0.4vw;
     color: #666;
 }
 
 .comment-text {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5vw;
     color: #333;
-    font-size: 0.6rem;
+    font-size: 0.6vw;
     font-family: 'wl1';
 }
 
 .comment-action {
-    font-size: 0.4rem;
+    font-size: 0.4vw;
     color: #999;
     cursor: pointer;
     transition: color 0.2s;
     background: #cfcfcf;
     width: min-content;
-    padding: 0.1rem 0.4rem;
+    padding: 0.1vw 0.4vw;
 }
 </style>

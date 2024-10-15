@@ -57,10 +57,10 @@ import BreadCrumb from '@/components/BreadCrumb.vue';
     margin-top: 50px;
 }
 .service-desk-header {
-    font-size: 2rem;
+    font-size: 2vw;
     font-weight: 900;
     font-family: wl2;
-    margin-bottom: 2rem;
+    margin-bottom: 2vw;
 }
 .service-desk-content {
     display: flex;
@@ -73,10 +73,10 @@ import BreadCrumb from '@/components/BreadCrumb.vue';
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-right: 2rem;
+    margin-right: 2vw;
 }
 .service-desk-sidebar-item {
-    margin-bottom: 1rem;
+    margin-bottom: 1vw;
     cursor: pointer;
 }
 .service-desk-main {
@@ -86,10 +86,10 @@ import BreadCrumb from '@/components/BreadCrumb.vue';
     justify-content: center;
 }
 .service-desk-main-header {
-    font-size: 1.5rem;
+    font-size: 1.5vw;
     font-weight: 900;
     font-family: wl2;
-    margin-bottom: 2rem;
+    margin-bottom: 2vw;
 }
 .service-desk-main-content {
     display: flex;
@@ -102,10 +102,10 @@ import BreadCrumb from '@/components/BreadCrumb.vue';
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    border: 0.1rem solid var(--wl);
-    border-radius: 1rem;
+    margin-bottom: 1vw;
+    padding: 1vw;
+    border: 0.1vw solid var(--wl);
+    border-radius: 1vw;
 }
 .service-desk-ticket-header {
     display: flex;
@@ -113,7 +113,7 @@ import BreadCrumb from '@/components/BreadCrumb.vue';
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: 1vw;
 }
 .service-desk-ticket-content {
     display: flex;

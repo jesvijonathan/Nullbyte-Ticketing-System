@@ -27,14 +27,14 @@ const handleMouseEnter = async (event) => {
     moreOptionsStyle.value.left = `${rect.left}px`;
     moreOptionsStyle.value.opacity = '1';
     moreOptionsStyle.value.filter = 'blur(0)';
-    moreOptionsStyle.value.height = `${more_options[event.target.innerText].length * 3.4}rem`;
+    moreOptionsStyle.value.height = `${more_options[event.target.innerText].length * 3.4}vw`;
     moreOptionsStyle.value.width = "auto";
     currentOptions.value = event.target.innerText;
 };
 
 const handleMouseLeave = () => {
     moreOptionsStyle.value.opacity = '0';
-    moreOptionsStyle.value.filter = 'blur(0.9rem)';
+    moreOptionsStyle.value.filter = 'blur(0.9vw)';
     moreOptionsStyle.value.height = "0";
 
 };
@@ -94,16 +94,16 @@ const more_options = {
 
 <style scoped>
 .nav_profile{
-    height: 2.6rem;
-    width: 2.6rem;
+    height: 2.6vw;
+    width: 2.6vw;
     cursor: pointer;
-    margin-left: 1.5rem;
-    border: 0.1rem solid transparent;
+    margin-left: 1.5vw;
+    border: 0.1vw solid transparent;
     border-radius: 50%;
     filter: contrast(0.8);
 }
 .nav_profile:hover{
-    border: 0.1rem solid transparent;
+    border: 0.1vw solid transparent;
     animation: border_rotate 1s infinite;
     background-color: #27a295;
 }
@@ -111,8 +111,8 @@ const more_options = {
     filter: grayscale(1)  saturate(0) contrast(100) brightness(1);
 }
 .nav_profile_img{
-    height: 2.6rem;
-    width: 2.6rem;
+    height: 2.6vw;
+    width: 2.6vw;
     border-radius: 50%;
 }
 nav
@@ -121,8 +121,8 @@ nav
    top: 0;
 }
 .nav_more_options_container div{
-    padding: 1rem 3rem;
-    font-size: 0.9rem;
+    padding: 1vw 3vw;
+    font-size: 0.9vw;
     color: var(--tertiary);
     text-align: center;
     cursor: pointer;
@@ -141,33 +141,33 @@ nav
 }
 .nav_more_options_container {
     position: absolute;
-    margin-top: 1.5rem;
+    margin-top: 1.5vw;
     background-color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease-in-out;
-    padding-bottom: 1rem; 
+    padding-bottom: 1vw; 
     overflow: hidden;
-    border-radius: 0 0 1rem 1rem;
-    border: 0.1rem solid var(--wl);
-    border-top: 0.1rem solid white;
-    /* box-shadow: 0 0 0.5rem 0rem var(--wl); */
+    border-radius: 0 0 1vw 1vw;
+    border: 0.1vw solid var(--wl);
+    border-top: 0.1vw solid white;
+    /* box-shadow: 0 0 0.5vw 0vw var(--wl); */
 }
 
 .navigation_bar {
     background-color: rgb(255, 255, 255);
-    padding: 2rem 3rem;
+    padding: 2vw 3vw;
     display: flex;
     justify-content: space-between;
     align-items: center;
     align-content: center;
     flex-wrap: nowrap;
     flex-direction: row;
-    /* box-shadow: 0 0 0.5rem 0rem var(--wl); */
-    border: 0.1rem solid var(--secondary);
+    /* box-shadow: 0 0 0.5vw 0vw var(--wl); */
+    border: 0.1vw solid var(--secondary);
     height: 3vh;
 }
 
 .wl_logo {
-    height: auto;
+    height: 1.4vw;
     cursor: pointer;
     z-index: 100;
 }
@@ -183,31 +183,31 @@ nav
 }
 
 .navigation_router_container a {
-    padding: 0.7rem 1rem;
+    padding: 0.7vw 1vw;
     color: #4B8077;
-    font-size: 0.8rem;
-    border-bottom: 0.1rem solid white;
+    font-size: 0.8vw;
+    border-bottom: 0.1vw solid white;
 }
 
 .navigation_router_container a:hover {
-    border-bottom: 0.1rem solid var(--wl);
+    border-bottom: 0.1vw solid var(--wl);
     color: var(--wl);
 }
 
 .nav_special {
     background-color: var(--wl);
     color: var(--secondary);
-    padding: 0.5rem 2rem;
-    border-radius: 1rem;
-    border: 0.1rem solid var(--wl);
+    padding: 0.5vw 2vw;
+    border-radius: 1vw;
+    border: 0.1vw solid var(--wl);
     transition: 0.1s ease-in-out;
-    margin-left: 2rem;
+    margin-left: 2vw;
     font-family: wl3;
 }
 
 .nav_special:hover {
     background-color: var(--secondary);
-    box-shadow: 0 0 0.5rem 0rem var(--wl);
+    box-shadow: 0 0 0.5vw 0vw var(--wl);
     color: var(--wl);
 }
 </style>

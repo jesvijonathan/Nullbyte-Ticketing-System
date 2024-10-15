@@ -60,9 +60,9 @@ async function SubmitLogin() {
 
 .invalid-feedback{
   color: red;
-  font-size: 0.8rem;
+  font-size: 0.8vw;
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 1vw;
   font-weight: light;
   font-family: wl1;
   z-index: -1;
@@ -82,27 +82,27 @@ async function SubmitLogin() {
   0% {
     background-position: 0% 0%;
     transform: rotate(0deg) scale(1.1);
-    /* filter: blur(30rem); */
+    /* filter: blur(30vw); */
   }
   50% {
     background-position: 100% 100%;
     transform: rotate(180deg) scale(2);
-    filter: blur(30rem);
+    filter: blur(30vw);
   }
   100% {
     background-position: 0% 0%;
     transform: rotate(360deg) scale(1);
     
-    /* filter: blur(15rem); */
+    /* filter: blur(15vw); */
   }
 }
 
 .login_info{
-  font-size: 1.8rem;
+  font-size: 1.8vw;
   color: #333;
   font-weight: 900;
   font-family: wl2;
-  margin-bottom: 2rem;
+  margin-bottom: 2vw;
 }
 body, html {
   height: 100%;
@@ -116,47 +116,47 @@ body, html {
   align-items: center;
   justify-content: center;
   height: 100%;
-  margin-top: 9rem;
+  margin-top: 9vw;
 
 }
 
 .logo img {
-  width: 15rem;
-  margin-bottom: 3rem;
+  width: 15vw;
+  margin-bottom: 3vw;
 }
 
 .login-form {
   background: white;
-  padding: 3rem;
-  border-radius: 1.2rem;
-  border: 0.1rem solid var(--light_grey);
+  padding: 3vw;
+  border-radius: 1.2vw;
+  border: 0.1vw solid var(--light_grey);
   text-align: center;
-  width: 25rem;
+  width: 25vw;
 }
 
 .login-form h2 {
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+  margin-bottom: 1.5vw;
+  font-size: 1.5vw;
   color: #333;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1vw;
   text-align: left;
 }
 
 .form-group label {
   font-family: wl1;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5vw;
 }
 
 .form-group input {
   font-family: wl1;
-  border: 0.1rem solid #ccc;
-  border-radius: 5px;
-  padding: 0.7rem;
-  width: 23rem;
+  border: 0.1vw solid #ccc;
+  border-radius: 0.3vw;
+  padding: 0.7vw;
+  width: 23vw;
 }
 
 .form-group input:focus {
@@ -172,11 +172,11 @@ body, html {
   position: absolute;
   top: 0;
   right: 0;
-  height: 3rem;
+  height: 3vw;
   border: none;
   background: none;
   cursor: pointer;
-  padding: 0 1.3rem;
+  padding: 0 1.3vw;
   color: #333;
 }
 
@@ -186,20 +186,20 @@ body, html {
 .login-button {
   font-family: wl1;
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.75vw;
   background-color: #0a8086;
   color: white;
   border: none;
-  border-radius: 5rem;
+  border-radius: 5vw;
   text-align: center;
   cursor: pointer;
-  font-size: 1rem;
-  margin-top: 1rem;
+  font-size: 1vw;
+  margin-top: 1vw;
 }
 
 .login-button:hover {
   background-color: var(--wl);
-  /* box-shadow: 0 0 2rem 0.1rem var(--wl); */
+  /* box-shadow: 0 0 2vw 0.1vw var(--wl); */
 }
 
 .forgot-password {
@@ -207,8 +207,8 @@ body, html {
   text-align: center;
   color: #02656b;
   display: block;
-  margin-top: 2rem;
-  font-size: 0.9rem;
+  margin-top: 2vw;
+  font-size: 0.9vw;
 }
 
 .forgot-password:hover {

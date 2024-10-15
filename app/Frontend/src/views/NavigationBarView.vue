@@ -24,14 +24,14 @@ const handleMouseEnter = async (event) => {
     moreOptionsStyle.value.left = `${rect.left}px`;
     moreOptionsStyle.value.opacity = '1';
     moreOptionsStyle.value.filter = 'blur(0)';
-    moreOptionsStyle.value.height = `${more_options[event.target.innerText].length * 3.4}rem`;
+    moreOptionsStyle.value.height = `${more_options[event.target.innerText].length * 3.4}vw`;
     moreOptionsStyle.value.width = "auto";
     currentOptions.value = event.target.innerText;
 };
 
 const handleMouseLeave = () => {
     moreOptionsStyle.value.opacity = '0';
-    moreOptionsStyle.value.filter = 'blur(0.9rem)';
+    moreOptionsStyle.value.filter = 'blur(0.9vw)';
     moreOptionsStyle.value.height = 
     setTimeout(() => {
         showMoreOptions.value = false;
@@ -104,8 +104,8 @@ nav
    top: 0;
 }
 .nav_more_options_container div{
-    padding: 1rem 3rem;
-    font-size: 0.9rem;
+    padding: 1vw 3vw;
+    font-size: 0.9vw;
     color: var(--tertiary);
     text-align: center;
     cursor: pointer;
@@ -122,33 +122,33 @@ nav
 }
 .nav_more_options_container {
     position: absolute;
-    margin-top: 2rem;
+    margin-top: 2vw;
     background-color: white;
     z-index: 999;
     transition: all 0.3s ease-in-out;
-    padding-bottom: 1rem; 
+    padding-bottom: 1vw; 
     overflow: hidden;
-    border-radius: 0 0 1rem 1rem;
-    border: 0.1rem solid var(--wl);
-    border-top: 0.1rem solid white;
-    /* box-shadow: 0 0 0.5rem 0rem var(--wl); */
+    border-radius: 0 0 1vw 1vw;
+    border: 0.1vw solid var(--wl);
+    border-top: 0.1vw solid white;
+    /* box-shadow: 0 0 0.5vw 0vw var(--wl); */
 }
 
 .navigation_bar {
     background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10rem);
-    padding: 2rem;
+    backdrop-filter: blur(10vw);
+    padding: 2vw;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
     align-content: center;
     flex-wrap: nowrap;
     flex-direction: row;
-    box-shadow: 0 0 0.5rem 0rem var(--wl);
+    box-shadow: 0 0 0.5vw 0vw var(--wl);
 }
 
 .wl_logo {
-    height: auto;
+    height: 1.4vw;
     cursor: pointer;
     z-index: 100;
 }
@@ -163,30 +163,30 @@ nav
 }
 
 .navigation_router_container a {
-    padding: 0.7rem 2rem;
-    font-size: 1rem;
-    border-bottom: 0.1rem solid white;
+    padding: 0.7vw 2vw;
+    font-size: 1vw;
+    border-bottom: 0.1vw solid white;
 }
 
 .navigation_router_container a:hover {
-    border-bottom: 0.1rem solid var(--wl);
+    border-bottom: 0.1vw solid var(--wl);
     color: var(--wl);
 }
 
 .nav_special {
     background-color: var(--wl);
     color: var(--secondary);
-    padding: 0.5rem 2rem;
-    border-radius: 1rem;
-    border: 0.1rem solid var(--wl);
+    padding: 0.5vw 2vw;
+    border-radius: 1vw;
+    border: 0.1vw solid var(--wl);
     transition: 0.1s ease-in-out;
-    margin-left: 2rem;
+    margin-left: 2vw;
     font-family: wl3;
 }
 
 .nav_special:hover {
     background-color: var(--secondary);
-    box-shadow: 0 0 0.5rem 0rem var(--wl);
+    box-shadow: 0 0 0.5vw 0vw var(--wl);
     color: var(--wl);
 }
 </style>

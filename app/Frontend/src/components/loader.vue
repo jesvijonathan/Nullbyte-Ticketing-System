@@ -9,7 +9,7 @@ function kill_loader() {
   const loader_spinner = document.getElementById("loader__spinner");
   
   loader_curatin.style.opacity = 0;
-  loader_curatin.style.backdropFilter = "blur(10rem)";
+  loader_curatin.style.backdropFilter = "blur(10vw)";
   loader_spinner.style.animation = "none";
   loader_spinner.style.opacity = 0;
 
@@ -90,7 +90,7 @@ let feq = ref("0.7s")
     position: absolute;
     top: 0;
     left: 0;
-    height: 10rem;
+    height: 10vw;
     width: 100%;
     filter: url(#pixelate);
     background-size: contain;
@@ -130,7 +130,7 @@ let feq = ref("0.7s")
 
 #myDiv {
   position:relative;
-  transform: scale(0.6);
+  transform: scale(1);
   animation: scaleLogo 0.45 1 forwards;
   
 }
@@ -140,7 +140,7 @@ let feq = ref("0.7s")
 }
 
 .svg_null{
-    width: 12rem;   
+    width: 12vw;   
 }
 .svg_null path{
     animation: svg_design 4s infinite;
@@ -153,7 +153,7 @@ let feq = ref("0.7s")
   width: 100%;
   height: 100vh;
   background: linear-gradient(135deg, rgba(122, 122, 122, 0.3), rgba(255, 255, 255, 0.603), rgba(255, 255, 255, 0.9));
-  backdrop-filter: blur(5rem);
+  backdrop-filter: blur(5vw);
   z-index: 1000;
   display: flex;
   animation: gradient-rotate 3s infinite linear;
@@ -175,7 +175,7 @@ let feq = ref("0.7s")
 
 .logo_svg {
   background-position: center;
-  height: 6rem;
+  height: 6vw;
   background-size: contain;
   animation: scaleLogo 0.5s ease forwards;
 }

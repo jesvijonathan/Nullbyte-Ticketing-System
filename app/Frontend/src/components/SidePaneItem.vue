@@ -69,15 +69,15 @@ export default defineComponent({
     },
     getBorderColor(status) {
       if (status.toLowerCase() === 'open') {
-        return { borderRight: '0.33rem solid grey' }; // Grey for open status
+        return { borderRight: '0.33vw solid grey' }; // Grey for open status
       } else if (status.toLowerCase() === 'closed') {
-        return { borderRight: '0.33rem solid #46BEAA' }; // Green for closed status
+        return { borderRight: '0.33vw solid #46BEAA' }; // Green for closed status
       } else if (status.toLowerCase() === 'in progress') {
-        return { borderRight: '0.33rem solid #FFD700' }; // blue for in progress status
+        return { borderRight: '0.33vw solid #FFD700' }; // blue for in progress status
       }else if (status.toLowerCase() === 'waitng for information') {
-        return { borderRight: '0.33rem solid #3159a0' }; // Brighter blue for hover
+        return { borderRight: '0.33vw solid #3159a0' }; // Brighter blue for hover
       } else {
-        return { borderRight: '0.33rem solid #8B3939' }; // Red for any other status
+        return { borderRight: '0.33vw solid #8B3939' }; // Red for any other status
       }
     },
     // yellow
@@ -87,15 +87,15 @@ export default defineComponent({
     
     getHoverBorderColor(status) {
       if (status.toLowerCase() === 'open') {
-        return { borderRight: '0.33rem solid #b3b3b3' }; // Brighter grey for hover
+        return { borderRight: '0.33vw solid #b3b3b3' }; // Brighter grey for hover
       } else if (status.toLowerCase() === 'closed') {
-        return { borderRight: '0.33rem solid #00FFE3' }; // Brighter green for hover
+        return { borderRight: '0.33vw solid #00FFE3' }; // Brighter green for hover
       } else if (status.toLowerCase() === 'in progress') {
-        return { borderRight: '0.33rem solid #FFFF00' }; // Brighter blue for hover
+        return { borderRight: '0.33vw solid #FFFF00' }; // Brighter blue for hover
       } else if (status.toLowerCase() === 'waitng for information') {
-        return { borderRight: '0.33rem solid #397aed' }; // Brighter blue for hover
+        return { borderRight: '0.33vw solid #397aed' }; // Brighter blue for hover
       }else {
-        return { borderRight: '0.33rem solid #FF0303' }; // Brighter red for hover
+        return { borderRight: '0.33vw solid #FF0303' }; // Brighter red for hover
       }
     }
   }
@@ -109,25 +109,25 @@ export default defineComponent({
 }
 
 .splitter {
-  margin: 0.4rem 0rem 1rem 0rem;
-  border: 0.1rem solid #79797971;
+  margin: 0.4vw 0vw 1vw 0vw;
+  border: 0.1vw solid #79797971;
 
 }
 
 .ticket_name_det {
   /* text-align: center;
   width: 100%; */
-  font-size: 0.7rem;
-  width: 13.5rem;
+  font-size: 0.7vw;
+  width: 13.5vw;
   text-transform: uppercase;
   overflow: clip;
 }
 
 .sidepane-item {
-  margin: 1em 0rem;
+  margin: 1em 0vw;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 0.4rem;
+  border: 0.1vw solid rgba(255, 255, 255, 0.7);
+  border-radius: 0.4vw;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -135,8 +135,8 @@ export default defineComponent({
   width: 100%;
   overflow: hidden; /* Ensures the container doesn't expand beyond its width */
   text-overflow: ellipsis;
-  border-right: 0.33rem solid #c7c7c7ab;
-  padding: 0.8rem 0rem 0.8rem 1rem;
+  border-right: 0.33vw solid #c7c7c7ab;
+  padding: 0.8vw 0vw 0.8vw 1vw;
   transition: 0s;
 }
 
@@ -148,7 +148,7 @@ export default defineComponent({
 
 .ticket {
   color: white;
-  font-size: 0.7rem;
+  font-size: 0.7vw;
   display: flex;
   flex-direction: column;
   text-transform: uppercase;
@@ -156,7 +156,7 @@ export default defineComponent({
   white-space: nowrap;
   overflow: hidden; /* Clips the text if it overflows */
   width: 100%; /* Ensures the ticket content occupies full width */
-  margin-right: 0.7rem;
+  margin-right: 0.7vw;
 }
 
 .ticket-details {
@@ -169,8 +169,8 @@ export default defineComponent({
   justify-content: center;
   align-items: stretch;
   flex-wrap: nowrap;
-  width: 15rem;
-  font-size: 0.6rem;
+  width: 15vw;
+  font-size: 0.6vw;
 }
 
 .detail {
@@ -178,7 +178,7 @@ export default defineComponent({
     align-items: baseline;
     justify-content: flex-start;
     color: white;
-    max-width: 17rem;
+    max-width: 17vw;
     flex-direction: row;
     flex-wrap: nowrap;
 
@@ -191,7 +191,7 @@ export default defineComponent({
 }
 
 .colon {
-  flex: 0 0 10px;
+  flex: 0 0 1vw;
   text-align: center;
   color: #79797971;
 }
@@ -205,16 +205,16 @@ export default defineComponent({
 
 .ico {
   align-self: flex-end;
-  height: 1rem;
-  padding: 0rem 1rem 0rem 0.3rem;
+  height: 1vw;
+  padding: 0vw 1vw 0vw 0.3vw;
   transition: 0s ease-in-out;
   opacity: 0.6;
 }
 
 .ico_rot {
   align-self: flex-end;
-  height: 1rem;
-  padding: 0rem 0.3rem 0rem 1rem;
+  height: 1vw;
+  padding: 0vw 0.3vw 0vw 1vw;
   transform: rotate(-180deg);
   transition: 0s ease-in-out;
   opacity: 0.6;

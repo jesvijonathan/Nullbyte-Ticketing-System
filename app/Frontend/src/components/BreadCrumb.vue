@@ -28,10 +28,10 @@ console.log(current_path.value);
 .breadcrumb {
   list-style: none;
   display: flex;
-  margin: 0rem 3.4rem;
-  margin-bottom: 0.3rem;
-  font-size: 0.8rem;
-  margin-top: 1rem;
+  margin: 0vw 3.4vw;
+  margin-bottom: 0.3vw;
+  font-size: 0.8vw;
+  margin-top: 1vw;
   font-family: wl1;
   font-weight: 100;
   flex-direction: row;
@@ -39,7 +39,7 @@ console.log(current_path.value);
   align-content: center;
   justify-content: center;
   align-items: flex-start;
-  gap: 0.1rem;
+  gap: 0.1vw;
 }
 
 .breadcrumb * {
@@ -52,7 +52,7 @@ console.log(current_path.value);
 
 .breadcrumb-item::before {
   content: '/';    
-  padding: 0.1rem;
+  padding: 0.1vw;
 }
 
 .breadcrumb-item:last-child::after {

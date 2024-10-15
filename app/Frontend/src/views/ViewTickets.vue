@@ -402,27 +402,27 @@ function getStoryPointsColor(story_points) {
     align-content: center;
     justify-content: space-between;
     align-items: center;
-    gap: 1rem;
+    gap: 1vw;
 }
 
 .btnsort {
     background-color: #46BEAA;
     color: white;
 
-    padding: 0.7rem 0rem;
+    padding: 0.7vw 0vw;
     border: none;
-    border-radius: 0.3rem;
+    border-radius: 0.3vw;
     cursor: pointer;
     text-align: center;
-    border: 0.1rem solid #46BEAA;
+    border: 0.1vw solid #46BEAA;
     margin: auto;
-    height: 2.5rem;
-    width: 3rem;
+    height: 2.5vw;
+    width: 3vw;
 }
 
 .btnsort:hover {
     background-color: white;
-    border: 0.1rem solid #46BEAA;
+    border: 0.1vw solid #46BEAA;
 }
 
 .btnsort:hover img {
@@ -430,8 +430,8 @@ function getStoryPointsColor(story_points) {
 }
 
 .btnsort img {
-    width: 1.2rem;
-    height: 1.1rem;
+    width: 1.2vw;
+    height: 1.1vw;
     filter: invert(1);
 }
 
@@ -454,8 +454,8 @@ function getStoryPointsColor(story_points) {
     align-items: stretch;
     /* width: 63%; */
     width: 78%;
-    margin: 0rem 5rem;
-    /* gap: 1rem; */
+    margin: 0vw 5vw;
+    /* gap: 1vw; */
 }
 
 textarea {
@@ -465,14 +465,14 @@ textarea {
 input,
 textarea,
 select {
-    width: 20rem;
-    height: 1.5rem;
-    min-height: 1.5rem;
-    border: 0.1rem solid #81818175;
-    border-radius: 0.3rem;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    font: 1rem 'wl1';
+    width: 20vw;
+    height: 1.5vw;
+    min-height: 1.5vw;
+    border: 0.1vw solid #81818175;
+    border-radius: 0.3vw;
+    padding: 0.5vw;
+    margin-top: 0.5vw;
+    font: 1vw 'wl1';
     color: black;
 }
 
@@ -480,18 +480,18 @@ input:focus,
 textarea:focus,
 select:focus {
     outline: none;
-    border: 0.1rem solid #46BEAA;
+    border: 0.1vw solid #46BEAA;
 }
 
 /* input, textarea, select{   placeholder: font size */
 ::placeholder {
-    font: 0.9rem 'wl1';
+    font: 0.9vw 'wl1';
     color: #81818175;
 }
 
 select {
     height: initial;
-    width: 21rem;
+    width: 21vw;
 }
 
 .input_cont_2 {
@@ -502,11 +502,11 @@ select {
     justify-content: space-between;
     align-items: baseline;
     width: 100%;
-    margin-top: 0.5rem;
+    margin-top: 0.5vw;
 }
 
 .desc {
-    height: 7rem;
+    height: 7vw;
     width: 100%;
 }
 
@@ -520,11 +520,11 @@ select {
     justify-content: center;
     align-items: baseline;
     color: grey;
-    margin-top: 1rem;
+    margin-top: 1vw;
 }
 
 .tile-container {
-    /* margin-top: 2rem; */
+    /* margin-top: 2vw; */
     /* width: 80%; */
     display: flex;
     flex-direction: column;
@@ -532,34 +532,34 @@ select {
     align-content: center;
     align-items: center;
     /* justify-content: flex-start; */
-    /* gap: 1rem; */
-    /* margin-top: 1rem; */
-    margin: 2rem 1rem;
+    /* gap: 1vw; */
+    /* margin-top: 1vw; */
+    margin: 2vw 1vw;
     width: 70vw;
     /* width: 63vw; */
-    /* margin-bottom: 7rem; */
+    /* margin-bottom: 7vw; */
     height: -webkit-fill-available;
 
 }
 
 .main_title {
     font-family: 'wl2';
-    font-size: 2rem;
+    font-size: 2vw;
     font-weight: 900;
     /* width: 90%; */
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 1vw;
     align-content: center;
     align-items: baseline;
     justify-content: flex-start;
     flex-wrap: nowrap;
     width: 90%;
-    margin-bottom: 2rem;
+    margin-bottom: 2vw;
 }
 
 .ticket_id {
-    font-size: 0.8rem;
+    font-size: 0.8vw;
     font-weight: 100;
     color: rgb(197, 197, 197);
 }
@@ -597,49 +597,49 @@ select {
 .btn {
     background-color: #46BEAA;
     color: white;
-    padding: 0.5rem 3rem;
-    /* min-width: 14rem; */
-    /* max-width: 14rem; */
+    padding: 0.5vw 3vw;
+    /* min-width: 14vw; */
+    /* max-width: 14vw; */
     border: none;
-    border-radius: 0.3rem;
+    border-radius: 0.3vw;
     cursor: pointer;
     text-align: center;
-    border: 0.1rem solid #46BEAA;
+    border: 0.1vw solid #46BEAA;
     /* margin: auto; */
 }
 
 .btn:hover {
     background-color: white;
     color: #46BEAA;
-    border: 0.1rem solid #46BEAA;
+    border: 0.1vw solid #46BEAA;
 }
 
 .btn_cancel {
     background-color: white;
     color: #46BEAA;
-    /* padding: 0.5rem 0rem; */
-    min-width: 5rem;
-    /* max-width: 14rem; */
+    /* padding: 0.5vw 0vw; */
+    min-width: 5vw;
+    /* max-width: 14vw; */
     border: none;
-    border-radius: 0.3rem;
+    border-radius: 0.3vw;
     cursor: pointer;
     text-align: center;
 
     /* margin: auto; */
-    /* margin-top: 3rem; */
-    /* margin-bottom: 3rem; */
+    /* margin-top: 3vw; */
+    /* margin-bottom: 3vw; */
     display: flex;
     justify-content: center;
     align-items: center;
     /* margin: auto; */
-    padding: 0.5rem 0.5rem;
-    border: 0.1rem solid #000000;
+    padding: 0.5vw 0.5vw;
+    border: 0.1vw solid #000000;
     background-color: grey;
     filter: invert(1);
 }
 
 .btn_cancel:hover {
-    border: 0.1rem solid #be4646;
+    border: 0.1vw solid #be4646;
     background-color: #000000;
 
 }
@@ -649,8 +649,8 @@ select {
 }
 
 .btn_cancel img {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.5vw;
+    height: 1.5vw;
 }
 
 .but_con {
@@ -660,11 +660,11 @@ select {
     align-content: flex-start;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: 1rem;
-    /* margin-top: 3rem;
-    margin-bottom: 3rem; */
+    gap: 1vw;
+    /* margin-top: 3vw;
+    margin-bottom: 3vw; */
     width: auto;
-    margin-top: 3.5rem;
+    margin-top: 3.5vw;
 }
 
 
@@ -687,16 +687,16 @@ select {
 }
 
 .ai_button {
-    height: 2.5rem;
+    height: 2.5vw;
     filter: invert(1);
-    padding: 0rem 2rem;
+    padding: 0vw 2vw;
     color: black;
     /* padding: 0 0; */
-    /* padding: 0rem 1rem; */
+    /* padding: 0vw 1vw; */
     background-color: #bb8484;
     min-width: 0;
     display: flex;
-    gap: 1rem;
+    gap: 1vw;
 }
 
 .ai_button:hover {
@@ -707,11 +707,11 @@ select {
 .attachment-item {
     display: flex;
     align-items: center;
-    margin-top: 0.5rem;
+    margin-top: 0.5vw;
     flex-direction: row-reverse;
     flex-wrap: nowrap;
-    width: 20rem;
-    gap: 2rem;
+    width: 20vw;
+    gap: 2vw;
     justify-content: flex-end;
 }
 
@@ -721,16 +721,16 @@ select {
 }
 
 .attachments-list {
-    margin-top: 1rem;
-    font-size: 0.8rem;
+    margin-top: 1vw;
+    font-size: 0.8vw;
 }
 
 .btn_cancel_file {
-    padding: 0rem 0.3rem;
+    padding: 0vw 0.3vw;
     color: rgba(77, 4, 4, 0.557);
     background-color: white;
-    border: 0.05rem solid rgb(77, 4, 4);
-    border-radius: 0.3rem;
+    border: 0.05vw solid rgb(77, 4, 4);
+    border-radius: 0.3vw;
     cursor: pointer;
 }
 
@@ -746,7 +746,7 @@ select {
 ._attch_but {
     background-color: grey;
     border-color: white;
-    margin-top: 0.6rem;
+    margin-top: 0.6vw;
 }
 
 ._attch_but:hover {
@@ -758,7 +758,7 @@ select {
 .f_size {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.5vw;
 }
 
 .f_size_con {
@@ -772,19 +772,19 @@ select {
 }
 
 .cat_section {
-    padding: 0.5rem 1rem;
-    /* border-radius: 0.3rem; */
+    padding: 0.5vw 1vw;
+    /* border-radius: 0.3vw; */
     /* background-color: #6a6a6a2d; */
-    border-bottom: 0.1rem solid #6a6a6a2d;
+    border-bottom: 0.1vw solid #6a6a6a2d;
     color: rgb(85, 85, 85);
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.9vw;
 }
 
 .cat_section_bar {
     display: flex;
-    gap: 1rem;
-    height: 2.5rem;
+    gap: 1vw;
+    height: 2.5vw;
 }
 
 .cat_section:hover {
@@ -802,41 +802,41 @@ select {
 }
 
 .cat_act {
-    border-bottom: 0.1rem solid #000000;
+    border-bottom: 0.1vw solid #000000;
     background-color: rgba(0, 0, 0, 0.03);
     min-width: max-content;
 }
 
 .top_search {
     border: none;
-    border-radius: 0rem;
-    border-bottom: 0.1rem solid #6a6a6a2d;
-    padding: 0.2rem;
-    width: 14rem;
+    border-radius: 0vw;
+    border-bottom: 0.1vw solid #6a6a6a2d;
+    padding: 0.2vw;
+    width: 14vw;
 }
 
 .top_search:focus {
     border: none;
-    border-bottom: 0.1rem solid #46BEAA;
+    border-bottom: 0.1vw solid #46BEAA;
 }
 
 .ticket_list {
-    margin-top: 1rem;
+    margin-top: 1vw;
     width: 100%;
     overflow: auto;
-    font-size: 0.8rem;
+    font-size: 0.8vw;
     width: 92%;
     height: -webkit-fill-available;
 }
 
 .ticket_list::-webkit-scrollbar {
-    width: 0.4rem;
-    height: 0.3rem;
+    width: 0.4vw;
+    height: 0.3vw;
 }
 
 .ticket_list::-webkit-scrollbar-thumb {
     background-color: #bbbbbb;
-    border-radius: 0.3rem;
+    border-radius: 0.3vw;
 }
 
 .ticket_list::-webkit-scrollbar-track {
@@ -880,7 +880,7 @@ tbody tr:hover {
 
 td,
 th {
-    padding: 0.75rem;
+    padding: 0.75vw;
     /* border-bottom: 1px solid #ccc; */
 }
 

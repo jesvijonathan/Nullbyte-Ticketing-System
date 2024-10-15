@@ -21,7 +21,8 @@ const props = defineProps({
 // const loggs = computed(() => props.logged_hrs);
 const loggs = computed(() => props.logged_hrs);
 const estimated_hrs = computed(() => props.estimated_hrs);
-const esthours = ref(0);
+let esthours = ref(0);
+
 
 let perscent_sla = ref(0);
 let sprintChart = ref(null);
@@ -40,9 +41,12 @@ const updateSLA = () => {
 
 import { watchEffect } from 'vue';
 
-function update_est(){
+function update_est() {
+    console.log('Updating SLA...');
+    console.log('Estimated Hours:', esthours.value); // Check the current value
     updateSLA();
 }
+
 
 watchEffect(() => {
     // Ensure data is available before drawing the chart
@@ -176,7 +180,10 @@ function drawSprintChart() {
             <div class="progress-bar" role="progressbar" :style="{ width: perscent_sla + '%' }">
             </div>
         </div>
-        <input class="numbner_sla" type="number" v-model="esthours" @change="update_est" />
+        <div class="sla_text">{{ loggs.reduce((acc, log) => acc + parseInt(log.logged), 0) }} /  <input class="numbner_sla" type="number" v-model="esthours" @input="update_est" /> hrs
+        </div>
+        <!-- <div class="sla_text">{{ total_logged }} / {{ estimated_hrs }} hrs</div> -->
+
         <!-- <div class="sla_text">{{ loggs.reduce((acc, log) => acc + parseInt(log.logged), 0) }} / {{ estimated_hrs }} hrs</div> -->
     </div>
 
@@ -199,14 +206,18 @@ function drawSprintChart() {
 
 <style scoped>
 .numbner_sla{
-    width: 3rem;
-    height: 1.5rem;
-    border-radius: 0.25rem;
+    width: 2vw;
+    padding: 0;
+    margin: 0;
+    height: 1.5vw;
+    border-radius: 0.25vw;
     border: 0;
     text-align: center;
-    font-size: 0.7rem;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
+    font-size: 0.7vw;
+    background-color: transparent;
+}
+.numbner_sla:hover {
+    background-color: #f7f6f6;
 }
 .numbner_sla:focus {
     outline: none;
@@ -215,34 +226,36 @@ function drawSprintChart() {
 .progress {
     width: 40%;
     background-color: #ddd;
-    border-radius: 0.25rem;
-    height: 0.4rem;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
+    border-radius: 0.25vw;
+    height: 0.4vw;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
 }
 
 .progress-bar {
     height: 100%;
     background-color: #27a295;
-    border-radius: 0.25rem;
+    border-radius: 0.25vw;
 }
 
 .sla_text {
-    font-size: 0.7rem;
-    margin-right: 0.5rem;
+    font-size: 0.7vw;
+    margin-right: 0.5vw;
 }
 
 .sla-container {
-    width: 20em;
-    height: 3rem;
-    border-radius: 0.5rem;
+    width: 20vw;
+    height: 3vw;
+    border-radius: 0.5vw;
     background-color: #f5f5f5;
-    margin-top: 1rem;
+    margin-top: 1vw;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    transform: scale(0.9);
+    padding: 0.4vw 0vw;
 }
 .sla-container:hover {
     background-color: #e0e0e0;
@@ -258,9 +271,10 @@ animation: progress 0.3s linear ;
 }
 
 .sprint_graph {
-    width: 20rem !important;
-    height: 10rem !important;
-    margin-top: 2rem !important;
-    margin-bottom: 1rem !important;
+    width: 19vw !important;
+    height: 8vw !important;
+    margin-top:1.8vw !important;
+    margin-bottom: 0.5vw !important;
+    /* transform: scale(0.9); */
 }
 </style>

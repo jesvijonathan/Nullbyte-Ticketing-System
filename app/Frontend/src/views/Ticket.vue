@@ -216,7 +216,7 @@ function check_padd(){
         document.querySelector('.attach_cont').style.alignContent = 'center';
         document.querySelector('.attach_cont').style.flexWrap = 'wrap';
         document.querySelector('.attach_cont').style.justifyContent = 'center';
-        document.querySelector('.attachments-list').style.marginTop = '-0.8rem';
+        document.querySelector('.attachments-list').style.marginTop = '-0.8vw';
         
     }
     else {
@@ -226,7 +226,7 @@ function check_padd(){
         document.querySelector('.attach_cont').style.alignContent = 'space-between';
         document.querySelector('.attach_cont').style.flexWrap = 'wrap';
         document.querySelector('.attach_cont').style.justifyContent = 'center';
-        document.querySelector('.attachments-list').style.marginTop = '-0rem'; 
+        document.querySelector('.attachments-list').style.marginTop = '-0vw'; 
     }
 }
 
@@ -459,7 +459,7 @@ const handleAddComment = (newCommentText) => {
                     <!-- <div class="input_cont" v-if="ticket_data.summary">
                         <label for="attachments">Summmary</label>
                         <textarea type="text" placeholder="Summary" class="input_field desc" id="analysis"
-                            v-model="ticket_data.summary" style="height: 3rem;" readonly disabled></textarea>
+                            v-model="ticket_data.summary" style="height: 3vw;" readonly disabled></textarea>
                     </div>
 
                     <div class="input_cont">
@@ -472,7 +472,7 @@ const handleAddComment = (newCommentText) => {
 
                         <!-- <label for="attachments">Analysis</label>
                         <textarea type="text" placeholder="Enter the analysis" class="input_field desc" id="analysis"
-                            v-model="ticket_data.analysis" style="height: 4rem;"></textarea> -->
+                            v-model="ticket_data.analysis" style="height: 4vw;"></textarea> -->
 
 
                         <div class="input_cont_2 " style="display: flex;
@@ -500,7 +500,7 @@ const handleAddComment = (newCommentText) => {
     </div>
 
     <div class="second_part">
-        <div class="input_cont input_contsec" style="margin-top: 0rem;">
+        <div class="input_cont input_contsec stretch_bar" style="margin-top: 0vw;">
             <label for="analysis" class="inpt_desc_lab sprint_ti">Sprint Progress
             </label>
                 <Sla :logged_hrs="ticket_data.logged_hrs" :estimated_hrs="ticket_data.estimation" />
@@ -527,33 +527,33 @@ const handleAddComment = (newCommentText) => {
 
 <style scoped>
 vv{
-    width: 20rem;
-    height: 0.1rem;
+    width: 20vw;
+    height: 0.1vw;
     /* background-color: #81818175; */
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 0.2rem;
-    margin-bottom: 1rem;
+    margin-top: 0.7vw;
+    margin-bottom: 0.7vw;
 }
 vvv{
     width: 70%;
     background-color: #81818122;
-    height: 0.1rem;
+    height: 0.1vw;
 }
 .btnsort {
     color: white;
 
-    /* padding: 0.1rem 0rem; */
+    /* padding: 0.1vw 0vw; */
     border: none;
-    border-radius: 0.3rem;
+    border-radius: 0.3vw;
     cursor: pointer;
     text-align: center;
     margin: auto;
-    height: 1.4 rem;
-    width: 1.7rem;
-    padding-top: 0.2rem;
-    margin-left: 0.6rem;
+    height: 1.4vw;
+    width: 1.7vw;
+    padding-top: 0.2vw;
+    margin-left: 0.6vw;
     transform: scale(0.8);
 }
 
@@ -566,22 +566,24 @@ vvv{
 }
 
 .btnsort img {
-    width: 1rem;
-    height: 1rem;
+    width: 1vw;
+    height: 1vw;
     filter: invert(0.5);
 }
 .second_part {
     width: -webkit-fill-available;
-    margin-left: 0rem;
-    border-left: 0.1rem solid #81818117;
+    margin-left: 0vw;
+    border-left: 0.1vw solid #81818117;
     position: fixed;
     top: 21%;
     left: 76%;
     background: white;
     width: auto;
+    height: -webkit-fill-available;
 }
 .input_contsec{
-    margin-left: 1rem;
+    margin-left: 1vw;
+    
 }
 .first_line {
     display: flex;
@@ -602,8 +604,8 @@ vvv{
     align-items: stretch;
     /* width: 63%; */
     width: 78%;
-    margin: 0rem 5rem;
-    /* gap: 1rem; */
+    margin: 0vw 5vw;
+    /* gap: 1vw; */
 }
 
 textarea {
@@ -613,14 +615,14 @@ textarea {
 
 textarea,
 select {
-    width: 20rem;
-    height: 1.5rem;
-    min-height: 1.5rem;
-    border: 0.1rem solid #81818175;
-    border-radius: 0.3rem;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    font: 1rem 'wl1';
+    width: 20vw;
+    height: 1.5vw;
+    min-height: 1.5vw;
+    border: 0.1vw solid #81818175;
+    border-radius: 0.3vw;
+    padding: 0.5vw;
+    margin-top: 0.5vw;
+    font: 1vw 'wl1';
     color: black;
 }
 
@@ -628,18 +630,18 @@ select {
 textarea:focus,
 select:focus {
     outline: none;
-    border: 0.1rem solid #46BEAA;
+    border: 0.1vw solid #46BEAA;
 }
 
 /* input, textarea, select{   placeholder: font size */
 ::placeholder {
-    font: 0.9rem 'wl1';
+    font: 0.9vw 'wl1';
     color: #81818175;
 }
 
 select {
     height: initial;
-    width: 21rem;
+    width: 21vw;
 }
 
 .input_cont_2 {
@@ -650,12 +652,12 @@ select {
     justify-content: space-between;
     align-items: baseline;
     width: 100%;
-    margin-top: 0.5rem;
-    margin-bottom: 1rem;
+    margin-top: 0.5vw;
+    margin-bottom: 1vw;
 }
 
 .desc {
-    height: 7rem;
+    height: 7vw;
     width: 100%;
 }
 
@@ -669,46 +671,45 @@ select {
     justify-content: center;
     align-items: baseline;
     color: grey;
-    margin-top: 1rem;
+    margin-top: 1vw;
 }
 
 .tile-container {
-    /* margin-top: 2rem; */
     /* width: 80%; */
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     align-content: center;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
-    /* gap: 1rem; */
-    margin-top: 2rem;
-    /* margin: 2rem 4rem; */
+    /* gap: 1vw; */
+    margin-top: 1vw;
+    /* margin: 2vw 4vw; */
     width: 70vw;
     height: 100%;
-    margin-bottom: 7rem;
+    margin-bottom: 7vw;
 }
 
 .main_title {
     font-family: 'wl2';
-    font-size: 2rem;
+    font-size: 2vw;
     font-weight: 900;
     /* width: 90%; */
     /* width: 80%; */
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 1vw;
     align-content: center;
     align-items: baseline;
     justify-content: flex-start;
     flex-wrap: nowrap;
     width: -webkit-fill-available;
-    margin-left: 7rem;
+    margin-left: 5vw;
     white-space: nowrap;
 }
 
 .ticket_id {
-    font-size: 1.7rem;
+    font-size: 1.7vw;
     font-weight: 500;
     color: rgb(197, 197, 197);
 }
@@ -717,12 +718,12 @@ select {
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    width: 100%;
+    width: 53%;
     flex-wrap: nowrap;
     align-content: center;
     justify-content: space-between;
     height: max-content;
-    overflow-y: scroll;
+    overflow-y: hidden;
     overflow-x: hidden;
     height: 90vh;
 }
@@ -738,55 +739,57 @@ select {
     flex-direction: row;
     overflow: hidden;
     height: fill-available;
-    height: 90vh;
+    /* height: 88.5vh;     */
+    height: 89.4vh;
 }
 
 .btn {
     background-color: #46BEAA;
     color: white;
-    padding: 0.5rem 3rem;
-    /* min-width: 14rem; */
-    /* max-width: 14rem; */
+    padding: 0.5vw 3vw;
+    /* min-width: 14vw; */
+    /* max-width: 14vw; */
     border: none;
-    border-radius: 0.3rem;
+    border-radius: 0.3vw;
     cursor: pointer;
     text-align: center;
-    border: 0.1rem solid #46BEAA;
+    border: 0.1vw solid #46BEAA;
     /* margin: auto; */
+    font-size: 1vw;
 }
 
 .btn:hover {
     background-color: white;
     color: #46BEAA;
-    border: 0.1rem solid #46BEAA;
+    border: 0.1vw solid #46BEAA;
 }
 
 .btn_cancel {
     background-color: white;
     color: #46BEAA;
-    /* padding: 0.5rem 0rem; */
-    min-width: 5rem;
-    /* max-width: 14rem; */
+    /* padding: 0.5vw 0vw; */
+    min-width: 5vw;
+    /* max-width: 14vw; */
     border: none;
-    border-radius: 0.3rem;
+    border-radius: 0.3vw;
     cursor: pointer;
     text-align: center;
 
     /* margin: auto; */
-    /* margin-top: 3rem; */
-    /* margin-bottom: 3rem; */
+    /* margin-top: 3vw; */
+    /* margin-bottom: 3vw; */
     display: flex;
     justify-content: center;
     align-items: center;
     /* margin: auto; */
-    padding: 0.5rem 0.5rem;
-    border: 0.1rem solid #000000;
+    padding: 0.5vw 0.5vw;
+    border: 0.1vw solid #000000;
     background-color: grey;
     filter: invert(1);
 }
 
 .btn_cancel:hover {
-    border: 0.1rem solid #be4646;
+    border: 0.1vw solid #be4646;
     background-color: #000000;
 }
 
@@ -795,8 +798,8 @@ select {
 }
 
 .btn_cancel img {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.5vw;
+    height: 1.5vw;
 }
 
 .but_con {
@@ -806,11 +809,11 @@ select {
     align-content: flex-start;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: 1rem;
-    /* margin-top: 3rem;
-    margin-bottom: 3rem; */
+    gap: 1vw;
+    /* margin-top: 3vw;
+    margin-bottom: 3vw; */
     width: auto;
-    margin-top: 3.5rem;
+    margin-top: 3.5vw;
 }
 
 
@@ -832,20 +835,20 @@ select {
     align-content: center;
     align-items: flex-start;
     justify-content: center;
-    margin-top: 0rem;
+    margin-top: 0vw;
 }
 
 .ai_button {
-    height: 2.5rem;
+    height: 2.5vw;
     filter: invert(1);
-    padding: 0rem 2rem;
+    padding: 0vw 2vw;
     color: black;
     /* padding: 0 0; */
-    /* padding: 0rem 1rem; */
+    /* padding: 0vw 1vw; */
     background-color: #bb8484;
     min-width: 0;
     display: flex;
-    gap: 1rem;
+    gap: 1vw;
 }
 
 .ai_button:hover {
@@ -856,10 +859,10 @@ select {
 .attachment-item {
     display: flex;
     align-items: center;
-    margin-top: 0.5rem;
+    margin-top: 0.5vw;
     flex-direction: row-reverse;
     flex-wrap: nowrap;
-    gap: 2rem;
+    gap: 2vw;
     justify-content: flex-end;
     
 }
@@ -870,17 +873,17 @@ select {
 }
 
 .attachments-list {
-    margin-top: 0rem;
-    font-size: 0.8rem;
+    margin-top: 0vw;
+    font-size: 0.8vw;
 
 }
 
 .btn_cancel_file {
-    padding: 0rem 0rem;
+    padding: 0vw 0vw;
     color: rgba(77, 4, 4, 0.557);
     background-color: white;
-    border: 0.05rem solid rgb(77, 4, 4);
-    border-radius: 0.3rem;
+    border: 0.05vw solid rgb(77, 4, 4);
+    border-radius: 0.3vw;
     cursor: pointer;
     filter: saturate(0.3);
 }
@@ -898,20 +901,20 @@ select {
 ._attch_but {
     background-color: grey;
     border-color: white;
-    margin-top: 0.6rem;
+    margin-top: 0.6vw;
 }
 
 ._attch_but:hover {
     background-color: rgb(65, 65, 65);
     border-color: white;
     color: white;
-    border: 0.1rem solid #81818175;
+    border: 0.1vw solid #81818175;
 }
 
 .f_size {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.5vw;
 
 }
 
@@ -927,18 +930,18 @@ select {
 
 .cont_paral {
     display: flex;
-    gap: 1.4rem;
+    gap: 1.4vw;
     width: -webkit-fill-available;
-    margin-left: 7rem;
-    margin-top: 0.4rem;
+    margin-left: 5vw;
+    margin-top: 0.4vw;
 }
 
 .bold_text_banner {
     background-color: rgb(84, 84, 84);
-    padding: 0.1rem 1.5rem;
-    border-radius: 0.4rem;
+    padding: 0.1vw 1.5vw;
+    border-radius: 0.4vw;
     color: white;
-    font-size: 0.8rem;
+    font-size: 0.8vw;
     text-align: center;
 }
 
@@ -967,17 +970,17 @@ select {
     justify-content: flex-start;
     align-items: center;
     width: 100%;
-    margin-left: 16rem;
-    margin-top: 1rem;
-    gap: 2rem;
+    margin-left: 5.2vw;
+    margin-top: 1vw;
+    gap: 2vw;
     font-family: wl1;
     color: rgb(158, 158, 158);
-    font-size: 0.8rem;
+    font-size: 0.8vw;
 }
 
 hv {
-    width: 0.08rem;
-    height: 2rem;
+    width: 0.08vw;
+    height: 2vw;
     background-color: rgba(158, 158, 158, 0.4);
 }
 
@@ -989,7 +992,7 @@ hv {
     align-content: center;
     justify-content: center;
     align-items: baseline;
-    gap: 0.5rem;
+    gap: 0.5vw;
 }
 
 .tinfo_text {
@@ -1015,13 +1018,13 @@ hv {
     cursor: pointer;
     opacity: 0.9;
     text-transform: capitalize;
-    width: 6rem;
+    width: 6vw;
     border: none;
     padding: 0;
     margin: 0;
     width: webkit-fill-available;
     background-color: transparent;
-    font-size: 0.8rem;
+    font-size: 0.8vw;
     color: black;
     font-family: wl1;
 }
@@ -1037,14 +1040,14 @@ hv {
 
 .drop_inpt_num {
     cursor: initial;
-    padding: 0rem 0rem 0rem 0.2rem;
-    width: 5.6rem;
+    padding: 0vw 0vw 0vw 0.2vw;
+    width: 5.6vw;
 }
 
 .drop_input_tex {
     cursor: initial;
-    padding: 0rem 0rem 0rem 0.2rem;
-    width: 4.8rem;
+    padding: 0vw 0vw 0vw 0.2vw;
+    width: 4.8vw;
 }
 
 .drop_input_tex:focus {
@@ -1057,7 +1060,7 @@ hv {
 }
 
 .drop_input_tex::placeholder {
-    font-size: 0.8rem;
+    font-size: 0.8vw;
 }
 
 .drop_input_tex:disabled:hover {
@@ -1066,33 +1069,33 @@ hv {
 }
 
 .ban_dropp {
-    width: 10rem !important;
+    width: 10vw !important;
     text-align: center;
     text-align-last: center;
-    margin-top: 0rem;
+    margin-top: 0vw;
     text-transform: capitalize;
 }
 
 .inp_desc {
     width: 100%;
-    height: 1.5rem;
-    min-height: 1.5rem;
-    border: 0.1rem solid #81818100;
-    border-radius: 0.3rem;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    font: 0.9rem 'wl1';
-    word-spacing: 0.1rem;
-    /* line-height: 1.5rem; */
+    height: 1.5vw;
+    min-height: 1.5vw;
+    border: 0.1vw solid #81818100;
+    border-radius: 0.3vw;
+    padding: 0.5vw;
+    margin-top: 0.5vw;
+    font: 0.9vw 'wl1';
+    word-spacing: 0.1vw;
+    /* line-height: 1.5vw; */
     color: black;
-    min-width: 40rem;
-    max-width: 45rem;
-    /* height: 5rem; */
+    min-width: 40vw;
+    max-width: 45vw;
+    /* height: 5vw; */
 }
 
 .inp_desc:hover {
     cursor: pointer;
-    /* border: 0.1rem solid #c8c8c8 */
+    /* border: 0.1vw solid #c8c8c8 */
     background-color: #f0f0f093;
 }
 .inp_desc_none{
@@ -1102,32 +1105,41 @@ hv {
 .inp_desc:focus {
     outline: none;
     cursor: text;
-    border: 0.1rem solid #c8c8c8;
+    border: 0.1vw solid #c8c8c8;
 }
 
-.inp_desc::-webkit-scrollbar {
-    width: 0.4rem;
-    height: 0.5rem;
+.main-pane::-webkit-scrollbar, .inp_desc::-webkit-scrollbar {
+    width: 0.4vw;
+    height: 0.5vw;
+    cursor: pointer;
 }
 
-.inp_desc::-webkit-scrollbar-thumb {
+.main-pane::-webkit-scrollbar-thumb,.inp_desc::-webkit-scrollbar-thumb {
     background-color: #c8c8c8;
-    border-radius: 0.3rem;
+    border-radius: 0.3vw;
+}
+.main-pane::-webkit-scrollbar-thumb{
+    background-color: #c8c8c836;
 }
 
-.inp_desc::-webkit-scrollbar-track {
+.main-pane::-webkit-scrollbar-track,.inp_desc::-webkit-scrollbar-track {
     background-color: #f0f0f0;
 }
+.main-pane::-webkit-scrollbar-track{
+    background-color: #f0f0f069;
+}
 
-.inp_desc::-webkit-scrollbar-thumb:hover {
+
+.main-pane::-webkit-scrollbar-thumb:hover, .inp_desc::-webkit-scrollbar-thumb:hover {
     background-color: #c8c8c8;
 }
 
+
 .inpt_desc_lab {
-    font-size: 1.4rem;
+    font-size: 1.4vw;
     font-family: wl2;
     color: #393939;
-    margin-top: 0.5rem;
+    margin-top: 0.5vw;
 }
 
 .both_tog {
@@ -1137,10 +1149,31 @@ hv {
     align-content: center;
     justify-content: space-between;
     align-items: baseline;
-    width: 100%;
-    margin-left: 5rem;
-    margin-top: 1rem;
-    gap: 7rem;
+    width: 52.5vw;
+    margin-left: 0vw;
+    margin-top: 1vw;
+    gap: 7vw;
+    height: 31vw;
+    overflow-y: hidden;
+}
+.both_tog:hover{
+    overflow-y: scroll;
+}
+.both_tog::-webkit-scrollbar {
+    width: 0.4vw;
+    height: 0.5vw;
+    cursor: pointer;
+    opacity: 0;
+}
+.both_tog:hover::-webkit-scrollbar {
+    opacity: 0;
+}
+.both_tog::-webkit-scrollbar-thumb {
+    background-color: #c8c8c8;
+    border-radius: 0.3vw;
+}
+.both_tog::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
 }
 
 .first_part {
@@ -1150,29 +1183,36 @@ hv {
     align-content: center;
     justify-content: space-between;
     align-items: baseline;
-    width: 100%;
-    /* margin-left: 16rem; */
-    /* margin-top: 1rem; */
-    gap: 0rem;
+    /* width: 10vw; */
+    /* margin-left: 16vw; */
+    /* margin-top: 1vw; */
+    gap: 0vw;
+    /* height: 100vh; */
+    margin-bottom: 10vw;
+}
+.first_part::-webkit-scrollbar {
+    width: 0.4vw;
+    height: 0.5vw;
+    cursor: pointer;
 }
 
 .con_spl {
-    border-top: 0.1rem solid #8181813d;
-    margin-top: 1.8rem;
-    /* margin-bottom: 1rem; */
-    padding-top: 0.8rem;
+    border-top: 0.1vw solid #8181813d;
+    margin-top: 1.8vw;
+    /* margin-bottom: 1vw; */
+    padding-top: 0.8vw;
     width: 40vw;
 }
 
 ._attch_but {
-    height: 3rem;
-    width: 3rem;
+    height: 3vw;
+    width: 3vw;
     padding: 0;
-    font-size: 1.6rem;
+    font-size: 1.6vw;
     background-color: rgba(214, 214, 214, 0.1);
-    border-radius: 0.2rem;
-    border: 0.1rem solid #81818143;
-    margin-top: 0rem;
+    border-radius: 0.2vw;
+    border: 0.1vw solid #81818143;
+    margin-top: 0vw;
     display: flex;
     flex-wrap: nowrap;
     align-content: center;
@@ -1195,19 +1235,19 @@ hv {
 .attachments-list {
     display: flex;
     flex-direction: row;
-    max-width: 35rem;
-    gap: 2rem;
-    row-gap: 1rem;
+    max-width: 35vw;
+    gap: 2vw;
+    row-gap: 1vw;
     flex-wrap: wrap;
     align-content: flex-start;
     justify-content: flex-start;
     align-items: flex-start;
     transform: scale(0.8);
-    /* height: 3rem; */
+    /* height: 3vw; */
 }
 
 .attachment-item {
-    flex: 1 1 calc(50% - 2rem);
+    flex: 1 1 calc(50% - 2vw);
     box-sizing: border-box;
 }
 
@@ -1215,25 +1255,25 @@ hv {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 0.1rem solid #ccc;
-    border-radius: 0.3rem;
-    padding: 0.5rem;
-    margin-bottom: 0rem;
+    border: 0.1vw solid #ccc;
+    border-radius: 0.3vw;
+    padding: 0.5vw;
+    margin-bottom: 0vw;
     width: 100%;
 
-    max-width: 16rem;
-    margin-top: 0rem;
-    /* padding: 0rem 1  rem; */
+    max-width: 16vw;
+    margin-top: 0vw;
+    /* padding: 0vw 1  rem; */
 }
 
 .attachment-preview {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border: 0.1rem solid #ddd;
-    border-radius: 0.3rem;
+    width: 2.5vw;
+    height: 2.5vw;
+    border: 0.1vw solid #ddd;
+    border-radius: 0.3vw;
     overflow: hidden;
 }
 
@@ -1244,13 +1284,13 @@ hv {
 }
 
 .attachment-icon {
-    font-size: 1rem;
+    font-size: 1vw;
     color: #666;
 }
 
 .attachment-info {
     flex-grow: 1;
-    margin-left: 0rem;
+    margin-left: 0vw;
 }
 
 .file-name {
@@ -1258,28 +1298,28 @@ hv {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 7rem;
-    width: 20rem;
+    max-width: 7vw;
+    width: 20vw;
     display: block;
 }
 
 .file-size {
-    font-size: 0.6rem;
+    font-size: 0.6vw;
     color: #777;
 }
 
 .file-details {
-    font-size: 0.6rem;
+    font-size: 0.6vw;
     color: #555;
-    margin-top: 0rem;
+    margin-top: 0vw;
 }
 
 .btn_cancel_file {
     background: none;
     border: none;
-    font-size: 0.7rem;
+    font-size: 0.7vw;
     cursor: pointer;
-    padding-left: 0.3rem;
+    padding-left: 0.3vw;
     color: #ff0000;
 }
 
@@ -1294,11 +1334,11 @@ textarea:disabled {
 }
 
 .links-item{
-    margin-top: 0.5rem;
+    margin-top: 0.5vw;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.7rem;
+    gap: 0.5vw;
+    font-size: 0.7vw;
 }
 .links-item a{
     color: rgb(27, 86, 205);
@@ -1307,7 +1347,7 @@ textarea:disabled {
 .links-item:hover{
     text-decoration: underline;
 }
-.sprint_ti{font-size: 1rem;
+.sprint_ti{font-size: 1vw;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -1319,10 +1359,20 @@ textarea:disabled {
     position: fixed;
     bottom: 0%;
     background: white;
-    padding-bottom: 2.1rem;
-    margin-top: 0rem;
-    margin-bottom: 0rem;
-    width: -webkit-fill-available;
+    padding-bottom: 1.2vw;
+    margin-top: 0vw;
+    margin-bottom: 0vw;
+    width: 47vw;
 }
 
+.stretch_bar{
+    margin-top: 0vw;
+    height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
 </style>
