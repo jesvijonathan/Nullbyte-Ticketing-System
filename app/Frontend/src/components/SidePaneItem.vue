@@ -1,43 +1,43 @@
 <template>
   <div
     class="sidepane-item"
-    :style="[getBorderColor(ticket.Status), isHovered ? getHoverBorderColor(ticket.Status) : {}]"
+    :style="[getBorderColor(ticket.status), isHovered ? getHoverBorderColor(ticket.status) : {}]"
     @mouseover="isHovered = true"
     @mouseleave="isHovered = false"
   >
-    <div v-if="!isExpanded" class="ticket">{{ ticket.TicketNo }} : {{ ticket.TicketName }}</div>
+    <div v-if="!isExpanded" class="ticket">{{ ticket.ticket_id }} : {{ ticket.subject }}</div>
     <div v-if="isExpanded" class="ticket-details">
-      <div class="detail"><span class="ticket_name_det">{{ ticket.TicketNo }} : {{ ticket.TicketName }}</span></div>
+      <div class="detail"><span class="ticket_name_det">{{ ticket.ticket_id }} : {{ ticket.subject }}</span></div>
       <hr class="splitter" />
       <div class="detail">
         <span class="label">Date</span>
         <span class="colon">:</span>
-        <span class="value">{{ ticket.Date }}</span>
+        <span class="value">{{ ticket.created }}</span>
       </div>
       <div class="detail">
         <span class="label">Created By</span>
         <span class="colon">:</span>
-        <span class="value">{{ ticket['Created By'] }}</span>
+        <span class="value">{{ ticket.user }}</span>
       </div>
       <div class="detail">
         <span class="label">Assigned To</span>
         <span class="colon">:</span>
-        <span class="value">{{ ticket['Assigned To'] }}</span>
+        <span class="value">{{ ticket.assingee }}</span>
       </div>
       <div class="detail">
         <span class="label">Status</span>
         <span class="colon">:</span>
-        <span class="value">{{ ticket.Status }}</span>
+        <span class="value">{{ ticket.status }}</span>
       </div>
       <div class="detail">
         <span class="label">Issue Type</span>
         <span class="colon">:</span>
-        <span class="value">{{ ticket['Issue Type'] }}</span>
+        <span class="value">{{ ticket.issue_type }}</span>
       </div>
       <div class="detail">
         <span class="label">Team</span>
         <span class="colon">:</span>
-        <span class="value">{{ ticket.Team }}</span>
+        <span class="value">{{ ticket.product_type }}</span>
       </div>
     </div>
     <img :src="angledown" :class="isExpanded ? 'ico_rot' : 'ico'" alt="angledown" @click.stop="toggleExpand" />

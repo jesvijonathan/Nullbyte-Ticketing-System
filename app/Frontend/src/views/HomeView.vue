@@ -24,7 +24,7 @@ import AboutImg from '@/assets/About.png';
 
 const tiles = [
     { title: 'Create Tickets', image: CreateTicketImg, link: '/create_ticket' },
-    { title: 'Ticket', image: TicketImg, link: '/list_tickets' },
+    { title: 'Ticket', image: TicketImg, link: '/tickets' },
     { title: 'Inbox', image: InboxImg, link: '/inbox' },
     { title: 'Chatbot', image: ChatbotImg, link: '/chatbot' },
     { title: 'Report', image: ReportImg, link: '/report' },
@@ -42,7 +42,6 @@ const handleTileClick = (title) => {
 
 let bread_path_json={
     "NULLBYTE": "/",
-    "DASHOARD": "/dashboard",
 } 
 </script>
 
@@ -54,7 +53,7 @@ let bread_path_json={
         <div class="main-pane">
         <BreadCrumb :data="bread_path_json"/>
         <div class="tile-container">
-            <Tile v-for="(tile, index) in tiles" :key="index" :title="tile.title" :image="tile.image" @tile-clicked="handleTileClick"/>
+            <Tile v-for="(tile, index) in tiles" :key="index" :title="tile.title" :image="tile.image" @click="handleTileClick(tile.title)" />
         </div>
     </div>
     </div>

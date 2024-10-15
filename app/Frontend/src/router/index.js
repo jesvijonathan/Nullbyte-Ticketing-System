@@ -8,7 +8,7 @@ const router = createRouter({
       path: '/',
       redirect: '/dashboard'
     },
-    { 
+    {
       path: '/dashboard',
       name: 'home',
       component: () => import('../views/HomeView.vue'),
@@ -29,20 +29,25 @@ const router = createRouter({
       path: '/create_ticket',
       name: 'create_ticket',
       component: () => import('../views/CreateTicket.vue'),
-      meta: {
-        breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }, { name: 'Service', path: '/service' }],
-        requiresAuth: true
-      }
+
     },
     {
       path: '/list_tickets',
-      name: 'tickets',
+      name: 'list_tickets',
       component: () => import('../views/ViewTickets.vue'),
-      meta: {
-        breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }, { name: 'Service', path: '/service' }],
-        requiresAuth: true
-      }
+
+    }, {
+      path: '/tickets',
+      name: 'tickets',
+      component: () => import('../views/TicketMenu.vue'),
+
     },
+    {
+      path: '/ticket/:id?',
+      name: 'ticket',
+      component: () => import('../views/Ticket.vue'),
+      props: route => ({ id: route.params.id || route.query.id }),
+        },
     {
       path: '/service',
       name: 'service',

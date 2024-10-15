@@ -1,68 +1,146 @@
-<script>
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import SidePaneItem from './SidePaneItem.vue';
 
-export default {
-  name: 'Sidepane',
-  components: {
-    SidePaneItem
+const sidePaneItems = ['Dashboard', 'Chatbot', 'Inbox', 'Ticket', 'Reports', 'HelpDesk', 'Create Ticket'];
+
+const TicketItems = ref([
+  {
+    chat_id: "tRAFcELKK5xiAK6FAAAD",
+    ticket_id: "SVC-000000",
+    user: "admin",
+    medium: "",
+    connection: "closed",
+    text: "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
+    subject: "wlpfo Transaction Declined for P025 Value 28",
+    summary: "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
+    attachments: [
+      {
+        name: "Transaction Logs",
+        type: "text/plain",
+        url: "https://example.com/logs.txt",
+        details: "The logs show successful transactions when P025 is 00 and declined transactions when P025 is 28. Errors like \"[ERROR]: P025 invalid\" are present. The logs also contain details of GICC capture, GICC authorization request, compose message, and e-commerce transaction details. Further analysis suggests potential conflicts with specific transaction parameters or conditions related to P025 field validation.",
+        size: "4382"
+      }
+    ],
+    product_type: "wlpfo",
+    issue_type: "bug",
+    priority: "high",
+    story_points: "5",
+    estimation: "8",
+    analysis: "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
+    reply: "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
+    assingee: "developer_1",
+    status: "open",
+    created: "2021-07-15T10:00:00",
+    updated: "2021-07-15T10:00:00",
+    comments: [
+      {
+        comment_id: "1",
+        user: "developer_1",
+        text: "I will start investigating the issue with P025 validation in wlpfo. I'll update you with my findings and progress.",
+        date: "2021-07-15T10:30:00"
+      }
+    ],
+    logged_hrs: [
+      {
+        user: "developer_1",
+        logged: "2",
+        date: "2021-07-15T10:30:00"
+      },
+      {
+        user: "developer_1",
+        logged: "3",
+        date: "2021-07-16T10:30:00"
+      }
+    ]
   },
-  data() {
-    return {
-      sidePaneItems: ['Dashboard', 'Chatbot', 'Inbox', 'Ticket', 'Reports', 'HelpDesk', 'Create Ticket'],
-      TicketItems: [
-        {
-          'TicketNo': 'SVC-42069',
-          'TicketName': 'Eat 5 Star Do nothing and get paid',
-          'Date': '12/12/2021',
-          'Created By': 'John Doe',
-          'Assigned To': 'Jane Doe',
-          'Status': 'Open',
-          'Issue Type': 'Bug',
-          'Team': 'Development'
-        },
-        {
-          'TicketNo': 'SVC-42070',
-          'TicketName': 'Fix login issue',
-          'Date': '13/12/2021',
-          'Created By': 'Alice Smith',
-          'Assigned To': 'Bob Johnson',
-          'Status': 'In Progress',
-          'Issue Type': 'Bug',
-          'Team': 'QA'
-        },
-        {
-          'TicketNo': 'SVC-42071',
-          'TicketName': 'Update user profile page',
-          'Date': '14/12/2021',
-          'Created By': 'Charlie Brown',
-          'Assigned To': 'David Wilson',
-          'Status': 'Closed',
-          'Issue Type': 'Enhancement',
-          'Team': 'UI/UX'
-        },
-        {
-          'TicketNo': 'SVC-42072',
-          'TicketName': 'Database optimization',
-          'Date': '15/12/2021',
-          'Created By': 'Eve Davis',
-          'Assigned To': 'Frank Miller',
-          'Status': 'Open',
-          'Issue Type': 'Performance',
-          'Team': 'Backend'
-        }
-      ]
-    };
-  },
-  methods: {
-    handleClick() {
-      this.$router.push('/create_ticket');
-    }
+  {
+    chat_id: "tRAFcELKK5xiAK6FAAAD",
+    ticket_id: "SVC-11111",
+    user: "admin",
+    medium: "",
+    connection: "closed",
+    text: "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
+    subject: "wlpfo Transaction Declined for P025 Value 28",
+    summary: "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
+    attachments: [
+      {
+        name: "Transaction Logs",
+        type: "text/plain",
+        url: "https://example.com/logs.txt",
+        details: "The logs show successful transactions when P025 is 00 and declined transactions when P025 is 28. Errors like \"[ERROR]: P025 invalid\" are present. The logs also contain details of GICC capture, GICC authorization request, compose message, and e-commerce transaction details. Further analysis suggests potential conflicts with specific transaction parameters or conditions related to P025 field validation.",
+        size: "4382"
+      }
+    ],
+    product_type: "wlpfo",
+    issue_type: "bug",
+    priority: "high",
+    story_points: "5",
+    estimation: "8",
+    analysis: "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
+    reply: "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
+    assingee: "developer_1",
+    status: "open",
+    created: "2021-07-15T10:00:00",
+    updated: "2021-07-15T10:00:00",
+    comments: [
+      {
+        comment_id: "1",
+        user: "developer_1",
+        text: "I will start investigating the issue with P025 validation in wlpfo. I'll update you with my findings and progress.",
+        date: "2021-07-15T10:30:00"
+      }
+    ],
+    logged_hrs: [
+      {
+        user: "developer_1",
+        logged: "2",
+        date: "2021-07-15T10:30:00"
+      },
+      {
+        user: "developer_1",
+        logged: "3",
+        date: "2021-07-16T10:30:00"
+      }
+    ]
   }
+]);
+
+const router = useRouter();
+
+const handleClick = (url) => {
+  router.push(url);
 };
+
+let mini=ref(false);
+
+
+function minimize() {
+  if (mini.value) {
+    var minimize = document.getElementById('minimize');
+    minimize.style.transform = 'translate(0%, -50%) rotate(90deg) scale(1.6)';
+    minimize.style.left = '23rem';
+    mini.value = !mini.value;
+    return;
+  }else{
+  var minimize = document.getElementById('minimize');
+  minimize.style.transform = 'translate(0%, -50%) rotate(270deg) scale(1.6)';  
+  minimize.style.left = '1rem';
+  mini.value = !mini.value;}
+}
+
+
+const show_extra_dashboard = ref(false);
 </script>
 
+
 <template>
-  <div class="side-pane">
+  <div class="minimize" @click="minimize()" id="minimize">
+    <img src="@/assets/angle-down-solid.svg" alt="angle-down-solid" />
+  </div>
+  <div class="side-pane" id="side-pane" v-if="!mini">
     <div class="sp">
       <!-- Iterate over sidePaneItems and call handleClick on click -->
       <div v-if="$route.path === '/service'">
@@ -71,31 +149,52 @@ export default {
         </div>
       </div>
       <div class="create_con" v-if="$route.path === '/dashboard'">
-        <div @click="handleClick()" :key="CreateTicket" class="side-pane-title-elements">
+        <div @click="handleClick('/create_ticket')" :key="CreateTicket" class="side-pane-title-elements first_nike">
           Create Ticket
         </div>
-        <hr style="
-    margin-bottom: 1rem; width: 14rem;border: 0.08rem solid #818181;">
-      </div>
-
-      <div class="create_con tpls" v-if="$route.path === '/create_ticket'">
-        <div @click="handleClick()" :key="CreateTicket" class="side-pane-title-elements tpl">
-          View Ticket
+        <hv class="hv"></hv>
+        <div @click="handleClick('/list_tickets')" :key="CreateTicket" class="side-pane-title-elements nike" v-if="show_extra_dashboard">
+          All Tickets
         </div>
-        <div @click="handleClick()" :key="CreateTicket" class="side-pane-title-elements tpl">
-          New Ticket
-        </div>
-        <div @click="handleClick()" :key="CreateTicket" class="side-pane-title-elements tpl">
+        <div @click="handleClick('/list_tickets')" :key="CreateTicket" class="side-pane-title-elements nike" v-if="show_extra_dashboard">
           Action Items
         </div>
-        <div @click="handleClick()" :key="CreateTicket" class="side-pane-title-elements tpl tplast ">
+        <div @click="handleClick('/list_tickets')" :key="CreateTicket" class="side-pane-title-elements nike" v-if="show_extra_dashboard">
+          Unassigned Tickets
+        </div>
+        <hr class="hv" v-if="show_extra_dashboard">
+
+        <div @click="handleClick('/text')" :key="CreateTicket" class="side-pane-title-elements nike" v-if="show_extra_dashboard">
+          Chatbot
+        </div>
+        <div @click="handleClick('/profile')" :key="CreateTicket" class="side-pane-title-elements nike" v-if="show_extra_dashboard">
+          Settings
+        </div>
+        <hr class="hv" v-if="show_extra_dashboard">
+
+      </div>
+
+      <div class="create_con tpls" v-if="$route.path.includes('ticket')">
+        <div @click="handleClick('/list_tickets')" :key="CreateTicket" class="side-pane-title-elements tpl tp1">
+          All Ticket
+        </div>
+        <div @click="handleClick('/create_ticket')" :key="CreateTicket" class="side-pane-title-elements tpl">
+          New Ticket
+        </div>
+        <div @click="handleClick('/list_tickets?category=my_tickets')" :key="CreateTicket" class="side-pane-title-elements tpl  ">
           My Tickets
         </div>
+        <div @click="handleClick('/list_tickets?category=pending')" :key="CreateTicket" class="side-pane-title-elements tpl">
+          Action Items
+        </div>
+        <div @click="handleClick('/list_tickets')" :key="CreateTicket" class="side-pane-title-elements tpl">
+          Unassigned Tickets
+        </div>
 
-        <hr style="
-    margin-bottom: 1rem; width: 14rem;border: 0.08rem solid #818181;">
+        <hr class="hv" v-if="$route.path.includes('ticket') && $route.path != '/list_tickets'">
       </div>
-      <SidePaneItem class="side_panel_item" v-for="ticket in TicketItems" :key="ticket.TicketNo" :ticket="ticket" />
+      <SidePaneItem class="side_panel_item" v-for="ticket in TicketItems" :key="ticket.ticket_id" :ticket="ticket"
+        v-if="$route.path != '/list_tickets'" />
 
     </div>
     <div class="sp-footer">
@@ -106,9 +205,27 @@ export default {
 </template>
 
 <style scoped>
-.tpls{
+.minimize{
+  position: absolute;
+  padding: 0.5rem;
+  cursor: pointer;
+  /* border: 0.2rem red solid; */
+  transform: translate(-50%, -50%) rotate(90deg) scale(1.6);
+  /* border-radius: 50%; */
+  top: 97%;
+  left: 24rem;
+  z-index: 100;
+  filter: invert(1);
+  opacity: 0.2;
+}
+.minimize:hover{
+  transform: translate(-50%, -50%) rotate(90deg) scale(1.8);
+  opacity: 1;
+}
+.tpls {
   margin-bottom: 1rem;
 }
+
 .create_con {
   display: flex;
   flex-direction: column;
@@ -191,7 +308,7 @@ export default {
   background-color: #46BEAA;
 }
 
-.tpl{
+.tpl {
   margin-top: 0.6rem;
   margin-bottom: 0.6rem;
 }
@@ -215,7 +332,27 @@ export default {
   background-color: #272727;
 }
 
-.tplast{
+.tplast {
   margin-bottom: 2rem;
+}
+.tp1{
+  margin-top: 2rem;
+}
+
+.nike {
+  margin-top: 0rem;
+
+  margin: 1rem 2rem 0rem 2rem;
+}
+
+.hv {
+
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+  width: 14rem;
+  border: 0.08rem solid #818181;
+}
+.first_nike{
+  margin-bottom: 0rem
 }
 </style>

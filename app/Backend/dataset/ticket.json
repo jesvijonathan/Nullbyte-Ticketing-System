@@ -1,17 +1,16 @@
 {
-    "chat_id": "tRAFcELKK5xiAK6FAAAD",
+    "chat_id": "tRAFcELKK5xiAK6FAAAD", 
     "ticket_id": "SVC-18193",
     "user": "admin",
-    "medium": "",
-    "connection": "closed",
-    "text": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    "subject": "wlpfo Transaction Declined for P025 Value 28",
+    "medium": "chat",
+    "text": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025. www.jesvi.pythonanywhere.com",
+    "subject": "Transaction Declined for P025 Value 28",
     "summary": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
     "attachments": [
         {
             "name": "Transaction Logs",
-            "type": "text/plain",
-            "url": "https://example.com/logs.txt",
+            "type": "image/jpeg",
+            "url": "https://plus.unsplash.com/premium_photo-1694819488591-a43907d1c5cc?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHx8MA%3D%3D"   ,
             "details": "The logs show successful transactions when P025 is 00 and declined transactions when P025 is 28. Errors like \"[ERROR]: P025 invalid\" are present. The logs also contain details of GICC capture, GICC authorization request, compose message, and e-commerce transaction details. Further analysis suggests potential conflicts with specific transaction parameters or conditions related to P025 field validation.",
             "size": "4382"
         }
@@ -32,7 +31,15 @@
             "comment_id": "1",
             "user": "developer_1",
             "text": "I will start investigating the issue with P025 validation in wlpfo. I'll update you with my findings and progress.",
+            "action" : "",
             "date": "2021-07-15T10:30:00"
+        },
+        {
+            "comment_id": "2",
+            "user": "admin",
+            "text": "I have identified the issue with P025 validation logic in wlpfo. The code is incorrectly rejecting transactions with P025 value 28. I will work on a fix and test it with various scenarios.",
+            "action" : "approval:admin",
+            "date": "2021-07-16T10:30:00"
         }
     ],
     "logged_hrs": [

@@ -49,10 +49,17 @@ def test():
 
 @app.route('/get_ticket', methods=['GET'])
 def get_ticket():
-    with open('dataset/ticket.json') as f:
-        data = json.load(f)
-    return jsonify(data)
-
+    ticket_id = request.args.get('id')
+    if ticket_id is None:
+        with open('dataset/ticket.json') as f:
+            data = json.load(f)
+        return jsonify(data)
+    else:
+        print(ticket_id)
+        with open('dataset/ticket.json') as f:
+            data = json.load(f)
+            return jsonify(data)
+    
 @app.route('/get_incomplete_ticket', methods=['GET'])
 def get_incomplete_ticket():
     with open('dataset/ticket_not.json') as f:

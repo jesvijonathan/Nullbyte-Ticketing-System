@@ -6,6 +6,8 @@ import SidePane from '@/components/SidePane.vue';
 import LoaderToast from '@/components/LoaderToast.vue';
 import { faLeaf } from '@fortawesome/free-solid-svg-icons';
 
+import { useCookies } from 'vue3-cookies';
+
 let bread_path_json = {
     "NULLBYTE": "/",
     "TICKETS": "/tickets",
@@ -15,6 +17,8 @@ let bread_path_json = {
 const loading = ref(true);
 
 const get_tickets_url = "http://localhost:5000/get_tickets";
+
+// get category passed via url params
 
 
 let ticket_data = ref([{
@@ -42,7 +46,57 @@ let ticket_data = ref([{
     "estimation": "8",
     "analysis": "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
     "reply": "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
-    "assingee": "developer_1",
+    "assignee": "developer_1",
+    "status": "closed",
+    "created": "2021-07-15T10:00:00",
+    "updated": "2021-07-15T10:00:00",
+    "comments": [
+        {
+            "comment_id": "1",
+            "user": "developer_1",
+            "text": "I will start investigating the issue with P025 validation in wlpfo. I'll update you with my findings and progress.",
+            "date": "2021-07-15T10:30:00"
+        }
+    ],
+    "logged_hrs": [
+        {
+            "user": "developer_1",
+            "logged": "2",
+            "date": "2021-07-15T10:30:00"
+        },
+        {
+            "user": "developer_1",
+            "logged": "3",
+            "date": "2021-07-16T10:30:00"
+        }
+    ]
+},
+{
+    "chat_id": "tRAFcELKK5xiAK6FAAAD",
+    "ticket_id": "SVC-11111",
+    "user": "raj",
+    "medium": "",
+    "connection": "closed",
+    "text": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
+    "subject": "rajash wlpfo Transaction Declined for P025 Value 28",
+    "summary": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
+    "attachments": [
+        {
+            "name": "Transaction Logs",
+            "type": "text/plain",
+            "url": "https://example.com/logs.txt",
+            "details": "The logs show successful transactions when P025 is 00 and declined transactions when P025 is 28. Errors like \"[ERROR]: P025 invalid\" are present. The logs also contain details of GICC capture, GICC authorization request, compose message, and e-commerce transaction details. Further analysis suggests potential conflicts with specific transaction parameters or conditions related to P025 field validation.",
+            "size": "4382"
+        }
+    ],
+    "product_type": "wlpfo",
+    "issue_type": "bug",
+    "priority": "high",
+    "story_points": "5",
+    "estimation": "8",
+    "analysis": "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
+    "reply": "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
+    "assignee": "admin",
     "status": "open",
     "created": "2021-07-15T10:00:00",
     "updated": "2021-07-15T10:00:00",
@@ -70,7 +124,7 @@ let ticket_data = ref([{
 {
     "chat_id": "tRAFcELKK5xiAK6FAAAD",
     "ticket_id": "SVC-11111",
-    "user": "admin",
+    "user": "akil",
     "medium": "",
     "connection": "closed",
     "text": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
@@ -92,57 +146,7 @@ let ticket_data = ref([{
     "estimation": "8",
     "analysis": "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
     "reply": "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
-    "assingee": "developer_1",
-    "status": "open",
-    "created": "2021-07-15T10:00:00",
-    "updated": "2021-07-15T10:00:00",
-    "comments": [
-        {
-            "comment_id": "1",
-            "user": "developer_1",
-            "text": "I will start investigating the issue with P025 validation in wlpfo. I'll update you with my findings and progress.",
-            "date": "2021-07-15T10:30:00"
-        }
-    ],
-    "logged_hrs": [
-        {
-            "user": "developer_1",
-            "logged": "2",
-            "date": "2021-07-15T10:30:00"
-        },
-        {
-            "user": "developer_1",
-            "logged": "3",
-            "date": "2021-07-16T10:30:00"
-        }
-    ]
-},
-{
-    "chat_id": "tRAFcELKK5xiAK6FAAAD",
-    "ticket_id": "SVC-11111",
-    "user": "admin",
-    "medium": "",
-    "connection": "closed",
-    "text": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    "subject": "wlpfo Transaction Declined for P025 Value 28",
-    "summary": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    "attachments": [
-        {
-            "name": "Transaction Logs",
-            "type": "text/plain",
-            "url": "https://example.com/logs.txt",
-            "details": "The logs show successful transactions when P025 is 00 and declined transactions when P025 is 28. Errors like \"[ERROR]: P025 invalid\" are present. The logs also contain details of GICC capture, GICC authorization request, compose message, and e-commerce transaction details. Further analysis suggests potential conflicts with specific transaction parameters or conditions related to P025 field validation.",
-            "size": "4382"
-        }
-    ],
-    "product_type": "wlpfo",
-    "issue_type": "bug",
-    "priority": "high",
-    "story_points": "5",
-    "estimation": "8",
-    "analysis": "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
-    "reply": "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
-    "assingee": "developer_1",
+    "assignee": "developer_1",
     "status": "open",
     "created": "2021-07-15T10:00:00",
     "updated": "2021-07-15T10:00:00",
@@ -182,13 +186,123 @@ onMounted(() => {
     //     });
 
     console.log(ticket_data.value);
+    let category = window.location.search.split('=')[1];
+    if (!category) {
+        category = 'all';
+    }
+    else {
+        // let text=category.toUpperCase();
+        category = category.toLowerCase();
+        const catSectionElements = document.getElementsByClassName('cat_section');
+        for (let catSectionElement of catSectionElements) {
+            if (catSectionElement.id == category) {
+                category_sel(category, { target: catSectionElement });
+                // text=catSectionElement.innerText;
+            }
+        }
+        // bread_path_json[text] = `/list_tickets?category=${category}`;
+        // console.log(bread_path_json);
+    }
+    // watch(() => route.query.category, (newCategory) => {
+    // alert(newCategory);
+    // });
+
     loading.value = false;
 });
 
 function open_ticket(ticket_id) {
-    console.log(ticket_id);
-    // this.$router.push('/ticket/' + ticket_id);
+    // open in new tab
+    window.open(`/ticket/${ticket_id}`, '_blank');
 }
+
+const { cookies } = useCookies();
+const current_user = cookies.get('user');
+
+if (!current_user) {
+    console.log('cookie not found');
+    alert('Please login again to continue, could not find user details');
+}
+
+function category_sel(category, event) {
+    let cat_section_bar = document.getElementById('cat_section_bar');
+    Array.from(cat_section_bar.childNodes).forEach((child) => {
+        if (child.classList) {
+            child.classList.remove('cat_act');
+        }
+    });
+    event.target.classList.add('cat_act');
+
+    let ticket_list_data = document.getElementById('ticket_list_data');
+    let ticket_list = ticket_list_data.getElementsByTagName('tr');
+    for (let i = 0; i < ticket_list.length; i++) {
+        let ticket = ticket_list[i];
+        let status = ticket.getElementsByTagName('td')[9].innerText;
+        if (category === 'all') {
+            ticket.style.display = 'table-row';
+
+        } else if (category === 'open' && status === 'open') {
+            ticket.style.display = 'table-row';
+        } else if (category === 'closed' && status === 'closed') {
+            ticket.style.display = 'table-row';
+        } else if (category === 'pending' && status === 'pending') {
+            ticket.style.display = 'table-row';
+        }
+        // else if (category === 'action' && status === 'action') {
+        // ticket.style.display = 'table-row';} 
+        else if (category === 'my_tickets' && (ticket.getElementsByTagName('td')[6].innerText.toLowerCase() === current_user || ticket.getElementsByTagName('td')[7].innerText.toLowerCase() === current_user)) {
+            ticket.style.display = 'table-row';
+        }
+
+        else {
+            ticket.style.display = 'none';
+        }
+    }
+}
+
+
+function search_results() {
+    let search = document.getElementById('search').value.toLowerCase();
+    let ticket_list_data = document.getElementById('ticket_list_data');
+    let ticket_list = ticket_list_data.getElementsByTagName('tr');
+    for (let i = 0; i < ticket_list.length; i++) {
+        let ticket = ticket_list[i];
+        let fields = Array.from(ticket.getElementsByTagName('td')).map(td => td.innerText.toLowerCase());
+        let match = fields.some(field => field.includes(search));
+        if (match) {
+            ticket.style.display = 'table-row';
+            fields.forEach((field, index) => {
+                let regex = new RegExp(`(${search})`, 'gi');
+                ticket.getElementsByTagName('td')[index].innerHTML = field.replace(regex, '<span style="background-color: yellow;">$1</span>');
+            });
+        } else {
+            ticket.style.display = 'none';
+        }
+    }
+}
+function getPriorityColor(priority) {
+    if (priority === 'high') {
+        return 'red';
+    } else if (priority === 'medium') {
+        return 'orange';
+    } else if (priority === 'low') {
+        return 'green';
+    } else {
+        return 'black';
+    }
+}
+function getStoryPointsColor(story_points) {
+    if (story_points === '5') {
+        return 'maroon';
+    } else if (story_points === '3') {
+        return 'orange';
+    } else if (story_points === '1') {
+        return 'green';
+    } else {
+        return 'black';
+    }
+}
+
+
 </script>
 
 
@@ -204,15 +318,23 @@ function open_ticket(ticket_id) {
                 <h1 class="main_title">Tickets View<div class="ticket_id">{{ ticket_data.ticket_id }}</div>
                 </h1>
                 <div class="cat_section_bar cat_on">
-                    <div class="cat_section_bar ">
-                        <div class="cat_section cat_act">All</div>
-                        <div class="cat_section">Open</div>
-                        <div class="cat_section">Closed</div>
-                        <div class="cat_section">Pending</div>
-                        <div class="cat_section">Action</div>
+                    <div class="cat_section_bar " id="cat_section_bar">
+                        <div class="cat_section cat_act" @click="category_sel('all', $event)">All ({{ ticket_data.length
+                            }})</div>
+                        <div class="cat_section" @click="category_sel('open', $event)" id="open">Open ({{
+                            ticket_data.filter(ticket => ticket.status == 'open').length }})</div>
+                        <div class="cat_section" @click="category_sel('closed', $event)" id="closed">Closed ({{
+                            ticket_data.filter(ticket => ticket.status == 'closed').length }})</div>
+                        <div class="cat_section" @click="category_sel('pending', $event)" id="pending">Pending ({{
+                            ticket_data.filter(ticket => ticket.status == 'waiting for information').length }})</div>
+                        <!-- <div class="cat_section" @click="category_sel('action', $event)">Action ({{ ticket_data.filter(ticket => ticket.status === 'action').length }})</div> -->
+                        <div class="cat_section" @click="category_sel('my_tickets', $event)" id="my_tickets">My Tickets ({{
+                            ticket_data.filter(ticket => ticket.user.toLowerCase() === current_user ||
+                            ticket.assignee.toLowerCase() === current_user).length }})</div>
                     </div>
                     <div class="cat_search">
-                        <input type="text" placeholder="Search" class="top_search" />
+                        <input type="text" placeholder="Search" class="top_search" id="search"
+                            @keyup="search_results" />
                         <div class="cat_section_bar">
                             <button class="btnsort"><img src="https://img.icons8.com/ios/50/000000/filter.png" />
                             </button>
@@ -238,18 +360,27 @@ function open_ticket(ticket_id) {
                                 <th>Updated</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr v-for="(ticket, index) in ticket_data" :key="ticket.ticket_id">
+                        <tbody id="ticket_list_data">
+                            <tr v-for="(ticket, index) in ticket_data" :key="ticket.ticket_id"
+                                @click="open_ticket(ticket.ticket_id)">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ ticket.ticket_id }}</td>
-                                <td>{{ ticket.subject }}</td>
-                                <td>{{ ticket.priority }}</td>
-                                <td>{{ ticket.story_points }}</td>
+                                <td><a>{{ ticket.subject }}</a></td>
+                                <td :style="{ color: getPriorityColor(ticket.priority) }">{{ ticket.priority }}</td>
+                                <td :style="{ color: getStoryPointsColor(ticket.story_points) }">{{ ticket.story_points
+                                    }}</td>
                                 <td>{{ ticket.product_type }}</td>
-                                <td>{{ ticket.user }}</td>
-                                <td>{{ ticket.assignee }}</td>
-                                <td>{{ ticket.estimation }} hrs</td>
-                                <td>{{ ticket.status }}</td>
+                                <td
+                                    :style="{ fontStyle: ticket.user === current_user ? '' : 'none', color: ticket.user === current_user ? 'teal' : 'inherit' }">
+                                    {{ ticket.user }}</td>
+                                <td
+                                    :style="{ fontStyle: ticket.assignee === current_user ? '' : 'none', color: ticket.assignee === current_user ? 'teal' : 'inherit' }">
+                                    {{ ticket.assignee }}</td>
+                                <td>{{ ticket.logged_hrs.reduce((total, log) => total + parseFloat(log.logged), 0) }}/{{
+                                    ticket.estimation }} hrs</td>
+                                <td
+                                    :style="{ color: ticket.status.toLocaleLowerCase() === 'open' ? 'green' : ticket.status.toLocaleLowerCase() === 'closed' ? 'red' : ticket.status.toLocaleLowerCase() === 'pending' ? 'orange' : ticket.status.toLocaleLowerCase() === 'waiting for information' ? 'blue' : 'black' }">
+                                    {{ ticket.status }}</td>
                                 <td>{{ ticket.created }}</td>
                                 <td>{{ ticket.updated }}</td>
                             </tr>
@@ -669,9 +800,13 @@ select {
     align-items: stretch;
     width: 90%;
 }
-.cat_act{
+
+.cat_act {
     border-bottom: 0.1rem solid #000000;
+    background-color: rgba(0, 0, 0, 0.03);
+    min-width: max-content;
 }
+
 .top_search {
     border: none;
     border-radius: 0rem;
@@ -693,14 +828,17 @@ select {
     width: 92%;
     height: -webkit-fill-available;
 }
+
 .ticket_list::-webkit-scrollbar {
     width: 0.4rem;
     height: 0.3rem;
 }
+
 .ticket_list::-webkit-scrollbar-thumb {
     background-color: #bbbbbb;
     border-radius: 0.3rem;
 }
+
 .ticket_list::-webkit-scrollbar-track {
     background-color: #f1f1f1;
 }
@@ -748,5 +886,15 @@ th {
 
 .table_skirt {
     width: max-content;
+}
+
+td a {
+    text-decoration: underline;
+    color: blue !important;
+    font-family: wl1;
+}
+
+td a:hover {
+    color: #46BEAA !important;
 }
 </style>
