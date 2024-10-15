@@ -95,14 +95,13 @@ onMounted(() => {
     console.log(ticket_data.value);
 
     autoFill();
+    
+    // let doc_tetx = document.getElementById('desc_te');
+    // if (doc_tetx.scrollHeight <= 200) {
+    //     doc_tetx.style.height = 'auto';
+    //     doc_tetx.style.height = doc_tetx.scrollHeight + 'px';
+    // }
 
-    let doc_tetx = document.getElementById('desc_te');
-    if (doc_tetx.scrollHeight <= 200) {
-        doc_tetx.style.height = 'auto';
-        doc_tetx.style.height = doc_tetx.scrollHeight + 'px';
-    }
-
-    autoFill();
     extract_links();
     // sla_json_data.value.estimated = ticket_data.value.estimation;
 });
@@ -320,7 +319,7 @@ const handleAddComment = (newCommentText) => {
             <BreadCrumb :data="bread_path_json" />
 
             <div class="tile-container ">
-                <h1 class="main_title">{{ ticket_data.ticket_id }}:<div class="ticket_id">{{ ticket_data.subject }}
+                <h1 class="main_title">{{ ticket_data.ticket_id }}:<div class="ticket_id"> <input class="subject_edit" type="text" v-model="ticket_data.subject" :class="{ 'inp_desc_none': !ticket_data.subject }">
                     </div>
                 </h1>
                 <div class="cont_paral">
@@ -402,9 +401,9 @@ const handleAddComment = (newCommentText) => {
         <div class="input_cont">
             <label for="desc_te" class="inpt_desc_lab">Description</label>
             <textarea placeholder="Enter your name" class="input_field inp_desc" 
-                      :class="{ 'inp_desc_none': !ticket_data.text }" id="desc_te"
-                      v-model="ticket_data.text" @input="autoExpand;extract_links()">
-            </textarea>
+                                  :class="{ 'inp_desc_none': !ticket_data.text }" id="desc_te"
+                                  v-model="ticket_data.text" @input="autoExpand($event);extract_links()">
+                        </textarea>
         </div>
 
         <div class="input_cont con_spl" v-if="ticket_data.summary">
@@ -712,6 +711,8 @@ select {
     font-size: 1.7vw;
     font-weight: 500;
     color: rgb(197, 197, 197);
+    display: flex;
+    flex-direction: row;
 }
 
 .main-pane {
@@ -1088,8 +1089,9 @@ hv {
     word-spacing: 0.1vw;
     /* line-height: 1.5vw; */
     color: black;
-    min-width: 40vw;
+    min-width: 45vw;
     max-width: 45vw;
+    /* height: 6vh; */
     /* height: 5vw; */
 }
 
@@ -1375,4 +1377,26 @@ textarea:disabled {
     justify-content: flex-start;
     align-items: flex-start;
 }
+
+.subject_edit{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5vw;
+    align-content: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    cursor: pointer;
+    width: 34vw;
+    align-items: center;
+    outline: none;
+    font-size: 1.6vw;
+    border: 0.1vw solid transparent;
+    }
+    .subject_edit:hover{
+        background-color: #f0f0f093;
+    }
+    .subject_edit:focus{
+        outline: none;
+        border-bottom: 0.1vw solid #46BEAA;
+    }
 </style>
