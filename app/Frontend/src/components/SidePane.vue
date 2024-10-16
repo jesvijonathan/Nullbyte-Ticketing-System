@@ -193,8 +193,31 @@ const show_extra_dashboard = ref(false);
 
         <hr class="hv" v-if="$route.path.includes('ticket') && $route.path != '/list_tickets'">
       </div>
+
+
+      <div class="create_con tpls" v-if="$route.path.includes('profile')">
+        <div @click="handleClick('/profile')" :key="CreateTicket" class="side-pane-title-elements tpl tp1">
+          My Profile
+        </div>
+        <div @click="handleClick('/profile')" :key="CreateTicket" class="side-pane-title-elements tpl">
+          Account
+        </div>
+        <div @click="handleClick('/profile')" :key="CreateTicket" class="side-pane-title-elements tpl  ">
+          Notifications
+        </div>
+        <div @click="handleClick('/profile')" :key="CreateTicket" class="side-pane-title-elements tpl">
+          Security
+        </div>
+        <div @click="handleClick('/logout')" :key="CreateTicket" class="side-pane-title-elements tpl">
+          Logout
+        </div>
+
+        <hr class="hv" v-if="$route.path.includes('ticket') && $route.path != '/list_tickets'">
+      </div>
       <SidePaneItem class="side_panel_item" v-for="ticket in TicketItems" :key="ticket.ticket_id" :ticket="ticket"
-        v-if="$route.path != '/list_tickets'" />
+        v-if="$route.path != '/list_tickets' && $route.path != '/profile' && $route.path != '/service' && $route.path != '/chatbot'
+         && $route.path != '/llama'  && $route.path != '/vertex' && $route.path != '/about' && $route.path != '/vertex' && $route.path != '/inbox'"
+         > </SidePaneItem>
 
     </div>
     <div class="sp-footer">

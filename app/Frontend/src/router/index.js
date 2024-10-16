@@ -95,6 +95,33 @@ const router = createRouter({
       }
     },
     {
+      path: '/inbox',
+      name: 'Inbox',
+      component: () => import('../views/Inbox.vue'),
+      meta: {
+        breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }, { name: 'Complaint', path: '/complaint' }],
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/about',
+      name: 'About',
+      component: () => import('../views/About.vue'),
+      meta: {
+        breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }, { name: 'Complaint', path: '/complaint' }],
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: () => import('../views/Profile.vue'),
+      meta: {
+        breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }, { name: 'Complaint', path: '/complaint' }],
+        requiresAuth: true
+      }
+    },
+    {
       path: '/logout',
       name: 'logout',
       component: () => {

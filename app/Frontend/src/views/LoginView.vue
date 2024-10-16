@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
+import NavigationBarView from '@/views/NavigationBarView.vue';
+
 
 const showPassword = ref(false);
 
@@ -29,6 +31,7 @@ async function SubmitLogin() {
 
 
 <template>
+      <NavigationBarView />
   <div class="blue_moving_bg" v-if="blurBackground"></div>
   <div class="login-container">
     <!-- <div class="logo"><img src="@/assets/logo.png" alt="Worldline Logo" /></div> -->

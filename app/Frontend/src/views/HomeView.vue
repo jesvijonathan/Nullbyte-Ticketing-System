@@ -36,7 +36,13 @@ const tiles = [
 
 const handleTileClick = (title) => {
     const tile = tiles.find(tile => tile.title === title);
-    router.push(tile.link);
+    if (tile) {
+        router.push(tile.link).catch(err => {
+            if (err.name !== 'NavigationDuplicated') {
+                console.error(err);
+            }
+        });
+    }
 };
 
 

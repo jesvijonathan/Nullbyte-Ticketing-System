@@ -303,6 +303,18 @@ watch(convo, () => {
                                         </div>
                                     </div>
                                 </div>
+                                <div v-if="convoItem.attachment && Object.keys(convoItem.attachment).length">
+                                    <div v-for="(attachment, aIndex) in convoItem.attachment" :key="aIndex" class="attachment_item" :title="getFileTitle(attachment)">
+                                        <div class="attachment-preview">
+                                            <img v-if="attachment.mime_type && attachment.mime_type.includes('image')" :src="attachment.path" class="attachment-img" />
+                                            <span v-else class="attachment-icon">📄</span>
+                                        </div>
+                                        <div class="attachment-info">
+                                            <span class="file-name">{{ attachment.filename }}</span>
+                                            <div class="file-size">({{ (attachment.size / 1024).toFixed(2) }} KB)</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="convo_date">{{ convoItem.time }}</div>
                         </div>

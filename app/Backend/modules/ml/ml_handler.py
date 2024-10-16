@@ -29,12 +29,15 @@ class ChatbotHandler:
         self.customer_id= payload["upn"]
         self.result= chat_json
         self.history = {}
-        self.result["user"]= payload['upn']
         if(botid==2):
             self.chat_id=token
+            self.user= payload['upn']
+            self.result["user"]= payload['upn']
         else:
             self.socket= sockets[token]
             self.chat_id= self.socket["sid"]
+            self.user= payload['username']
+            self.result["user"]= payload['username']
         self.result["chat_id"]= self.chat_id
         self.result["user"]= payload['upn']
         self.result["ticket_id"]= "SVC-" + str(random.randint(10000, 99999))
@@ -190,7 +193,7 @@ class ChatbotHandler:
         print("chat closed : ", self.result)
 
         if(self.socketio):
-            self.socketio.emit("close_chat", {"close_chat": self.result}, room=self.socket["sid"])
+            self.socketio.emit("close_chat", {"closed_chat": self.result}, room=self.socket["sid"])
         # if self.token in sockets:
         #     del sockets[self.token]
 

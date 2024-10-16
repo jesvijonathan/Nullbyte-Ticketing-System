@@ -44,36 +44,28 @@ const handleOptionsMouseLeave = () => {
 
 const more_options = {
     'Home': [
-        "More About Worldline",
-        "Products",
-        "Development",
-        "2024 Q1 Roadmap",
-        "2024 Q2 Roadmap",
-        "Financials",
-        "Investors",
+        "WL Vertex AI",
+        "WL LLama",
+        "AutoFill",
+        "Document Analyser",
     ],
     'About': [
-        "About WGS",
-        "Our Mission",
-        "Our Vision",
-        "Our Values",
-        "Our Services",
+        "Create Ticket",
+        "View Tickets",
+        "Approval"
     ],
     'Contact': [
-        "Contact Us",
-        "Service",
-        "Sales",
-        "Careers",
-        "Partners",
-        "Locations",
+        "Analytics",
+        "Reports",
+        "Alerts",
+        "Help Desk",
     ],
     'Dev': [
-        "API",
-        "SDK",
-        "Documentation",
-        "Tutorials",
-        "Community",
-        "Blog",
+        "Profile",
+        "Account",
+        "Notifications",
+        "Security",
+        "Logout",
     ],
 };
 </script>
