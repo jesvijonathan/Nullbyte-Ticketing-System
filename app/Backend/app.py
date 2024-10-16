@@ -91,7 +91,14 @@ def get_jsonl():
         for line in f:
             load_jsonl.append(json.loads(line))
     return jsonify(load_jsonl)
-    
+
+
+@app.route('/text_form', methods=['POST'])
+def text_form():
+    form_data = request.json 
+    print(json.dumps(form_data, indent=4))
+    return json.dumps(form_data, indent=4) 
+
 
 
 # Socket IO event handling

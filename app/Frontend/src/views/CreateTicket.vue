@@ -15,15 +15,24 @@ let bread_path_json = {
 const attachments = ref([]);
 
 const handleFileChange = (event) => {
-    
     loading.value = true;
     const files = Array.from(event.target.files);
-    attachments.value.push(...files);
-
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            attachments.value.push({
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                base64: e.target.result
+            });
+        };
+        reader.readAsDataURL(file); // or reader.readAsArrayBuffer(file) if needed
+    });
     event.target.value = '';
-    
     loading.value = false;
 };
+
 
 const removeAttachment = (index) => {
     attachments.value.splice(index, 1);
@@ -117,6 +126,7 @@ const reset_form = () => {
         "created": "",
         "updated": "",
         "comments": [
+            "dick", "suck"
         ],
         "logged_hrs": [
         ]
@@ -124,6 +134,33 @@ const reset_form = () => {
 
     attachments.value = [];
     loading.value = false;
+};
+
+// let create_url="http://127.0.0.1:5000/text_form";
+let create_url="http://127.0.0.1:5000/ticket/create";
+
+
+const submitForm = async () => {
+    const payload = {
+        ...ticket_data.value,
+        attachments: attachments.value
+    };
+
+    console.log('submitting form:', payload);
+
+    try {
+        const response = await fetch(create_url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        console.log(result);
+    } catch (error) {
+        console.error('Error submitting form:', error);
+    }
 };
 </script>
 
@@ -283,7 +320,7 @@ const reset_form = () => {
 
 
                             <div class="input_cont_2  last_cno">
-                                <button class="btn">Create</button>
+                                <button class="btn" @click="submitForm">Create</button>
                                 <button class="btn_cancel">
                                     <img src="https://img.icons8.com/ios/50/000000/cancel.png" alt="cancel" />
                                 </button>
