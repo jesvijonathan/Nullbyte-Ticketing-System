@@ -28,7 +28,7 @@ def authenticate():
     logger.info(f"Authenticating user: {username}")
 
     if username == ADMIN_CRED['username'] and password == ADMIN_CRED['password']:
-        payload = {'username': 'Administrator', 'ou': [], 'upn': 'administrator@nullbyte.exe'}
+        payload = {'username': ADMIN_CRED['username'], 'ou': [], 'upn': 'administrator@nullbyte.exe'}
     elif lwrapper.Authenticate(username, password):
         payload = lwrapper.getPayload(username)
 

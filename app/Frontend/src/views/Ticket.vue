@@ -294,10 +294,19 @@ function total_logged_hrs(){
 }
  
 
+import { useCookies } from 'vue3-cookies';
+const { cookies } = useCookies();
+const current_user = cookies.get('user');
+
+if (!current_user) {
+    console.log('cookie not found');
+    alert('Please login again to continue, could not find user details');
+}
+
 const handleAddComment = (newCommentText) => {
   const newComment = {
     comment_id: ticket_data.value.comments.length + 1, // Generate a unique ID for the new comment
-    user: 'CurrentUser', // Replace with dynamic user if needed
+    user: current_user, // Replace with dynamic user if needed
     text: newCommentText,
     date: new Date().toISOString() // Capture the current date
   };

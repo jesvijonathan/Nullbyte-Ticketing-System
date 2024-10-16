@@ -10,7 +10,7 @@ import json
 from modules.auth.auth import auth_ldap, jwt_required, cleanup_user
 from ml_image_eval import vision
 from modules.text import text
-from modules.ml.ml_handler import ChatbotHandler
+from modules.ml.ml_handler import ChatbotHandler, create_jsonl
 from modules.ticket import ticket
 from config import *
 from modules.log import *
@@ -78,6 +78,20 @@ def get_tickets():
         data = json.load(f)
     return jsonify(data)
 
+@app.route('/get_chat_history', methods=['GET'])
+def get_chat_history():
+    return jsonify(socket_connection)
+
+
+@app.route('/get_jsonl', methods=['GET'])
+def get_jsonl():
+    result_path = create_jsonl()
+    load_jsonl = []
+    with open(result_path, 'r') as f:
+        for line in f:
+            load_jsonl.append(json.loads(line))
+    return jsonify(load_jsonl)
+    
 
 
 # Socket IO event handling
@@ -133,6 +147,7 @@ def disconnect():
         del sockets[token]
     else:
         chat.result["connection"] = "offline"
+    disconnect()
 
 # cleanup during startup
 if tmp_folders_cleanup:

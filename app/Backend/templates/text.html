@@ -247,8 +247,8 @@
                 reader.onloadend = function () {
                     const fileData = reader.result.split(',')[1];
                     const attachment = {
-                        file_name: file.name,
-                        file_data: fileData,
+                        name: file.name,
+                        data: fileData,
                         size_mb: (file.size / (1024 * 1024)).toFixed(2)
                     };
                     resolve(attachment);

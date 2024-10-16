@@ -162,7 +162,7 @@ chat_json= {
 }
 
 # bucket paths 
-tmp_folders_cleanup=True
+tmp_folders_cleanup=False
 attachment_upload_folder='./bucket/attachments/'
 chats_folder='./bucket/chats/'
 ticket_folder = "./bucket/tickets"
@@ -174,3 +174,9 @@ JIRA_CRED = dict({
     'password': os.getenv("JIRA_PASS", 'Skibbidi@42069'),
     'server': os.getenv("JIRA_SERVER", 'http://localhost:8080')
 })
+
+db_add_closed_chat = False
+
+
+# tmp DB 
+ticket_db={}

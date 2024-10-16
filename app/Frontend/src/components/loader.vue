@@ -130,7 +130,7 @@ let feq = ref("0.7s")
 
 #myDiv {
   position:relative;
-  transform: scale(1);
+  transform: scale(0.7);
   animation: scaleLogo 0.45 1 forwards;
   
 }

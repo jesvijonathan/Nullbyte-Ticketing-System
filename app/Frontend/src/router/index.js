@@ -67,6 +67,34 @@ const router = createRouter({
       }
     },
     {
+      path: '/chatbot',
+      name: 'chatbot',
+      component: () => import('../views/ChatboMenu.vue'),
+      meta: {
+        breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }, { name: 'Complaint', path: '/complaint' }],
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/vertex',
+      name: 'Chatbot Vertex',
+      component: () => import('../views/Chatbot.vue'),
+      meta: {
+        breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }, { name: 'Complaint', path: '/complaint' }],
+        requiresAuth: true
+      }
+    },
+
+    {
+      path: '/llama',
+      name: 'Chatbot Llama',
+      component: () => import('../views/Chatbot.vue'),
+      meta: {
+        breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }, { name: 'Complaint', path: '/complaint' }],
+        requiresAuth: true
+      }
+    },
+    {
       path: '/logout',
       name: 'logout',
       component: () => {

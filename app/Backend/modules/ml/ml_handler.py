@@ -25,7 +25,7 @@ class ChatbotHandler:
         self.botid=botid if botid else 1
         self.token= token
         self.mail = {"response": "", "processing": False, "RepliedBot": ""}
-        self.user= payload['upn']
+        self.user= payload['username']
         self.customer_id= payload["upn"]
         self.result= chat_json
         self.history = {}
@@ -36,11 +36,15 @@ class ChatbotHandler:
             self.socket= sockets[token]
             self.chat_id= self.socket["sid"]
         self.result["chat_id"]= self.chat_id
+        self.result["user"]= payload['upn']
+        self.result["ticket_id"]= "SVC-" + str(random.randint(10000, 99999))
+        self.attachments = []
+        
         self.bot, self.chat= self.initialize_bot(chatbot_fallback)
         self.fallback= self.initialize_fallback(chatbot_fallback)
         self.fell= False
 
-        self.bucket_dir = chats_folder
+        self.bucket_dir = os.path.join(chats_folder, self.user, self.chat_id)
         os.makedirs(self.bucket_dir, exist_ok=True)
 
         self.init_chat()
@@ -73,9 +77,10 @@ class ChatbotHandler:
         if attachments_list:
             attachment_count = 0
             for attachment in attachments_list:
-                binary_file_data = attachment['file_data']
-                b_file_data = base64.b64decode(attachment['file_data'])
-                google_string, filename, mime = self.parse_attachment(b_file_data, secure_filename(attachment['file_name']))
+                print(attachment)
+                binary_file_data = attachment['data']
+                b_file_data = base64.b64decode(attachment['data'])
+                google_string, filename, mime = self.parse_attachment(b_file_data, secure_filename(attachment['name']))
                 filename = filename
                 file_path = os.path.join(self.bucket_dir, self.chat_id, filename)
     
@@ -91,6 +96,8 @@ class ChatbotHandler:
                 'mime_type': mime,
                 'size': len(b_file_data),
                 }
+
+                self.attachments.append(self.history[len(self.history)]["attachment"][attachment_count])
                     
                 # print("00000000000:",  binary_file_data, "\n\n", b_file_data)
                 attachments.append({
@@ -135,23 +142,36 @@ class ChatbotHandler:
     def close_chat(self):
         self.result["connection"]= "closed"
         # logic to add details to db here, for later
-        print("\n\nresult starts here:")
-        res=self.result
-        tid=BotAdmin().create_ticket(res)['id']
-        if[tid]:
-            self.result["ticket_id"]=str(tid)
-        print(res)
-        print("\n\nresult ends here:")
+        if db_add_closed_chat:
+            print("\n\nresult starts here:")
+            res=self.result
+            tid=BotAdmin().create_ticket(res)['id']
+            if[tid]:
+                self.result["ticket_id"]=str(tid)
+            print(res)
+            print("\n\nresult ends here:")
         
         ticket_folder = "./bucket/tickets"
         os.makedirs(ticket_folder, exist_ok=True)
         
-        this_ticket_folder = os.path.join(ticket_folder, "SVC-" + self.result["ticket_id"])
+        this_ticket_folder = os.path.join(ticket_folder, self.result["ticket_id"])
         os.makedirs(this_ticket_folder, exist_ok=True)
         chat_file = os.path.join(this_ticket_folder, "chat.json")
         
+        # have to store this details somewhere in db
+        # final_file['ticket_id']=self.result["ticket_id"]
+        # final_file['chat_id']=self.chat_id
+        # final_file['user']=self.user
+        chat_history={
+            "chat_id": self.chat_id,
+            "ticket_id": self.result["ticket_id"],
+            "user": self.user,
+            "history": self.history,
+            "closed_chat": self.result
+        }
+
         with open(chat_file, "w") as f:
-            json.dump(self.history, f)
+            json.dump(chat_history, f)
         
         for key in self.history:
             if "attachment" in self.history[key]:
@@ -167,6 +187,7 @@ class ChatbotHandler:
                         except:
                             print("Error moving attachment file")
                             pass
+        print("chat closed : ", self.result)
 
         if(self.socketio):
             self.socketio.emit("close_chat", {"close_chat": self.result}, room=self.socket["sid"])
@@ -262,10 +283,32 @@ class ChatbotHandler:
                 self.llama_generate(response_msg, attachment)
         return
     
+    def parse_json(self, json_msg_dict):
+        tmp_json = chat_json
+        for key in json_msg_dict:
+            tmp_json[key] = json_msg_dict[key]
+        tmp_json["chat_id"] = self.chat_id
+        tmp_json["user"] = self.user
+        tmp_json["ticket_id"] = self.result["ticket_id"]
+        tmp_json["created"] = datetime.datetime.now().isoformat()
+        tmp_json["updated"] = tmp_json["created"]
+        tmp_json["attachments"] = self.attachments
+        # for key in tmp_json:
+        #     if key == "attachments":
+        #         for attachment in tmp_json[key]:
+        #             attachment["path"] = os.path.join(self.bucket_dir, self.chat_id, attachment["name"])
+        #             attachment["size"] = os.path.getsize(attachment["path"])
+        #             attachment["type"] = mimetypes.guess_type(attachment["path"])[0] or "application/octet-stream"
+        #             attachment["url"] = f"/attachments/{self.chat_id}/{attachment['name']}"
+        return tmp_json
+         
+    
     def handle_response(self, text_response):
         json_msg_dict, reply_msg = self.extract_json_response(text_response)
+        print("@@@@@@@@@@@@@2", json_msg_dict, "\n\n", reply_msg)
     
         if json_msg_dict:
+            json_msg_dict = self.parse_json(json_msg_dict)
             self.result.update(json_msg_dict)
             self.reply_send(reply_msg)
             self.mail["response"]=reply_msg
@@ -323,9 +366,9 @@ class ChatbotHandler:
         # save the attachment to the bucket
         for attachment in attachment_list:
             """ Receives attachment data from frontend and processes it. """
-            file_name = attachment['file_name'] 
+            file_name = attachment['name'] 
             file_name = secure_filename(file_name)
-            file_data = base64.b64decode(attachment['file_data']) 
+            file_data = base64.b64decode(attachment['data']) 
             print ("AAAAAAAAAAAAAAAAA", attachment)
             encoded_file, file_name, mime = self.parse_attachment(file_data, file_name)
             if(self.socketio):
@@ -333,19 +376,33 @@ class ChatbotHandler:
             
     def extract_json_response(self, text_response):
         text_response = re.sub(r'//.*?(\r?\n|$)', '\n', text_response)
-    
         text_response = re.sub(r',\s*([}\]])', r'\1', text_response)
+        
+        json_field_pattern = re.compile(r'{\s*["\']?(subject|chat_id|ticket_id|user|medium|text|summary|attachments|product_type|issue_type|priority|story_points|estimation|analysis|reply|assingee|status|created|updated|comments|logged_hrs)["\']?\s*:')
+        json_msg=""
+
         if "```json" in text_response:
             start_index = text_response.index("```json") + len("```json")
             end_index = text_response.index("```", start_index)
             json_msg = text_response[start_index:end_index].strip()
-        elif "{ \"subject\":" in text_response or '``` { "subject":' in text_response:
-            start_index = text_response.index('{ "subject":')
-            end_index = text_response.index('}', start_index) + 1
-            json_msg = text_response[start_index:end_index].strip()
         else:
-            # No JSON found, returning the plain text response
-            return None, text_response.strip()
+            match = json_field_pattern.search(text_response)
+            if match:
+                start_index = match.start()
+                end_index = self.find_closing_brace(text_response, start_index)
+                if end_index != -1:
+                    json_msg = text_response[start_index:end_index].strip()
+                else:
+                    return None, text_response.strip()
+            # else:
+            #     try:
+            #         json_msg_dict = json.loads(text_response.strip())
+            #         reply_msg = json_msg_dict.get("reply") or default_reply_msg
+            #         return json_msg_dict, reply_msg
+            #     except json.JSONDecodeError as e:
+            #         print(f"JSON decoding error: {e}")
+            #         print(f"Problematic JSON: {text_response}")
+            #         return None, text_response.strip()  
 
         try:
             json_msg_dict = json.loads(json_msg)
@@ -353,5 +410,64 @@ class ChatbotHandler:
             return json_msg_dict, reply_msg
         except json.JSONDecodeError as e:
             print(f"JSON decoding error: {e}")
-            print(f"Problematic JSON: {json_msg}")
+            print(f"Problematic JSON: {text_response}")
             return None, text_response.strip()
+
+    def find_closing_brace(self, text, start_index):
+        """Finds the index of the closing brace '}' that balances the opening one."""
+        open_braces = 0
+        for i in range(start_index, len(text)):
+            if text[i] == '{':
+                open_braces += 1
+            elif text[i] == '}':
+                open_braces -= 1
+                if open_braces == 0:
+                    return i + 1  # Return the index after the closing brace
+        return -1  # No matching closing brace found
+
+
+import os
+import json 
+def create_jsonl():
+    # Create a JSONL file
+    # Get all JSON files from within chats_folder/* and its subdirectories
+    # Create a JSONL file with all the JSON files and include the directory as a key
+    # Return the JSONL file path
+
+    # Also get all JSON from ticket_folder and its subdirectories, and add to the JSONL file
+    json_files = []
+    ticket_files = []
+
+    # Get JSON files from chats folder
+    for root, dirs, files in os.walk(chats_folder):
+        for file in files:
+            if file.endswith(".json"):
+                json_files.append((os.path.join(root, file), os.path.basename(root)))
+
+    # Get JSON files from ticket folder
+    for root, dirs, files in os.walk(ticket_folder):
+        for file in files:
+            if file.endswith(".json"):
+                ticket_files.append((os.path.join(root, file), os.path.basename(root)))
+
+    # Combine both chat and ticket JSON files
+    json_files.extend(ticket_files)
+
+    # Define the path for the output JSONL file
+    jsonl_file = os.path.join(chats_folder, "all_chats.jsonl")
+
+    # Write the JSON objects to the JSONL file
+    with open(jsonl_file, "w") as f:
+        for file, dir_name in json_files:
+            with open(file, "r") as jf:
+                # Load each JSON file content as a Python dictionary
+                data = json.load(jf)
+                # Wrap the JSON data with a new key (directory name) and write it to the JSONL file
+                wrapped_data = {dir_name: data}
+                # Write the wrapped JSON object as a single line in the JSONL file
+                f.write(json.dumps(wrapped_data) + "\n")
+
+    return jsonl_file
+
+
+    
