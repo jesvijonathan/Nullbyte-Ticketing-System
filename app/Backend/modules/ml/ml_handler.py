@@ -20,19 +20,22 @@ import re
 
 # chatbot handler for socketio and manager
 class ChatbotHandler:
-    def __init__(self, token, socketio,payload):
+    def __init__(self, token, socketio=None,payload=None,botid=None):
         self.socketio= socketio
+        self.botid=botid if botid else 1
         self.token= token
+        self.mail = {"response": "", "processing": False, "RepliedBot": ""}
         self.user= payload['upn']
         self.customer_id= payload["upn"]
-        self.socket= sockets[token]
-        self.chat_id= self.socket["sid"]
-        self.history = {}
         self.result= chat_json
-        self.result["chat_id"]= self.chat_id
+        self.history = {}
         self.result["user"]= payload['upn']
-        self.result["ticket_id"]= "SVC-" + str(random.randint(10000, 99999))
-
+        if(botid==2):
+            self.chat_id=token
+        else:
+            self.socket= sockets[token]
+            self.chat_id= self.socket["sid"]
+        self.result["chat_id"]= self.chat_id
         self.bot, self.chat= self.initialize_bot(chatbot_fallback)
         self.fallback= self.initialize_fallback(chatbot_fallback)
         self.fell= False
@@ -64,6 +67,7 @@ class ChatbotHandler:
             'time': datetime.datetime.now().isoformat(),
             'message': response_msg
         }
+        self.mail["processing"]= True
     
         attachments = []  
         if attachments_list:
@@ -164,8 +168,8 @@ class ChatbotHandler:
                             print("Error moving attachment file")
                             pass
 
-
-        self.socketio.emit("close_chat", {"close_chat": self.result}, room=self.socket["sid"])
+        if(self.socketio):
+            self.socketio.emit("close_chat", {"close_chat": self.result}, room=self.socket["sid"])
         # if self.token in sockets:
         #     del sockets[self.token]
 
@@ -217,6 +221,7 @@ class ChatbotHandler:
             print("Sending message:", message_payload)
             response = self.chat.send_message(message_payload)
             self.handle_response(response)
+            self.mail["RepliedBot"]= "wl_llama"
         except Exception as e:
             print(f"An error occurred: {e}")
             self.fallback_handle()
@@ -230,16 +235,19 @@ class ChatbotHandler:
             if response.candidates:
                 text_response = response.candidates[0].content.parts[0].text
                 self.handle_response(text_response)
+                self.mail["RepliedBot"]= "wl_vertex"
         except ResourceExhausted:
             print("Quota exceeded. Waiting before retrying...")
             self.fallback_handle()
         except json.JSONDecodeError as e:
             print(f"JSON decoding error: {e}")
-            self.socketio.emit("message", {"message": "JSON decoding error: " + str(e)}, room=self.socket["sid"])
+            if(self.socketio):
+                self.socketio.emit("message", {"message": "JSON decoding error: " + str(e)}, room=self.socket["sid"])
             self.fallback_handle()
         except Exception as e:
             print(f"An error occurred: {e}")
-            self.socketio.emit("message", {"message": str(e)}, room=self.socket["sid"])
+            if(self.socketio):
+                self.socketio.emit("message", {"message": str(e)}, room=self.socket["sid"])
             self.fallback_handle()
 
     
@@ -260,11 +268,14 @@ class ChatbotHandler:
         if json_msg_dict:
             self.result.update(json_msg_dict)
             self.reply_send(reply_msg)
+            self.mail["response"]=reply_msg
             print("Response received successfully:", self.result)
             self.close_chat()
         else:
             print("Response received successfully (No JSON found in the response; processing as plain text.):", self.result)
             self.reply_send(reply_msg if reply_msg else text_response)
+            self.mail["response"]=reply_msg
+        self.mail["processing"]= False
     
     def reply_send(self, reply_msg):
         # bot reply
@@ -273,7 +284,8 @@ class ChatbotHandler:
             'time': datetime.datetime.now().isoformat(),
             'message': reply_msg
         }
-        self.socketio.emit("live_chat", {"live_chat": self.history}, room=self.socket["sid"])
+        if(self.socketio):
+            self.socketio.emit("live_chat", {"live_chat": self.history}, room=self.socket["sid"])
         return reply_msg
     
     def parse_attachment(self, file_data, file_name):
@@ -316,7 +328,8 @@ class ChatbotHandler:
             file_data = base64.b64decode(attachment['file_data']) 
             print ("AAAAAAAAAAAAAAAAA", attachment)
             encoded_file, file_name, mime = self.parse_attachment(file_data, file_name)
-            self.socketio.emit("attachment_saved", {"message": f"Attachment {file_name} received and saved."}, room=self.socket["sid"])
+            if(self.socketio):
+                self.socketio.emit("attachment_saved", {"message": f"Attachment {file_name} received and saved."}, room=self.socket["sid"])
             
     def extract_json_response(self, text_response):
         text_response = re.sub(r'//.*?(\r?\n|$)', '\n', text_response)

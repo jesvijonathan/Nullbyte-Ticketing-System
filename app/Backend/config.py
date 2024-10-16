@@ -26,11 +26,17 @@ ADMIN_CRED_2 = dict({
     'password': os.getenv('SVC_ACC_PASS', 'nig')
 })
 
+MAIL_CRED = dict({
+    'username': os.getenv('MAIL_ACC', 'nig'),
+    'password': os.getenv('MAIL_ACC_PASS', 'nig')
+})
+
 # dict data | should convert/store to db 
 users = {} # token, userid, 
 users_token = {}
 sockets = {} # connection_status, chat_object
 socket_connection = {}
+mailchains={}
 
 # Database configuration
 DATABASE_HOST = os.getenv("DATABASE_HOST", "localhost")
