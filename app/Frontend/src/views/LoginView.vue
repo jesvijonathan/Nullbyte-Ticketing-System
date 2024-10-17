@@ -2,9 +2,10 @@
 import { ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import NavigationBarView from '@/views/NavigationBarView.vue';
-
+import { useCookies } from 'vue3-cookies';
 
 const showPassword = ref(false);
+const { cookies } = useCookies();
 
 const handleShowPassword = () => {
   showPassword.value = !showPassword.value;
@@ -19,8 +20,11 @@ let errors = ref("");
 async function SubmitLogin() {
   const authStore = useAuthStore();
 
+
   try {
     errors.value = await authStore.login(email.value, password.value);
+    cookies.set('email', email.value);
+
   } catch (error) {
     errors.value = "Login failed. Please try again.";
   }

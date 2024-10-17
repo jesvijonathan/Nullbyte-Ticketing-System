@@ -82,7 +82,7 @@ const more_options = {
             <router-link @mouseenter="handleMouseEnter" to="/tickets">Tickets</router-link>
             <router-link @mouseenter="handleMouseEnter" to="/dashboard">Dashboard</router-link>
             <router-link @mouseenter="handleMouseEnter" to="/settings">Settings</router-link>
-                <div class="nav_profile"  @mouseenter="handleOptionsMouseLeave"><div style="display: none;">Profile</div><img class="nav_profile_img" :src="ProfileImg" alt="Profile" title="Profile" /></div>
+                <div class="nav_profile" @click="$router.push('/profile')"  @mouseenter="handleOptionsMouseLeave"><div style="display: none;">Profile</div><img class="nav_profile_img" :src="ProfileImg" alt="Profile" title="Profile" /></div>
         </div>
         <div class="nav_more_options_container" @mouseleave="handleOptionsMouseLeave" :style="moreOptionsStyle">
             <div v-for="(option, index) in more_options[currentOptions]" :key="index">

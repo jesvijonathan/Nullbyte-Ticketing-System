@@ -156,6 +156,7 @@ function getStoryPointsColor(story_points) {
                     <div class="cat_section_bar " id="cat_section_bar">
                         <div class="cat_section cat_act" @click="category_sel('all', $event)">All ({{ ticket_data.length
                             }})</div>
+
                         <div class="cat_section" @click="category_sel('open', $event)" id="open">Open ({{
                             ticket_data.filter(ticket => ticket.status == 'open').length }})</div>
                         <div class="cat_section" @click="category_sel('closed', $event)" id="closed">Closed ({{
@@ -164,8 +165,8 @@ function getStoryPointsColor(story_points) {
                             ticket_data.filter(ticket => ticket.status == 'waiting for information').length }})</div>
                         <!-- <div class="cat_section" @click="category_sel('action', $event)">Action ({{ ticket_data.filter(ticket => ticket.status === 'action').length }})</div> -->
                         <div class="cat_section" @click="category_sel('my_tickets', $event)" id="my_tickets">My Tickets ({{
-                            ticket_data.filter(ticket => ticket.user.toLowerCase() === current_user ||
-                            ticket.assignee.toLowerCase() === current_user).length }})</div>
+                            ticket_data.filter(ticket => (ticket.user && ticket.user.toLowerCase() === current_user) ||
+                            (ticket.assignee && ticket.assignee.toLowerCase() === current_user)).length }})</div>
                     </div>
                     <div class="cat_search">
                         <input type="text" placeholder="Search" class="top_search" id="search"

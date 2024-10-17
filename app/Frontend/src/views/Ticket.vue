@@ -350,6 +350,29 @@ function handle_delete(){
         });
     
 }
+
+let update_url = "http://localhost:5000/update_ticket";
+
+function update_ticket(){
+    // request /update_ticket
+    fetch(update_url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ticket_data.value),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            alert('Ticket updated successfully');
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error updating ticket');
+        });
+}
+
 </script>
 
 
@@ -542,8 +565,8 @@ function handle_delete(){
 
 
                                 <div class="input_cont_2 but_con al_but">
-                                    <button class="btn">Move To Jira</button>
-                                    <button class="btn_cancel">
+                                    <button class="btn jira">Move To Jira</button>
+                                    <button class="btn_cancel save" @click="update_ticket">
                                         <img src="https://img.icons8.com/ios/50/000000/save.png">
                                     </button>
                                     <button class="btn_cancel" @click="handle_delete">
@@ -1489,5 +1512,18 @@ textarea:disabled {
 .subject_edit:focus {
     outline: none;
     border-bottom: 0.1vw solid #46BEAA;
+}
+.save{
+    background-color: rgb(188, 89, 89);
+}
+.jira{
+    filter: invert(0);
+    background-color: rgba(71, 165, 71, 0);
+    border: 0.1vw solid #46BEAA;
+    color: #000000;
+}
+.jira:hover{
+    background-color: #46BEAA;
+    color: white;
 }
 </style>

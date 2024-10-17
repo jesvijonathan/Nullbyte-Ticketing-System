@@ -126,7 +126,16 @@ const router = createRouter({
       name: 'logout',
       component: () => {
         const authStore = useAuthStore();
+        
+        // Perform logout from auth store
         authStore.logout();
+    
+        // Delete 'user' and 'session' cookies
+        document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    
+        // Optionally, you can also redirect after logout
+        window.location.href = '/login'; // or wherever you want to redirect the user
       },
       meta: { requiresAuth: true }
     },

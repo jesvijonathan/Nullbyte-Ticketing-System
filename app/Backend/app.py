@@ -17,7 +17,8 @@ from modules.log import *
 import base64
 import shutil
 import modules.db.db_models as db_models
-
+import mimetypes
+from mimetypes import guess_extension
 from werkzeug.utils import secure_filename
 import random
 
@@ -86,7 +87,25 @@ def get_ticket(ticket_id=None):
     # Return an empty response if ticket_id is None or not found
     return jsonify({})
 
-    
+
+@app.route('/update_ticket', methods=['POST'])
+def update_ticket():
+    ticket_data = request.json
+    ticket_id = ticket_data.get('ticket_id')
+    if not ticket_id:
+        return jsonify({"error": "Ticket ID is required"}), 400
+    ticket_path = os.path.join(ticket_folder, ticket_id)
+    if os.path.isdir(ticket_path):
+        chat_file = os.path.join(ticket_path, "data.json")
+        if os.path.isfile(chat_file):
+            with open(chat_file, "r") as f:
+                data = json.load(f)
+                data.update(ticket_data)
+                with open(chat_file, "w") as f:
+                    json.dump(data, f)
+                return jsonify(data)
+    return jsonify({"error": "Ticket not found"}), 404
+
 @app.route('/get_incomplete_ticket', methods=['GET'])
 def get_incomplete_ticket():
     with open('dataset/ticket_not.json') as f:
@@ -176,13 +195,9 @@ def text_form():
 
     with open(chat_file, "w") as f:
         json.dump(chat_history, f)
-
-
     return json.dumps(chat_history, indent=4) 
 
 
-import mimetypes
-from mimetypes import guess_extension
 
 def parse_attachment(file_data, file_name, folder_this):
     """ Save attachment to bucket/chat_id folder and return base64 encoded content. """
