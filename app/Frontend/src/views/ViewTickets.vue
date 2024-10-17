@@ -16,7 +16,7 @@ let bread_path_json = {
 
 const loading = ref(true);
 
-const get_tickets_url = "http://localhost:5000/get_tickets";
+const get_tickets_url = document.baseURL+ "/get_tickets";
 
 // get category passed via url params
 
