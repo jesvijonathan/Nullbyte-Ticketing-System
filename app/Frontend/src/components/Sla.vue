@@ -224,14 +224,14 @@ const total_logged = computed(() => {
 
 <template>
     <div class="sla-container">
-        <div class="sla_text">Time to SLA</div>
+        <div class="sla_text">SLA Time</div>
         <div class="progress">
             <div class="progress-bar" role="progressbar" :style="{ width: perscent_sla + '%' }">
             </div>
         </div>
         <div class="sla_text">
             <!-- {{ loggs.reduce((acc, log) => acc + parseInt(log.logged), 0) }} -->
-              <input class="numbner_sla" type="number" @change="add_log($event)" min="0" :v-model="total_logged" :max="esthours" />
+              <input class="numbner_sla alfron" type="number" @change="add_log($event)" min="0" :v-model="total_logged" :max="esthours" />
             /  <input class="numbner_sla" type="number" v-model="esthours" @input="update_est" /> hrs
         </div>
         <!-- <div class="sla_text">{{ total_logged }} / {{ estimated_hrs }} hrs</div> -->
@@ -328,5 +328,11 @@ animation: progress 0.3s linear ;
     margin-top:1.8vw !important;
     margin-bottom: 0.5vw !important;
     /* transform: scale(0.9); */
+}
+.alfron{
+    margin-right: 0vw;
+    padding: 0;
+    margin: 0;
+    width: 1.4vw;
 }
 </style>

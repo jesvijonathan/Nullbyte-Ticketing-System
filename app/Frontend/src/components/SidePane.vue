@@ -1,112 +1,29 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import SidePaneItem from './SidePaneItem.vue';
 
 const sidePaneItems = ['Dashboard', 'Chatbot', 'Inbox', 'Ticket', 'Reports', 'HelpDesk', 'Create Ticket'];
 
 const TicketItems = ref([
-  {
-    chat_id: "tRAFcELKK5xiAK6FAAAD",
-    ticket_id: "SVC-000000",
-    user: "admin",
-    medium: "",
-    connection: "closed",
-    text: "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    subject: "wlpfo Transaction Declined for P025 Value 28",
-    summary: "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    attachments: [
-      {
-        name: "Transaction Logs",
-        type: "text/plain",
-        url: "https://example.com/logs.txt",
-        details: "The logs show successful transactions when P025 is 00 and declined transactions when P025 is 28. Errors like \"[ERROR]: P025 invalid\" are present. The logs also contain details of GICC capture, GICC authorization request, compose message, and e-commerce transaction details. Further analysis suggests potential conflicts with specific transaction parameters or conditions related to P025 field validation.",
-        size: "4382"
-      }
-    ],
-    product_type: "wlpfo",
-    issue_type: "bug",
-    priority: "high",
-    story_points: "5",
-    estimation: "8",
-    analysis: "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
-    reply: "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
-    assingee: "developer_1",
-    status: "open",
-    created: "2021-07-15T10:00:00",
-    updated: "2021-07-15T10:00:00",
-    comments: [
-      {
-        comment_id: "1",
-        user: "developer_1",
-        text: "I will start investigating the issue with P025 validation in wlpfo. I'll update you with my findings and progress.",
-        date: "2021-07-15T10:30:00"
-      }
-    ],
-    logged_hrs: [
-      {
-        user: "developer_1",
-        logged: "2",
-        date: "2021-07-15T10:30:00"
-      },
-      {
-        user: "developer_1",
-        logged: "3",
-        date: "2021-07-16T10:30:00"
-      }
-    ]
-  },
-  {
-    chat_id: "tRAFcELKK5xiAK6FAAAD",
-    ticket_id: "SVC-11111",
-    user: "admin",
-    medium: "",
-    connection: "closed",
-    text: "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    subject: "wlpfo Transaction Declined for P025 Value 28",
-    summary: "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    attachments: [
-      {
-        name: "Transaction Logs",
-        type: "text/plain",
-        url: "https://example.com/logs.txt",
-        details: "The logs show successful transactions when P025 is 00 and declined transactions when P025 is 28. Errors like \"[ERROR]: P025 invalid\" are present. The logs also contain details of GICC capture, GICC authorization request, compose message, and e-commerce transaction details. Further analysis suggests potential conflicts with specific transaction parameters or conditions related to P025 field validation.",
-        size: "4382"
-      }
-    ],
-    product_type: "wlpfo",
-    issue_type: "bug",
-    priority: "high",
-    story_points: "5",
-    estimation: "8",
-    analysis: "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
-    reply: "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
-    assingee: "developer_1",
-    status: "open",
-    created: "2021-07-15T10:00:00",
-    updated: "2021-07-15T10:00:00",
-    comments: [
-      {
-        comment_id: "1",
-        user: "developer_1",
-        text: "I will start investigating the issue with P025 validation in wlpfo. I'll update you with my findings and progress.",
-        date: "2021-07-15T10:30:00"
-      }
-    ],
-    logged_hrs: [
-      {
-        user: "developer_1",
-        logged: "2",
-        date: "2021-07-15T10:30:00"
-      },
-      {
-        user: "developer_1",
-        logged: "3",
-        date: "2021-07-16T10:30:00"
-      }
-    ]
-  }
 ]);
+
+
+// get ticket form /get_tickets
+let get_tickets = "http://localhost:5000/get_tickets"; 
+onMounted(async () => {
+
+  const response = await fetch(get_tickets);
+        const data = await response.json();
+        Object.keys(data).forEach(ticket_id => {
+            const ticket_info = data[ticket_id];
+            const tmp_tick = ticket_info.closed_chat || ticket_info;
+            console.log("jesvi ::::", tmp_tick)
+            TicketItems.value.push(tmp_tick);
+        });
+
+      console.log("#####jesvi :", TicketItems.value)
+});
 
 const router = useRouter();
 

@@ -169,6 +169,12 @@ attachment_upload_folder='./bucket/attachments/'
 chats_folder='./bucket/chats/'
 ticket_folder = "./bucket/tickets"
 
+if os.name == 'nt':
+    ticket_folder = ticket_folder.replace("/", "\\")
+    attachment_upload_folder = attachment_upload_folder.replace("/", "\\")
+    chats_folder = chats_folder.replace("/", "\\")
+
+
 # Jira Configs
 
 JIRA_CRED = dict({

@@ -464,6 +464,13 @@ function handle_delete(){
             </textarea>
                         </div>
 
+                        <div class="input_cont con_spl" v-if="ticket_data.analysis">
+                            <label for="summary_te" class="inpt_desc_lab">Analysis</label>
+                            <textarea placeholder="Enter your Analysis or Solution" class="input_field inp_desc" id="analysis"
+                                v-model="ticket_data.analysis" @input="autoExpand">
+            </textarea>
+                        </div>
+
                         <div class="input_cont con_spl">
                             <label for="title" class="inpt_desc_lab">Attachments</label>
                             <div class="input_cont attach_cont_files">

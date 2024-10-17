@@ -200,7 +200,8 @@ function getStoryPointsColor(story_points) {
                                 @click="open_ticket(ticket.ticket_id)">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ ticket.ticket_id }}</td>
-                                <td><a>{{ ticket.subject }}</a></td>
+                                <td class="td_subdes"><a class="subdes">{{ ticket.subject || ticket.text }}</a>
+                                </td>
                                 <td :style="{ color: getPriorityColor(ticket.priority) }">{{ ticket.priority }}</td>
                                 <td :style="{ color: getStoryPointsColor(ticket.story_points) }">{{ ticket.story_points
                                     }}</td>
@@ -229,6 +230,14 @@ function getStoryPointsColor(story_points) {
 </template>
 
 <style scoped>
+.td_subdes{
+    max-width: 34vw;
+    overflow: clip;
+}
+.subdes{
+    width: max-content;
+    display: flex;
+}
 .cat_search {
     display: flex;
     flex-direction: row;

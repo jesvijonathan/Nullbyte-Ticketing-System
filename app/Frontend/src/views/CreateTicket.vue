@@ -6,6 +6,10 @@ import SidePane from '@/components/SidePane.vue';
 import LoaderToast from '@/components/LoaderToast.vue';
 import { faLeaf } from '@fortawesome/free-solid-svg-icons';
 
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
 let bread_path_json = {
     "NULLBYTE": "/",
     "TICKETS": "/tickets",
@@ -188,6 +192,7 @@ const submitForm = async () => {
         });
         const result = await response.json();
         console.log(result);
+        router.push('/ticket/' + ticket_data.value.ticket_id);
     } catch (error) {
         console.error('Error submitting form:', error);
     }

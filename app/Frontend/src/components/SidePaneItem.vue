@@ -68,6 +68,10 @@ export default defineComponent({
       this.isExpanded = !this.isExpanded;
     },
     getBorderColor(status) {
+      // if status it empty 
+      if (status == null || status == ""){
+        return { borderRight: '0.33vw solid grey' }
+      }
       if (status.toLowerCase() === 'open') {
         return { borderRight: '0.33vw solid grey' }; // Grey for open status
       } else if (status.toLowerCase() === 'closed') {
@@ -86,6 +90,9 @@ export default defineComponent({
     // FFD700   397aed
     
     getHoverBorderColor(status) {
+      if (status == null || status == ""){
+        return { borderRight: '0.33vw solid grey' }
+      }
       if (status.toLowerCase() === 'open') {
         return { borderRight: '0.33vw solid #b3b3b3' }; // Brighter grey for hover
       } else if (status.toLowerCase() === 'closed') {

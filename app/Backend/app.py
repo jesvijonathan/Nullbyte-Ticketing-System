@@ -159,6 +159,7 @@ def text_form():
             attachment_count += 1
             # attachments.append(file_path)
     chat_file = os.path.join(folder_this, "data.json")
+    os.makedirs(folder_this, exist_ok=True)
     chat_history={
             "chat_id": form_data.get('chat_id'),
             "ticket_id": ticket_id,
