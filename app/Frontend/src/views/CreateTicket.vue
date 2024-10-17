@@ -45,8 +45,8 @@ const removeAttachment = (index) => {
 
 const loading = ref(true);
 
-const get_ticket_url = document.baseURL + "/get_ticket";
-const get_incomplete_ticket_url = document.baseURL + "/get_incomplete_ticket";
+const get_ticket_url = document.baseMyURL + "/get_ticket";
+const get_incomplete_ticket_url = document.baseMyURL + "/get_incomplete_ticket";
 
 import { useCookies } from 'vue3-cookies';
 
@@ -104,8 +104,8 @@ onMounted(() => {
 });
 
 
-const auto_fill_url = document.baseURL + "/text/fill_ticket";
-// const auto_fill_url = document.baseURL + "/get_autofill";
+const auto_fill_url = document.baseMyURL + "/text/fill_ticket";
+// const auto_fill_url = document.baseMyURL + "/get_autofill";
 const autoFill = () => {
     if (!ticket_data.value.subject && !ticket_data.value.text) {
         alert('Please fill either the subject or description');

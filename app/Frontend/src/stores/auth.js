@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import router  from '../router/';
 import { jwtDecode } from "jwt-decode";
 
-const baseUrl = document.baseURL;
 
 export const useAuthStore = defineStore({
     id: 'auth',
@@ -24,7 +23,7 @@ export const useAuthStore = defineStore({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
             };
-            const response = await fetch(`${baseUrl}/sso/auth`, requestOptions);
+            const response = await fetch(document.baseMyURL  + "/sso/auth", requestOptions);
             console.log(response);
             if (!response.ok) {
                 if (response.status == 401)

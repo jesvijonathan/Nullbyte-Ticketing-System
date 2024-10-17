@@ -43,10 +43,10 @@ let bread_path_json = {
 
 const loading = ref(true);
 
-const get_ticket_url = document.baseURL + "/get_ticket" + `?ticket_id=${ticket_id}`;
-const get_incomplete_ticket_url = document.baseURL + "/get_incomplete_ticket";
-// const auto_fill_url = document.baseURL + "/text/fill_ticket";
-const auto_fill_url = document.baseURL + "/get_autofill";
+const get_ticket_url = document.baseMyURL + "/get_ticket" + `?ticket_id=${ticket_id}`;
+const get_incomplete_ticket_url = document.baseMyURL + "/get_incomplete_ticket";
+// const auto_fill_url = document.baseMyURL + "/text/fill_ticket";
+const auto_fill_url = document.baseMyURL + "/get_autofill";
 
 
 
@@ -332,7 +332,7 @@ const handleAddComment = (newCommentText) => {
 function handle_delete(){
     // request /delete/<ticket_id>
     
-    fetch(document.baseURL + `/delete/${ticket_id}`, {
+    fetch(document.baseMyURL + `/delete/${ticket_id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -351,7 +351,7 @@ function handle_delete(){
     
 }
 
-let update_url = document.baseURL+ "/update_ticket";
+let update_url = document.baseMyURL+ "/update_ticket";
 
 function update_ticket(){
     // request /update_ticket
