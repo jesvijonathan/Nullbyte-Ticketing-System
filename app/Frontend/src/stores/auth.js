@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import router  from '../router/';
 import { jwtDecode } from "jwt-decode";
 
-const baseUrl = 'http://localhost:5000';
+const baseUrl = document.baseURL;
 
 export const useAuthStore = defineStore({
     id: 'auth',
