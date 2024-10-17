@@ -192,7 +192,7 @@ function add_log(event) {
     const currentTotal = total_logged.value;
 
     if (newValue < currentTotal) {
-        const difference = currentTotal - newValue;
+        let difference = currentTotal - newValue;
         for (let i = loggs.value.length - 1; i >= 0 && difference > 0; i--) {
             const log = loggs.value[i];
             const loggedHours = parseInt(log.logged, 10);

@@ -13,12 +13,12 @@ RUN apt update -y && \
 
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-RUN curl -fsSL https://ollama.com/install.sh | sh
-RUN ollama pull llama3.2
-RUN ollama list
-RUN ollama rm nullbyte || true
-COPY ./Backend/Modelfile /Modelfile
-RUN ollama create nullbyte -f /Modelfile
+# RUN curl -fsSL https://ollama.com/install.sh | sh
+# RUN ollama pull llama3.2
+# RUN ollama list
+# RUN ollama rm nullbyte || true
+# COPY ./Backend/Modelfile /Modelfile
+# RUN ollama create nullbyte -f /Modelfile
 
 EXPOSE 5000
 
