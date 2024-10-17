@@ -9,8 +9,8 @@ const TicketItems = ref([
 ]);
 
 
-// get ticket form /get_tickets
-let get_tickets = "http://localhost:5000/get_tickets"; 
+
+let get_tickets = document.baseMyURL+"/get_tickets"; 
 onMounted(async () => {
 
   const response = await fetch(get_tickets);
@@ -23,6 +23,37 @@ onMounted(async () => {
         });
 
       console.log("#####jesvi :", TicketItems.value)
+
+
+      if (router.currentRoute.value.path.includes('chatbot') || router.currentRoute.value.path.includes('vertex') || router.currentRoute.value.path.includes('llama')) {
+  const userId = cookies.get('user');  // Get the user ID from cookies
+
+  if (userId) {
+    try {
+      const response = await fetch(chat_data_url + '/' + userId);  // Use a standard CORS request
+
+      if (!response.ok) {
+        console.error('Error fetching chat data:', response.statusText);
+        return;  // Stop execution if the response is not okay
+      }
+
+      const data = await response.json();  // Parse the JSON response
+      console.log('Chat data:', data);
+
+      // Update the chat_data reactive variable
+      for (const key in data["chat_history"]) {
+        chat_data.value[key] = data["chat_history"][key];
+      }
+      console.log('Updated chat data:', chat_data.value);
+
+    } catch (error) {
+      console.error('Fetch error:', error);  // Catch any fetch or network errors
+    }
+  } else {
+    console.error('User ID not found in cookies.');
+  }
+}
+
 });
 
 const router = useRouter();
@@ -49,7 +80,26 @@ function minimize() {
 }
 
 
+
 const show_extra_dashboard = ref(false);
+
+const chat_data_url = document.baseMyURL + "/get_chat_history";
+
+import { useCookies } from 'vue3-cookies';
+
+const current_user = ref(null);
+const { cookies } = useCookies();
+
+const chat_data = ref({});
+
+
+function handleClick_new(chat_id) {
+
+}
+ 
+
+
+
 </script>
 
 
@@ -136,6 +186,17 @@ const show_extra_dashboard = ref(false);
          && $route.path != '/llama'  && $route.path != '/vertex' && $route.path != '/about' && $route.path != '/vertex' && $route.path != '/inbox'"
          > </SidePaneItem>
 
+        <div v-if="$route.path.includes('chatbot') || $route.path.includes('vertex') || $route.path.includes('llama')" class="chathist">
+          <!-- {{chat_data}} -->
+           - Chat History -
+           <br><br>
+          <!-- @click="handleClick('/ticket/'+item.closed_chat.ticket_id)"> -->
+           <div v-for="item in chat_data" :key="item" class="chat_panel"
+           @click="handleClick_new(item.closed_chat.chat_id)">
+                {{ item.closed_chat.ticket_id }} : {{ item.closed_chat.subjecty ? item.closed_chat.subjecty : "" }}
+          </div>
+        </div>
+
     </div>
     <div class="sp-footer">
       <div class="powered-by">Powered By </div>
@@ -145,6 +206,32 @@ const show_extra_dashboard = ref(false);
 </template>
 
 <style scoped>
+.chathist{
+  margin-top: 1vw;
+  margin-bottom: 1vw;
+  width: 16vw;
+  padding: 0.5vw;
+  border-radius: 0.3vw;
+  text-align: center;
+  cursor: pointer;
+  color: white;
+}
+.chat_panel{
+  margin-top: 1vw;
+  margin-bottom: 1vw;
+  width: 14vw;
+  border: 0.08vw solid #818181;
+  padding: 0.5vw;
+  border-radius: 0.3vw;
+  background-color: rgba(255, 255, 255, 0.568);
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.8vw;
+  color: rgb(0, 0, 0);
+}
+.chat_panel:hover{
+  background-color: rgba(255, 255, 255, 1);
+}
 .minimize{
   position: absolute;
   padding: 0.5vw;

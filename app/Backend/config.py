@@ -170,6 +170,12 @@ attachment_upload_folder='./bucket/attachments/'
 chats_folder='./bucket/chats/'
 ticket_folder = "./bucket/tickets"
 
+bucket_name="nullbyte"
+bucket_mode=True
+
+baseMyURL = "http://localhost:5000"
+
+
 if os.name == 'nt':
     ticket_folder = ticket_folder.replace("/", "\\")
     attachment_upload_folder = attachment_upload_folder.replace("/", "\\")
@@ -189,3 +195,4 @@ db_add_closed_chat = False
 
 # tmp DB 
 ticket_db={}
+old_chat = {}

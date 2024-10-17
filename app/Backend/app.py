@@ -21,6 +21,8 @@ import mimetypes
 from mimetypes import guess_extension
 from werkzeug.utils import secure_filename
 import random
+from modules.bucket import *
+
 
 # Flask configurations
 app = Flask(__name__)
@@ -54,11 +56,22 @@ def test():
 @app.route('/delete/<ticket_id>', methods=['DELETE'])
 def delete_ticket(ticket_id):
     ticket_path = os.path.join(ticket_folder, ticket_id)
+    result={}
+    if bucket_mode:
+        try:
+            delete_file_or_folder(bucket_name, f"tickets/{ticket_id}/")
+            result= jsonify({"message": "Ticket deleted successfully"})
+        except Exception as e:
+            print(f"Error deleting ticket: {e}")
+            result=jsonify({"error": "Failed to delete ticket"}), 500    
     if os.path.isdir(ticket_path):
         shutil.rmtree(ticket_path)
-        return jsonify({"message": "Ticket deleted successfully"})
-    return jsonify({"message": "Ticket not found"}), 404
+        result= jsonify({"message": "Ticket deleted successfully"})
+    if not result:
+        result= jsonify({"error": "Ticket not found"}), 404
+    return result
 
+import requests
 
 @app.route('/get_ticket', methods=['GET'])
 @app.route('/get_ticket/<ticket_id>', methods=['GET'])
@@ -73,7 +86,25 @@ def get_ticket(ticket_id=None):
 
     # Ensure ticket_id is not None before proceeding
     if ticket_id:
-        ticket_path = os.path.join(ticket_folder, ticket_id)
+        ticket_path = os.path.join(ticket_folder, ticket_id)        
+        if bucket_mode:
+            file_url = get_signed_url_for_file(bucket_name, f"tickets/{ticket_id}/data.json")
+            print("######", file_url)
+            response = requests.get(file_url)
+            if response.status_code == 200:
+                try:
+                    data = response.json()  # Use response.json() to parse directly as JSON
+                    if "closed_chat" in data:
+                        return jsonify(data["closed_chat"])
+                    else:
+                        return jsonify(data)
+                except json.JSONDecodeError:
+                    print("Error: Unable to decode the JSON content")
+                    return None
+            else:
+                print(f"Error: Failed to fetch the file from {file_url}. Status code: {response.status_code}")
+                return None
+
         if os.path.isdir(ticket_path):
             chat_file = os.path.join(ticket_path, "data.json")
             if os.path.isfile(chat_file):
@@ -83,6 +114,7 @@ def get_ticket(ticket_id=None):
                         return jsonify(data["closed_chat"])
                     else:
                         return jsonify(data)
+        return jsonify({"error": "Ticket not found"}), 404  
     
     # Return an empty response if ticket_id is None or not found
     return jsonify({})
@@ -103,6 +135,8 @@ def update_ticket():
                 data.update(ticket_data)
                 with open(chat_file, "w") as f:
                     json.dump(data, f)
+                if bucket_mode:
+                    upload_individual_files(bucket_name, [chat_file])
                 return jsonify(data)
     return jsonify({"error": "Ticket not found"}), 404
 
@@ -138,9 +172,25 @@ def get_tickets(limit=20):
 
     return jsonify(tickets)
 
-@app.route('/get_chat_history', methods=['GET'])
-def get_chat_history():
-    return jsonify(socket_connection)
+# sql, 2xapigee, 1-container, 1-ad,1- ollama 
+@app.route('/get_chat_history/<user_id>', methods=['GET'])
+def get_chat_history(user_id):
+    if not user_id:
+        user_id = request.args.get('user_id') 
+    
+    print("User ID:", user_id)
+    return jsonify({"chat_history": old_chat.get(user_id, "No chat history found")})
+
+# delete all tickets
+@app.route('/delete_all_tickets')
+def delete_all_tickets():
+    for ticket in os.listdir(ticket_folder):
+        ticket_path = os.path.join(ticket_folder, ticket)
+        if os.path.isdir(ticket_path):
+            shutil.rmtree(ticket_path)
+        if bucket_mode:
+            delete_file_or_folder(bucket_name, f"tickets/{ticket}/")
+    return jsonify({"message": "All tickets deleted successfully"})
 
 
 @app.route('/get_jsonl', methods=['GET'])
@@ -195,9 +245,28 @@ def text_form():
 
     with open(chat_file, "w") as f:
         json.dump(chat_history, f)
+    if bucket_mode:
+        files_to_upload = [chat_file] + [attachment['url'] for attachment in attachments_list]
+        upload_individual_files(bucket_name, files_to_upload)
+
+        # Upload the chat file and attachments to the cloud
     return json.dumps(chat_history, indent=4) 
 
 
+@app.route('/sync_bucket')
+def sync_bucket():
+    get_jsonl()
+
+    list_buckets()
+    list_blobs(bucket_name)
+
+    local_directory = "./bucket" 
+    uploaded_files, skipped_files = upload_files_from_directory(bucket_name, local_directory) 
+    return jsonify({
+        "message": "Files uploaded successfully",
+        "uploaded_files": uploaded_files,
+        "skipped_files": skipped_files
+        })
 
 def parse_attachment(file_data, file_name, folder_this):
     """ Save attachment to bucket/chat_id folder and return base64 encoded content. """
@@ -216,6 +285,37 @@ def parse_attachment(file_data, file_name, folder_this):
         
     return file_name, mime_type
 
+@app.route('/move_to_cloud')
+def move_to_cloud(local_directory):
+    uploaded_files, skipped_files  = upload_individual_files(bucket_name, [local_directory+ "/data.json"])
+    list_all_data(bucket_name)
+    # uploaded_files, skipped_files = upload_files_from_directory( bucket_name, local_directory) 
+    return jsonify({
+        "message": "Files uploaded successfully",
+        "uploaded_files": uploaded_files,
+        "skipped_files": skipped_files
+        })
+
+import pickle
+import threading
+@app.route('/save')
+def save_obj():
+    with open('data_bank.pkl', 'wb') as f:
+        try:
+            pickle.dump([users, users_token, mailchains, old_chat], f)
+        except Exception as e:
+            return jsonify({"error": f"Failed to save data: {str(e)}"}), 500
+    return jsonify({"message": "Data saved successfully"})
+
+def load_obj():
+    global users, users_token, mailchains, old_chat
+    if os.path.exists('data_bank.pkl') and os.path.getsize('data_bank.pkl') > 0:
+        with open('data_bank.pkl', 'rb') as f:
+            users, users_token, mailchains, old_chat = pickle.load(f)
+    print(users)
+    print(users_token)
+    print(mailchains)
+    print(old_chat)
 
 
 # Socket IO event handling
@@ -286,7 +386,7 @@ if tmp_folders_cleanup:
                 except Exception as e:
                     print(f"Failed to delete {file_path}. Reason: {e}")
 
-
+load_obj()
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host="0.0.0.0", port=5000)

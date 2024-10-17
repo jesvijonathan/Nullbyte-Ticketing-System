@@ -19,6 +19,7 @@ library.add(fas, far, fab); // Add all the icon packs at once
 
 // set baseurl globally for the app
 document.baseMyURL = 'http://localhost:5000';
+// document.baseMyURL = 'http://localhost:5000/api';
 
 createApp(App)
   .component("font-awesome-icon", FontAwesomeIcon) // Register the component globally

@@ -39,18 +39,27 @@ export const useAuthStore = defineStore({
             localStorage.setItem('user', JSON.stringify(this.user));
             const { cookies } = useCookies();
             cookies.set('token', user.token);
-            cookies.set('user', jwtDecode(user.token).user);
+            cookies.set('session', user.token);
+            cookies.set('user', jwtDecode(user.token).username);
             cookies.set('upn', jwtDecode(user.token).upn);
             cookies.set('role', jwtDecode(user.token).role);
             cookies.set('exp', jwtDecode(user.token).exp);
             cookies.set('iat', jwtDecode(user.token).iat);
-            
+
             router.push('/dashboard');
             return "";
         },
         async logout() {
             this.user = null;
             localStorage.removeItem('user');
+            // remove cookies
+            const { cookies } = useCookies();
+            cookies.remove('token');
+            cookies.remove('user');
+            cookies.remove('upn');
+            cookies.remove('role');
+            cookies.remove('exp');
+            cookies.remove('iat');
             router.push('/login');
         }
     }

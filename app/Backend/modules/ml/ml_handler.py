@@ -17,6 +17,7 @@ from mimetypes import guess_extension
 import mimetypes
 from modules.db.db_models import Attachment
 import re
+from modules.bucket import *
 
 # chatbot handler for socketio and manager
 class ChatbotHandler:
@@ -46,7 +47,8 @@ class ChatbotHandler:
         self.bot, self.chat= self.initialize_bot(chatbot_fallback)
         self.fallback= self.initialize_fallback(chatbot_fallback)
         self.fell= False
-
+        if bucket_mode:
+            pass
         self.bucket_dir = os.path.join(chats_folder, self.user, self.chat_id)
         os.makedirs(self.bucket_dir, exist_ok=True)
 
@@ -85,7 +87,7 @@ class ChatbotHandler:
                 b_file_data = base64.b64decode(attachment['data'])
                 google_string, filename, mime = self.parse_attachment(b_file_data, secure_filename(attachment['name']))
                 filename = filename
-                file_path = os.path.join(self.bucket_dir, self.chat_id, filename)
+                file_path = os.path.join(self.bucket_dir, filename)
     
 
                 try:
@@ -175,7 +177,9 @@ class ChatbotHandler:
 
         with open(chat_file, "w") as f:
             json.dump(chat_history, f)
-        
+        if bucket_mode:
+            upload_individual_files(bucket_name, [chat_file])
+            
         for key in self.history:
             if "attachment" in self.history[key]:
                     attachments = self.history[key]["attachment"]
@@ -190,7 +194,18 @@ class ChatbotHandler:
                         except:
                             print("Error moving attachment file")
                             pass
-        print("chat closed : ", self.result)
+        if self.user not in old_chat:
+            old_chat[self.user] = {}
+        
+        old_chat[self.user][self.chat_id] = {
+            "history": self.history,
+            "closed_chat": self.result,
+            "ticket_url": str(baseMyURL + "/ticket/" + self.result["ticket_id"])
+        }
+        print(old_chat)
+        
+        # print("old chat  : ", old_chat)
+        # print("chat closed : ", self.result)
 
         if(self.socketio):
             self.socketio.emit("close_chat", {"closed_chat": self.result}, room=self.socket["sid"])
@@ -201,6 +216,7 @@ class ChatbotHandler:
         #     del socket_connection[self.token]
         
         # self.destroy()
+        # move to ticket in 5 seconds
         return
 
     
@@ -252,14 +268,16 @@ class ChatbotHandler:
 
 
     def vertex_generate(self, message, attachments=None):
+        
+        print("Sending message:", self.format_message(message))
+        response = self.chat.send_message(self.format_message(message), attachments)
+        
+        if response.candidates:
+            text_response = response.candidates[0].content.parts[0].text
+            self.handle_response(text_response)
+            self.mail["RepliedBot"]= "wl_vertex"
         try:
-            print("Sending message:", self.format_message(message))
-            response = self.chat.send_message(self.format_message(message), attachments)
-            
-            if response.candidates:
-                text_response = response.candidates[0].content.parts[0].text
-                self.handle_response(text_response)
-                self.mail["RepliedBot"]= "wl_vertex"
+            pass
         except ResourceExhausted:
             print("Quota exceeded. Waiting before retrying...")
             self.fallback_handle()
@@ -336,7 +354,7 @@ class ChatbotHandler:
     
     def parse_attachment(self, file_data, file_name):
         """ Save attachment to bucket/chat_id folder and return base64 encoded content. """
-        chat_folder = os.path.join(self.bucket_dir, self.chat_id)
+        chat_folder = self.bucket_dir
         os.makedirs(chat_folder, exist_ok=True)
         file_path = os.path.join(chat_folder, file_name)
 
@@ -471,6 +489,5 @@ def create_jsonl():
                 f.write(json.dumps(wrapped_data) + "\n")
 
     return jsonl_file
-
 
     

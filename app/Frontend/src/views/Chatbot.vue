@@ -370,7 +370,7 @@ watch(convo, () => {
             <div v-else class="closed_chat">
                 <!-- go to /ticket/ticket_id -->
                 <div class="closed_button" @click="router.push(`/ticket/${closed_chat.ticket_id}`)">
-                >Chat Closed & Linked with Ticket : {{ closed_chat.ticket_id }}</div>
+                Chat Closed & Linked with Ticket : {{ closed_chat.ticket_id }}</div>
             </div>
         </div>
     </div>

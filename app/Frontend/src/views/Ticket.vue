@@ -317,6 +317,9 @@ if (!current_user) {
 }
 
 const handleAddComment = (newCommentText) => {
+    if (!ticket_data.value.comments) {
+        ticket_data.value.comments = [];
+    }
     const newComment = {
         comment_id: ticket_data.value.comments.length + 1, // Generate a unique ID for the new comment
         user: current_user, // Replace with dynamic user if needed
@@ -487,7 +490,7 @@ function update_ticket(){
             </textarea>
                         </div>
 
-                        <div class="input_cont con_spl" v-if="ticket_data.analysis">
+                        <div class="input_cont con_spl" >
                             <label for="summary_te" class="inpt_desc_lab">Analysis</label>
                             <textarea placeholder="Enter your Analysis or Solution" class="input_field inp_desc" id="analysis"
                                 v-model="ticket_data.analysis" @input="autoExpand">

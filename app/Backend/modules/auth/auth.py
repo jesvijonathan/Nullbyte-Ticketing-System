@@ -42,8 +42,10 @@ def authenticate():
 
     if token:
         response = make_response(jsonify({'token': token, 'message': 'Authentication successful'}), 201)
-        response.set_cookie('session', token, httponly=False, secure=False)
-        response.set_cookie('user', username, httponly=False, secure=False)
+        for cookie in request.cookies:
+            response.set_cookie(cookie, '', expires=0)
+        response.set_cookie('session', token, httponly=False, secure=False, samesite='None', expires=None)
+        response.set_cookie('user', username, httponly=False, secure=False,samesite='None', expires=None)
         if username in users_token:
             del users[users_token[username]]
         users_token[username] = token

@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, render_template, session, make_re
 from flask_socketio import emit
 from modules.auth.auth import jwt_required  
 from config import *
+from modules.bucket import *
 import modules.ml.wl_vertex as wl_vertex
 from modules.log import *
 import json
@@ -78,7 +79,7 @@ def fill_ticket():
         
 # pass an text, document, logs, etc file to get the analysis of it
 @text.route('/attachment', methods=['GET', 'POST'])
-@jwt_required
+# @jwt_required
 def attachment():
     try:
         if request.method == 'GET':
@@ -94,19 +95,26 @@ def attachment():
             
             if not text and not file:
                 return make_response(jsonify({'error': 'Please provide either text or an attachment'}), 400)
+            
+            # chat_folder = attachment_upload_folder + "/" + str(chat_id)
 
             chat_folder = os.path.join(attachment_upload_folder, str(chat_id))
             os.makedirs(chat_folder, exist_ok=True)
 
             attachment_data = None
-
+            file_path = os.path.join(chat_folder, file.filename)
             if file:
-                file_path = os.path.join(chat_folder, file.filename)
+                # if bucket_mode:
+                #     file_data = file.read()
+                    
+                #     print("gooooooo : ", file_path, "\n\n", file)
+                #     file_url  = direct_upload_individual_file(bucket_name, file_path, file_data)
+                #     print("gooooooo : ", file_url)
+                #     encoded_file = 
+                # else:  
                 file.save(file_path)
-
                 with open(file_path, "rb") as f:
                     encoded_file = base64.b64encode(f.read()).decode('utf-8')
-
                 attachment_data = {
                     "filename": file.filename,
                     "data": encoded_file
