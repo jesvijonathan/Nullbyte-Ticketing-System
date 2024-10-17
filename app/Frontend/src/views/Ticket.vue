@@ -43,7 +43,7 @@ let bread_path_json = {
 
 const loading = ref(true);
 
-const get_ticket_url = "http://localhost:5000/get_ticket";
+const get_ticket_url = "http://localhost:5000/get_ticket" + `?ticket_id=${ticket_id}`;
 const get_incomplete_ticket_url = "http://localhost:5000/get_incomplete_ticket";
 // const auto_fill_url = "http://localhost:5000/text/fill_ticket";
 const auto_fill_url = "http://localhost:5000/get_autofill";
@@ -64,11 +64,11 @@ let ticket_data = ref({
     "issue_type": "",
     "priority": "",
     "story_points": "",
-    "estimation": "",
+    "estimation": "1",
     "analysis": "",
     "reply": "",
     "assingee": "",
-    "status": "",
+    "status": "open",
     "created": "",
     "updated": "",
     "comments": [
@@ -80,22 +80,22 @@ let ticket_data = ref({
 onMounted(() => {
     loading.value = true;
     console.log('mounted');
-    fetch(get_incomplete_ticket_url)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            ticket_data.value = data;
-            console.log(ticket_data.value.comments);
-            refreshComponent();
-        })
-        .finally(() => {
-            loading.value = false;
-        });
+    // fetch(get_incomplete_ticket_url)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log(data);
+    //         ticket_data.value = data;
+    //         console.log(ticket_data.value.comments);
+    //         refreshComponent();
+    //     })
+    //     .finally(() => {
+    //         loading.value = false;
+    //     });
 
     console.log(ticket_data.value);
 
     autoFill();
-    
+
     // let doc_tetx = document.getElementById('desc_te');
     // if (doc_tetx.scrollHeight <= 200) {
     //     doc_tetx.style.height = 'auto';
@@ -112,46 +112,59 @@ const refreshComponent = () => {
     componentKey.value += 1; // Changing the key forces the component to re-render
 };
 
-const autoFill = () => {
-    loading.value = true;
+const autoFill = async () => {
+    try {
+        loading.value = true;
 
-    console.log(attachments.value.length);
-    fetch(auto_fill_url)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            ticket_data.value = data;
-            get_attachments_from_data();
-            extract_links();
-        });
+        console.log("Attachments length: ", attachments.value.length);
+
+        const response = await fetch(get_ticket_url);
+
+        if (!response.ok) {
+            throw new Error(`Error fetching ticket data: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("Ticket data fetched successfully:", data);
+
+        ticket_data.value = data;  // Assign the fetched data
+
+        get_attachments_from_data();  // Process attachments
+        extract_links();  // Extract links if needed
+    } catch (error) {
+        console.error("Error in autoFill:", error);
+    } finally {
+        loading.value = false;  // Ensure loading is disabled after the process
+    }
 };
+
 
 const reset_form = () => {
     loading.value = true;
     ticket_data.value = {
-    "chat_id": ticket_data.value.chat_id,
-    "ticket_id": ticket_data.value.ticket_id,
-    "user": ticket_data.value.user,
-    "medium": ticket_data.value.medium,
-    "connection": "",
-    "text": ticket_data.value.text, 
-    "subject": "",
-    "summary": "",
-    "attachments": [],
-    "product_type": "",
-    "issue_type": "",
-    "priority": "",
-    "story_points": "",
-    "estimation": "",
-    "analysis": "",
-    "reply": "",
-    "assingee": "",
-    "status": "open",
-    "created": ticket_data.value.created,
-    "updated": "",
-    "comments": ticket_data.value.comments,
-    "logged_hrs": []
-};
+        "chat_id": ticket_data.value.chat_id,
+        "ticket_id": ticket_data.value.ticket_id,
+        "user": ticket_data.value.user,
+        "medium": ticket_data.value.medium,
+        "connection": "",
+        "text": ticket_data.value.text,
+        "subject": "",
+        "summary": "",
+        "attachments": [],
+        "product_type": "",
+        "issue_type": "",
+        "priority": "",
+        "story_points": "",
+        "estimation": "1",
+        "analysis": "",
+        "reply": "",
+        "assingee": "",
+        "status": "open",
+        "created": ticket_data.value.created,
+        "updated": "",
+        "comments": ticket_data.value.comments,
+        "logged_hrs": []
+    };
 
     attachments.value = [];
     loading.value = false;
@@ -207,7 +220,7 @@ function get_attachments_from_data() {
 // Ref for file input element
 const fileInput = ref(null);
 
-function check_padd(){
+function check_padd() {
     if (attachments.value.length > 2) {
         document.querySelector('.attach_cont').style.display = 'flex';
         document.querySelector('.attach_cont').style.flexDirection = 'row';
@@ -216,7 +229,7 @@ function check_padd(){
         document.querySelector('.attach_cont').style.flexWrap = 'wrap';
         document.querySelector('.attach_cont').style.justifyContent = 'center';
         document.querySelector('.attachments-list').style.marginTop = '-0.8vw';
-        
+
     }
     else {
         document.querySelector('.attach_cont').style.display = 'flex';
@@ -225,7 +238,7 @@ function check_padd(){
         document.querySelector('.attach_cont').style.alignContent = 'space-between';
         document.querySelector('.attach_cont').style.flexWrap = 'wrap';
         document.querySelector('.attach_cont').style.justifyContent = 'center';
-        document.querySelector('.attachments-list').style.marginTop = '-0vw'; 
+        document.querySelector('.attachments-list').style.marginTop = '-0vw';
     }
 }
 
@@ -256,14 +269,14 @@ const getFileTitle = (file) => {
     return `Filename: ${file.name}\nSize: ${(file.size / 1024).toFixed(2)} KB\nType: ${file.type}\nURL: ${file.url}\nDetails: ${file.details}`;
 };
 
-let links=ref([]);
+let links = ref([]);
 
-function extract_links() {  
+function extract_links() {
     const text = ticket_data.value.text;
     const summary = ticket_data.value.summary;
     const comments = ticket_data.value.comments;
     const linksArray = [];
-    const link_pattern = /((http|https):\/\/[^\s]+|www\.[^\s]+)/g; 
+    const link_pattern = /((http|https):\/\/[^\s]+|www\.[^\s]+)/g;
     if (text) {
         linksArray.push(...(text.match(link_pattern) || []));
     }
@@ -281,10 +294,10 @@ function extract_links() {
 
 let sla_json_data = ref({
     "estimated": 0,
-    "logged":0 ,
+    "logged": 0,
 })
 
-function total_logged_hrs(){
+function total_logged_hrs() {
     let total = 0;
     ticket_data.value.logged_hrs.forEach(log => {
         total += log.logged;
@@ -292,7 +305,7 @@ function total_logged_hrs(){
     alert(total);
     return total;
 }
- 
+
 
 import { useCookies } from 'vue3-cookies';
 const { cookies } = useCookies();
@@ -304,17 +317,39 @@ if (!current_user) {
 }
 
 const handleAddComment = (newCommentText) => {
-  const newComment = {
-    comment_id: ticket_data.value.comments.length + 1, // Generate a unique ID for the new comment
-    user: current_user, // Replace with dynamic user if needed
-    text: newCommentText,
-    date: new Date().toISOString() // Capture the current date
-  };
+    const newComment = {
+        comment_id: ticket_data.value.comments.length + 1, // Generate a unique ID for the new comment
+        user: current_user, // Replace with dynamic user if needed
+        text: newCommentText,
+        date: new Date().toISOString() // Capture the current date
+    };
 
-  // Add the new comment to the comments array
-  ticket_data.value.comments.push(newComment);
+    // Add the new comment to the comments array
+    ticket_data.value.comments.push(newComment);
 };
 
+
+function handle_delete(){
+    // request /delete/<ticket_id>
+    
+    fetch(`http://localhost:5000/delete/${ticket_id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ticket_data.value),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            window.location.href = '/list_tickets';
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error deleting ticket');
+        });
+    
+}
 </script>
 
 
@@ -328,16 +363,18 @@ const handleAddComment = (newCommentText) => {
             <BreadCrumb :data="bread_path_json" />
 
             <div class="tile-container ">
-                <h1 class="main_title">{{ ticket_data.ticket_id }}:<div class="ticket_id"> <input class="subject_edit" type="text" v-model="ticket_data.subject" :class="{ 'inp_desc_none': !ticket_data.subject }">
+                <h1 class="main_title">{{ ticket_data.ticket_id }}:<div class="ticket_id"> <input class="subject_edit"
+                            type="text" v-model="ticket_data.subject"
+                            :class="{ 'inp_desc_none': !ticket_data.subject }">
                     </div>
                 </h1>
                 <div class="cont_paral">
                     <div class="bold_text_banner">{{ formatDate(ticket_data.created) }}</div>
                     <select v-model="ticket_data.status" :class="{
                         'bold_text_banner banner_drop ban_dropp': true,
-                        'banner_open': ticket_data.status.toLowerCase() === 'open',
-                        'banner_closed': ticket_data.status.toLowerCase() === 'closed',
-                        'banner_waiting': ticket_data.status.toLowerCase() === 'waiting for information'
+                        'banner_open': ticket_data.status && ticket_data.status.toLowerCase() === 'open',
+                        'banner_closed': ticket_data.status && ticket_data.status.toLowerCase() === 'closed',
+                        'banner_waiting': ticket_data.status && ticket_data.status.toLowerCase() === 'waiting for information'
                     }">
                         <option value="open">Open</option>
                         <option value="closed">Closed</option>
@@ -346,9 +383,10 @@ const handleAddComment = (newCommentText) => {
                 </div>
                 <div class="tick_info">
                     <div class="typ_info">
-                        <div class="tinfo_text" >
+                        <div class="tinfo_text">
                             <div>Type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</div> &nbsp;
-                            <select class="typ_inp drop_inpt" v-model="ticket_data.issue_type" :class="{ 'inp_desc_none': !ticket_data.issue_type }" >
+                            <select class="typ_inp drop_inpt" v-model="ticket_data.issue_type"
+                                :class="{ 'inp_desc_none': !ticket_data.issue_type }">
                                 <option value="bug">Bug</option>
                                 <option value="feature">Feature</option>
                                 <option value="story">Story</option>
@@ -359,7 +397,8 @@ const handleAddComment = (newCommentText) => {
                         </div>
                         <div class="tinfo_text">
                             <div>Priority&nbsp;&nbsp;:</div>&nbsp;
-                            <select class="typ_inp drop_inpt" v-model="ticket_data.priority" :class="{ 'inp_desc_none': !ticket_data.priority }">
+                            <select class="typ_inp drop_inpt" v-model="ticket_data.priority"
+                                :class="{ 'inp_desc_none': !ticket_data.priority }">
                                 <option value="low">Low</option>
                                 <option value="medium">Medium</option>
                                 <option value="high">High</option>
@@ -373,20 +412,23 @@ const handleAddComment = (newCommentText) => {
                             <div>Created By&nbsp;&nbsp;&nbsp;&nbsp;:</div> &nbsp;&nbsp;
                             <!-- <div class="typ_inp">{{ ticket_data.user }}</div> -->
                             <input type="text" placeholder="Add Username" class="input_field drop_inpt drop_input_tex"
-                                id="created_by" v-model="ticket_data.user" readonly disabled :class="{ 'inp_desc_none': !ticket_data.user }" >
+                                id="created_by" v-model="ticket_data.user" readonly disabled
+                                :class="{ 'inp_desc_none': !ticket_data.user }">
                         </div>
 
                         <div class="tinfo_text">
                             <div>Assigned To&nbsp;&nbsp;:</div>&nbsp;
                             <input type="text" placeholder="Add Username" class="input_field drop_inpt drop_input_tex"
-                                id="assingee" v-model="ticket_data.assingee" :class="{ 'inp_desc_none': !ticket_data.assingee }">
+                                id="assingee" v-model="ticket_data.assingee"
+                                :class="{ 'inp_desc_none': !ticket_data.assingee }">
                         </div>
                     </div>
                     <hv></hv>
                     <div class="typ_info">
                         <div class="tinfo_text">
                             <div>Product&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</div> &nbsp;
-                            <select class="typ_inp drop_inpt" v-model="ticket_data.product_type" :class="{ 'inp_desc_none': !ticket_data.product_type }">
+                            <select class="typ_inp drop_inpt" v-model="ticket_data.product_type"
+                                :class="{ 'inp_desc_none': !ticket_data.product_type }">
                                 <option value="wlpfo">WLPFO</option>
                                 <option value="webgui">WebGUI</option>
                                 <option value="wlsi">WLSI</option>
@@ -399,72 +441,74 @@ const handleAddComment = (newCommentText) => {
                         <div class="tinfo_text">
                             <div>Story Points &nbsp;:</div> &nbsp;
                             <input class="typ_inp drop_inpt drop_inpt_num" v-model="ticket_data.story_points"
-                                type="number" name="story_points" id="story_points" range="0" min="0" max="100"
-                                step="1" :class="{ 'inp_desc_none': !ticket_data.story_points }">
+                                type="number" name="story_points" id="story_points" range="0" min="0" max="100" step="1"
+                                :class="{ 'inp_desc_none': !ticket_data.story_points }">
                         </div>
                     </div>
 
                 </div>
                 <div class="both_tog">
-    <div class="first_part">
-        <div class="input_cont">
-            <label for="desc_te" class="inpt_desc_lab">Description</label>
-            <textarea placeholder="Enter your name" class="input_field inp_desc" 
-                                  :class="{ 'inp_desc_none': !ticket_data.text }" id="desc_te"
-                                  v-model="ticket_data.text" @input="autoExpand($event);extract_links()">
+                    <div class="first_part">
+                        <div class="input_cont">
+                            <label for="desc_te" class="inpt_desc_lab">Description</label>
+                            <textarea placeholder="Enter your name" class="input_field inp_desc"
+                                :class="{ 'inp_desc_none': !ticket_data.text }" id="desc_te" v-model="ticket_data.text"
+                                @input="autoExpand($event); extract_links()">
                         </textarea>
-        </div>
-
-        <div class="input_cont con_spl" v-if="ticket_data.summary">
-            <label for="summary_te" class="inpt_desc_lab">Summary</label>    
-            <textarea placeholder="Enter Summary" class="input_field inp_desc" 
-                      id="summary_te" v-model="ticket_data.summary" @input="autoExpand" readonly disabled>
-            </textarea>
-        </div>
-
-        <div class="input_cont con_spl">
-            <label for="title" class="inpt_desc_lab">Attachments</label>
-            <div class="input_cont attach_cont_files">
-                <div class="input_cont attach_cont">
-                    <input type="file" class="input_field att" id="attachments" 
-                           @change="handleFileChange" multiple style="display: none;" ref="fileInput">
-
-                    <button @click="$refs.fileInput.click()" class="btn _attch_but">
-                        <div>+</div>
-                    </button>
-
-                    <div class="attachments-list">
-                        <div v-for="(file, index) in attachments" :key="index" class="attachment-item" 
-                             :title="getFileTitle(file)">
-                            <div class="attachment-preview">
-                                <img v-if="file.type.includes('image')" :src="file.url || URL.createObjectURL(file)" 
-                                     class="attachment-img" />
-                                <span v-else class="attachment-icon">📄</span>
-                            </div>
-                            <div class="attachment-info">
-                                <span class="file-name">{{ file.name }}</span>
-                                <div class="file-size">({{ (file.size / 1024).toFixed(2) }} KB)</div>
-                            </div>
-                            <button @click="removeAttachment(index)" class="btn_cancel_file">❌</button>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="input_cont con_spl" v-if="links.length > 0">
-            <label for="links" class="inpt_desc_lab">Links</label>
-            <div v-for="(link, index) in links" :key="index" class="links-item">
-                <a :href="link.startsWith('http') ? link : `http://${link}`" target="_blank">{{ link }}</a>
-            </div>
-        </div>
+                        <div class="input_cont con_spl" v-if="ticket_data.summary">
+                            <label for="summary_te" class="inpt_desc_lab">Summary</label>
+                            <textarea placeholder="Enter Summary" class="input_field inp_desc" id="summary_te"
+                                v-model="ticket_data.summary" @input="autoExpand" readonly disabled>
+            </textarea>
+                        </div>
+
+                        <div class="input_cont con_spl">
+                            <label for="title" class="inpt_desc_lab">Attachments</label>
+                            <div class="input_cont attach_cont_files">
+                                <div class="input_cont attach_cont">
+                                    <input type="file" class="input_field att" id="attachments"
+                                        @change="handleFileChange" multiple style="display: none;" ref="fileInput">
+
+                                    <button @click="$refs.fileInput.click()" class="btn _attch_but">
+                                        <div>+</div>
+                                    </button>
+
+                                    <div class="attachments-list">
+                                        <div v-for="(file, index) in attachments" :key="index" class="attachment-item"
+                                            :title="getFileTitle(file)">
+                                            <div class="attachment-preview">
+                                                <img v-if="file.type && file.type.includes('image')"
+                                                    :src="file.url || URL.createObjectURL(file)"
+                                                    class="attachment-img" />
+                                                <span v-else class="attachment-icon">📄</span>
+                                            </div>
+                                            <div class="attachment-info">
+                                                <span class="file-name">{{ file.name }}</span>
+                                                <div class="file-size">({{ (file.size / 1024).toFixed(2) }} KB)</div>
+                                            </div>
+                                            <button @click="removeAttachment(index)" class="btn_cancel_file">❌</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input_cont con_spl" v-if="links.length > 0">
+                            <label for="links" class="inpt_desc_lab">Links</label>
+                            <div v-for="(link, index) in links" :key="index" class="links-item">
+                                <a :href="link.startsWith('http') ? link : `http://${link}`" target="_blank">{{ link
+                                    }}</a>
+                            </div>
+                        </div>
 
 
-        <div class="creat_form_cont">
-                    <div class="input_cont_2 attach_cont">
-                    </div>
+                        <div class="creat_form_cont">
+                            <div class="input_cont_2 attach_cont">
+                            </div>
 
-                    <!-- <div class="input_cont" v-if="ticket_data.summary">
+                            <!-- <div class="input_cont" v-if="ticket_data.summary">
                         <label for="attachments">Summmary</label>
                         <textarea type="text" placeholder="Summary" class="input_field desc" id="analysis"
                             v-model="ticket_data.summary" style="height: 3vw;" readonly disabled></textarea>
@@ -478,51 +522,57 @@ const handleAddComment = (newCommentText) => {
 
 
 
-                        <!-- <label for="attachments">Analysis</label>
+                            <!-- <label for="attachments">Analysis</label>
                         <textarea type="text" placeholder="Enter the analysis" class="input_field desc" id="analysis"
                             v-model="ticket_data.analysis" style="height: 4vw;"></textarea> -->
 
 
-                        <div class="input_cont_2 " style="display: flex;
+                            <div class="input_cont_2 " style="display: flex;
     align-items: flex-start;">
 
 
 
 
 
-                            <div class="input_cont_2 but_con al_but">
-                                <button class="btn">Move To Jira</button>
-                                <button class="btn_cancel">
-                                    <img src="https://img.icons8.com/ios/50/000000/save.png">
-                                </button>
-                                <button class="btn_cancel" @click="reset_form">
-                                    <!-- reset -->
-                                    <img src="https://img.icons8.com/ios/50/000000/refresh.png" alt="cancel" />
-                                </button>
+                                <div class="input_cont_2 but_con al_but">
+                                    <button class="btn">Move To Jira</button>
+                                    <button class="btn_cancel">
+                                        <img src="https://img.icons8.com/ios/50/000000/save.png">
+                                    </button>
+                                    <button class="btn_cancel" @click="handle_delete">
+                                        <img src="https://img.icons8.com/ios/50/000000/delete-forever.png">
+                                    </button>
+                                    <button class="btn_cancel" @click="reset_form">
+                                        <!-- reset -->
+                                        <img src="https://img.icons8.com/ios/50/000000/refresh.png" alt="cancel" />
+                                    </button>
+                                </div>
                             </div>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="second_part">
+                        <div class="input_cont input_contsec stretch_bar" style="margin-top: 0vw;">
+                            <label for="analysis" class="inpt_desc_lab sprint_ti">Sprint Progress
+                            </label>
+                            <Sla :logged_hrs="ticket_data.logged_hrs" :estimated_hrs="ticket_data.estimation" />
+                            <vv>
+                                <vvv></vvv>
+                            </vv>
+                            <label for="analysis" class="inpt_desc_lab sprint_ti">Activity
+                                <button class="btnsort"><img
+                                        src="https://img.icons8.com/?size=100&id=1701&format=png&color=000000" />
+                                </button>
+                            </label>
+                            <Activity :comments="ticket_data.comments" @addComment="handleAddComment" />
+
                         </div>
 
-
-
+                    </div>
                 </div>
-    </div>
-
-    <div class="second_part">
-        <div class="input_cont input_contsec stretch_bar" style="margin-top: 0vw;">
-            <label for="analysis" class="inpt_desc_lab sprint_ti">Sprint Progress
-            </label>
-                <Sla :logged_hrs="ticket_data.logged_hrs" :estimated_hrs="ticket_data.estimation" />
-                <vv><vvv></vvv></vv>
-            <label for="analysis" class="inpt_desc_lab sprint_ti">Activity
-                <button class="btnsort"><img src="https://img.icons8.com/?size=100&id=1701&format=png&color=000000" />
-                </button>
-            </label>
-            <Activity :comments="ticket_data.comments" @addComment="handleAddComment" />
-
-        </div>  
-
-    </div>
-</div>
 
 
 
@@ -534,7 +584,7 @@ const handleAddComment = (newCommentText) => {
 </template>
 
 <style scoped>
-vv{
+vv {
     width: 20vw;
     height: 0.1vw;
     /* background-color: #81818175; */
@@ -544,11 +594,13 @@ vv{
     margin-top: 0.7vw;
     margin-bottom: 0.7vw;
 }
-vvv{
+
+vvv {
     width: 70%;
     background-color: #81818122;
     height: 0.1vw;
 }
+
 .btnsort {
     color: white;
 
@@ -565,7 +617,7 @@ vvv{
     transform: scale(0.8);
 }
 
-.btnsort:hover { 
+.btnsort:hover {
     background-color: #46BEAA;
 }
 
@@ -578,6 +630,7 @@ vvv{
     height: 1vw;
     filter: invert(0.5);
 }
+
 .second_part {
     width: -webkit-fill-available;
     margin-left: 0vw;
@@ -589,10 +642,12 @@ vvv{
     width: auto;
     height: -webkit-fill-available;
 }
-.input_contsec{
+
+.input_contsec {
     margin-left: 1vw;
-    
+
 }
+
 .first_line {
     display: flex;
     flex-direction: row;
@@ -874,7 +929,7 @@ select {
     flex-wrap: nowrap;
     gap: 2vw;
     justify-content: flex-end;
-    
+
 }
 
 .attachment-item:hover {
@@ -960,7 +1015,7 @@ select {
 }
 
 .banner_open {
-    background-color: rgb(210, 183, 30);
+    background-color: rgb(163, 128, 161);
 }
 
 .banner_closed {
@@ -1109,7 +1164,8 @@ hv {
     /* border: 0.1vw solid #c8c8c8 */
     background-color: #f0f0f093;
 }
-.inp_desc_none{
+
+.inp_desc_none {
     background-color: #f0f0f093;
 }
 
@@ -1119,29 +1175,35 @@ hv {
     border: 0.1vw solid #c8c8c8;
 }
 
-.main-pane::-webkit-scrollbar, .inp_desc::-webkit-scrollbar {
+.main-pane::-webkit-scrollbar,
+.inp_desc::-webkit-scrollbar {
     width: 0.4vw;
     height: 0.5vw;
     cursor: pointer;
 }
 
-.main-pane::-webkit-scrollbar-thumb,.inp_desc::-webkit-scrollbar-thumb {
+.main-pane::-webkit-scrollbar-thumb,
+.inp_desc::-webkit-scrollbar-thumb {
     background-color: #c8c8c8;
     border-radius: 0.3vw;
 }
-.main-pane::-webkit-scrollbar-thumb{
+
+.main-pane::-webkit-scrollbar-thumb {
     background-color: #c8c8c836;
 }
 
-.main-pane::-webkit-scrollbar-track,.inp_desc::-webkit-scrollbar-track {
+.main-pane::-webkit-scrollbar-track,
+.inp_desc::-webkit-scrollbar-track {
     background-color: #f0f0f0;
 }
-.main-pane::-webkit-scrollbar-track{
+
+.main-pane::-webkit-scrollbar-track {
     background-color: #f0f0f069;
 }
 
 
-.main-pane::-webkit-scrollbar-thumb:hover, .inp_desc::-webkit-scrollbar-thumb:hover {
+.main-pane::-webkit-scrollbar-thumb:hover,
+.inp_desc::-webkit-scrollbar-thumb:hover {
     background-color: #c8c8c8;
 }
 
@@ -1167,22 +1229,27 @@ hv {
     height: 31vw;
     overflow-y: hidden;
 }
-.both_tog:hover{
+
+.both_tog:hover {
     overflow-y: scroll;
 }
+
 .both_tog::-webkit-scrollbar {
     width: 0.4vw;
     height: 0.5vw;
     cursor: pointer;
     opacity: 0;
 }
+
 .both_tog:hover::-webkit-scrollbar {
     opacity: 0;
 }
+
 .both_tog::-webkit-scrollbar-thumb {
     background-color: #c8c8c8;
     border-radius: 0.3vw;
 }
+
 .both_tog::-webkit-scrollbar-track {
     background-color: #f0f0f0;
 }
@@ -1201,6 +1268,7 @@ hv {
     /* height: 100vh; */
     margin-bottom: 10vw;
 }
+
 .first_part::-webkit-scrollbar {
     width: 0.4vw;
     height: 0.5vw;
@@ -1344,21 +1412,25 @@ textarea:disabled {
     cursor: not-allowed !important;
 }
 
-.links-item{
+.links-item {
     margin-top: 0.5vw;
     display: flex;
     align-items: center;
     gap: 0.5vw;
     font-size: 0.7vw;
 }
-.links-item a{
+
+.links-item a {
     color: rgb(27, 86, 205);
     text-decoration: none;
 }
-.links-item:hover{
+
+.links-item:hover {
     text-decoration: underline;
 }
-.sprint_ti{font-size: 1vw;
+
+.sprint_ti {
+    font-size: 1vw;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -1366,7 +1438,8 @@ textarea:disabled {
     justify-content: center;
     align-items: center;
 }
-.al_but{
+
+.al_but {
     position: fixed;
     bottom: 0%;
     background: white;
@@ -1376,7 +1449,7 @@ textarea:disabled {
     width: 47vw;
 }
 
-.stretch_bar{
+.stretch_bar {
     margin-top: 0vw;
     height: -webkit-fill-available;
     display: flex;
@@ -1387,7 +1460,7 @@ textarea:disabled {
     align-items: flex-start;
 }
 
-.subject_edit{
+.subject_edit {
     display: flex;
     flex-direction: row;
     gap: 0.5vw;
@@ -1400,12 +1473,14 @@ textarea:disabled {
     outline: none;
     font-size: 1.6vw;
     border: 0.1vw solid transparent;
-    }
-    .subject_edit:hover{
-        background-color: #f0f0f093;
-    }
-    .subject_edit:focus{
-        outline: none;
-        border-bottom: 0.1vw solid #46BEAA;
-    }
+}
+
+.subject_edit:hover {
+    background-color: #f0f0f093;
+}
+
+.subject_edit:focus {
+    outline: none;
+    border-bottom: 0.1vw solid #46BEAA;
+}
 </style>

@@ -24,7 +24,7 @@ const handleFileChange = (event) => {
                 name: file.name,
                 type: file.type,
                 size: file.size,
-                base64: e.target.result
+                data: btoa(e.target.result)
             });
         };
         reader.readAsDataURL(file); // or reader.readAsArrayBuffer(file) if needed
@@ -43,15 +43,26 @@ const loading = ref(true);
 
 const get_ticket_url = "http://localhost:5000/get_ticket";
 const get_incomplete_ticket_url = "http://localhost:5000/get_incomplete_ticket";
-// const auto_fill_url = "http://localhost:5000/text/fill_ticket";
-const auto_fill_url = "http://localhost:5000/get_autofill";
 
+import { useCookies } from 'vue3-cookies';
+
+const current_user = ref(null);
+const { cookies } = useCookies();
+
+if (!current_user.value) {
+    current_user.value = cookies.get('user');
+    if (!current_user.value) {
+        alert('Please login again to continue, could not find user details');
+    }
+}
+
+import { v4 as uuidv4 } from 'uuid';
 
 let ticket_data = ref({
-    "chat_id": "",
-    "ticket_id": "",
-    "user": "",
-    "medium": "",
+    "chat_id": uuidv4(),
+    "ticket_id": "SVC-" + uuidv4().replace(/\D/g, '').slice(0, 8),
+    "user": current_user.value,
+    "medium": "portal",
     "connection": "",
     "text": "",
     "subject": "",
@@ -65,9 +76,9 @@ let ticket_data = ref({
     "analysis": "",
     "reply": "",
     "assingee": "",
-    "status": "",
-    "created": "",
-    "updated": "",
+    "status": "open",
+    "created": (new Date()).toISOString(),
+    "updated": (new Date()).toISOString(),
     "comments": [
     ],
     "logged_hrs": [
@@ -78,69 +89,88 @@ onMounted(() => {
     
     loading.value = true;
     console.log('mounted');
-    fetch(get_incomplete_ticket_url)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            ticket_data.value = data;
-        });
+    // fetch(get_incomplete_ticket_url)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log(data);
+    //         ticket_data.value = data;
+    //     });
     console.log(ticket_data.value);
     loading.value = false;
 });
 
+
+const auto_fill_url = "http://localhost:5000/text/fill_ticket";
+// const auto_fill_url = "http://localhost:5000/get_autofill";
 const autoFill = () => {
+    if (!ticket_data.value.subject && !ticket_data.value.text) {
+        alert('Please fill either the subject or description');
+        return;
+    }
     loading.value = true;
-    
-    console.log(attachments.value.length);
-    fetch(auto_fill_url)
+    console.log('auto-filling form');
+    console.log(ticket_data.value);
+    fetch(auto_fill_url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(ticket_data.value)
+    })
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            ticket_data.value = data;
-        });
-
-    loading.value = false;
+            ticket_data.value = data['result']
+            ticket_data.value['status'] = "open";
+            console.log(ticket_data.value);
+        })
+        .finally(() => {
+            loading.value = false;
+        }); 
 };
 
 const reset_form = () => {
     loading.value = true;
     ticket_data.value = {
-        "chat_id": "",
-        "ticket_id": "",
-        "user": "",
-        "medium": "",
-        "connection": "",
-        "text": "",
-        "subject": "",
-        "summary": "",
-        "attachments": [],
-        "product_type": "",
-        "issue_type": "",
-        "priority": "",
-        "story_points": "",
-        "estimation": "",
-        "analysis": "",
-        "reply": "",
-        "assingee": "",
-        "status": "",
-        "created": "",
-        "updated": "",
-        "comments": [
-            "dick", "suck"
-        ],
-        "logged_hrs": [
-        ]
-    };
+    "chat_id": uuidv4(),
+    "ticket_id": "SVC-" + uuidv4().replace(/\D/g, '').slice(0, 8),
+    "user": current_user.value,
+    "medium": "portal",
+    "connection": "",
+    "text": "",
+    "subject": "",
+    "summary": "",
+    "attachments": [],
+    "product_type": "",
+    "issue_type": "",
+    "priority": "",
+    "story_points": "",
+    "estimation": "",
+    "analysis": "",
+    "reply": "",
+    "assingee": "",
+    "status": "open",
+    "created": (new Date()).toISOString(),
+    "updated": (new Date()).toISOString(),
+    "comments": [
+    ],
+    "logged_hrs": [
+    ]
+};
 
     attachments.value = [];
     loading.value = false;
 };
 
-// let create_url="http://127.0.0.1:5000/text_form";
-let create_url="http://127.0.0.1:5000/ticket/create";
+let create_url="http://127.0.0.1:5000/text_form";
+// let create_url="http://127.0.0.1:5000/ticket/create";
 
 
 const submitForm = async () => {
+    if (!ticket_data.value.subject && !ticket_data.value.text) {
+        alert('Please fill either the subject or description');
+        return;
+    }
     const payload = {
         ...ticket_data.value,
         attachments: attachments.value
@@ -162,8 +192,53 @@ const submitForm = async () => {
         console.error('Error submitting form:', error);
     }
 };
-</script>
 
+
+
+
+
+
+// const submitForm = async () => {
+//     const formData = new FormData();
+    
+//     for (let key in ticket_data.value) {
+//         if (Array.isArray(ticket_data.value[key])) {
+//             if (key === 'logged_hrs') {
+//                 ticket_data.value[key].forEach((item, index) => {
+//                     for (let subKey in item) {
+//                         formData.append(`${key}[${index}][${subKey}]`, item[subKey]);
+//                     }
+//                 });
+//             } else {
+//                 ticket_data.value[key].forEach((item, index) => {
+//                     formData.append(`${key}[${index}]`, item);
+//                 });
+//             }
+//         } else {
+//             formData.append(key, ticket_data.value[key]);
+//         }
+//     }
+    
+//     attachments.value.forEach((file, index) => {
+//         formData.append(`files[${index}]`, file); // Adjust this to match backend expectations
+//     });
+
+
+//     console.log('submitting form:', formData);
+
+//     try {
+//         const response = await fetch(create_url, {
+//             method: 'POST',
+//             body: formData
+//         });
+//         const result = await response.json();
+//         console.log(result);
+//     } catch (error) {
+//         console.error('Error submitting form:', error);
+//     }
+// };
+
+</script>
 
 <template>
     <LoaderToast :loading="loading" />
@@ -239,6 +314,7 @@ const submitForm = async () => {
                                     <option value="support">Support</option>
                                     <option value="task">Task</option>
                                     <option value="epic">Epic</option>
+                                    <options value="other">Other</options>
                                 </select>
 
                             </div>
@@ -260,7 +336,7 @@ const submitForm = async () => {
                 </div> -->
                             <div class="input_cont">
                                 <label for="ticket_type">Product</label>
-                                <select name="ticket_type" class="input_field" id="ticket_type" v-model="ticket_data.product_type">
+                                <select name="ticket_type" class="input_field" id="ticket_type" v-model="ticket_data.product_type" default="other">
                                     <option value="wlpfo">WLPFO</option>
                                     <option value="webgui">WebGUI</option>
                                     <option value="wlsi">WLSI</option>
@@ -268,13 +344,18 @@ const submitForm = async () => {
                                     <option value="db">DB</option>
                                     <option value="certification">Certification</option>
                                     <option value="testing">Testing</option>
+                                    <option value="other">Other</option>
                                 </select>
 
                             </div>
                             <div class="input_cont">
-                                <label for="assingee">Assigned To</label>
-                                <input type="text" placeholder="Enter the name of the person" class="input_field"
-                                    id="assingee" v-model="ticket_data.assingee">
+                                <label for="assingee">Status</label>
+                                <select  class="input_field" id="assingee" v-model="ticket_data.status" default="open">
+                                    <option value="open">Open</option>
+                                    <option value="closed">Closed</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="waiting for information">Waiting for Information</option>    
+                                </select>
                             </div>
                         </div>
 
@@ -283,12 +364,12 @@ const submitForm = async () => {
                             <div class="input_cont">
                                 <label for="estimation">Estimated Time</label>
                                 <input type="number" placeholder="Enter the estimated time" class="input_field"
-                                    id="estimation" v-model="ticket_data.estimation">
+                                    id="estimation" v-model="ticket_data.estimation" default="1">
                             </div>
                             <div class="input_cont">
                                 <label for="ticket_type">Story Points</label>
                                 <input type="number" placeholder="Enter the story points" class="input_field"
-                                    id="story_points" v-model="ticket_data.story_points">
+                                    id="story_points" v-model="ticket_data.story_points" default="1">
 
                             </div>
                         </div>

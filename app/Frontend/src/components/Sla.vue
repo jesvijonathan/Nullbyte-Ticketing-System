@@ -48,13 +48,29 @@ function update_est() {
 }
 
 
+// import " coockie from 'vue3-cookies";
+import { useCookies } from 'vue3-cookies';
+const { cookies } = useCookies();
+const user= cookies.get('user');
+
 watchEffect(() => {
     // Ensure data is available before drawing the chart
-    if (loggs.value.length > 0) {
+    if (!estimated_hrs.value) {
+        estimated_hrs.value = 1;
+        esthours.value = 1;
+    } else {
         esthours.value = estimated_hrs.value;
-        updateSLA();
-        console.log('Initial logged hours:', loggs.value);
     }
+
+    if (loggs.value.length === 0) {
+        loggs.value.push({
+            user: user,
+            logged: "0",
+            date: new Date().toISOString()
+        });
+    }
+
+    updateSLA();
 });
 
 onMounted(() => {
@@ -63,7 +79,7 @@ onMounted(() => {
     // drawSprintChart();
     setTimeout(() => {
         drawSprintChart();
-    }, 1000);
+    },1000);
 });
 
 
@@ -171,6 +187,39 @@ function drawSprintChart() {
     });
 }
 
+function add_log(event) {
+    const newValue = parseInt(event.target.value, 10);
+    const currentTotal = total_logged.value;
+
+    if (newValue < currentTotal) {
+        const difference = currentTotal - newValue;
+        for (let i = loggs.value.length - 1; i >= 0 && difference > 0; i--) {
+            const log = loggs.value[i];
+            const loggedHours = parseInt(log.logged, 10);
+
+            if (loggedHours <= difference) {
+                difference -= loggedHours;
+                loggs.value.splice(i, 1); 
+            } else {
+                log.logged = loggedHours - difference;
+                break;
+            }
+        }
+    } else {
+        loggs.value.push({
+            user: user,
+            logged: newValue - currentTotal,
+            date: new Date().toISOString()
+        });
+    }
+
+    updateSLA();
+    drawSprintChart();
+}
+
+const total_logged = computed(() => {
+    return loggs.value.reduce((acc, log) => acc + parseInt(log.logged), 0);
+});
 </script>
 
 <template>
@@ -180,7 +229,10 @@ function drawSprintChart() {
             <div class="progress-bar" role="progressbar" :style="{ width: perscent_sla + '%' }">
             </div>
         </div>
-        <div class="sla_text">{{ loggs.reduce((acc, log) => acc + parseInt(log.logged), 0) }} /  <input class="numbner_sla" type="number" v-model="esthours" @input="update_est" /> hrs
+        <div class="sla_text">
+            <!-- {{ loggs.reduce((acc, log) => acc + parseInt(log.logged), 0) }} -->
+              <input class="numbner_sla" type="number" @change="add_log($event)" min="0" :v-model="total_logged" :max="esthours" />
+            /  <input class="numbner_sla" type="number" v-model="esthours" @input="update_est" /> hrs
         </div>
         <!-- <div class="sla_text">{{ total_logged }} / {{ estimated_hrs }} hrs</div> -->
 

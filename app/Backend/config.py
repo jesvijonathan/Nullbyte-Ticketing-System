@@ -65,7 +65,8 @@ instructions_chat="""You are an IT application/expert engineer who has to sort a
 \\\"product_type\\\": \\\"\\\", // retrieve the product type from the text & attachments, string: [ webgui, wlpfo, pass, wlsi, ]
 \\\"issue_type\\\": \\\"\\\", // retrieve the issue type from the text & attachments, string: [\'bug\', \'error\', \'issue\', \'story\', \'others\', \'feature\', \'enhancement\', \'support\']
 \\\"priority\\\": \\\"\\\", // Analyse the priority from the text & attachments, string: [\'crtical\', \'high\', \'medium\', \'low\']\\
-\\\"story_points\\\": \\\"\\\", // Analyse the story points from the text & attachments, linked with the priority & ticket type, int: 'n'
+\\\"status\\\": \\\"\\\", // always string: 'open'
+\\\"story_points\\\": \\\"\\\", // Analyse the story points from the text, description & attachments, linked with the priority & ticket type, int: 'n'
 \\\"estimation\\\": \\\"\\\", // Analyse the estimation from the text & attachments, linked with the story points & priority, n hours in int: 'n'
 \\\"analysis\\\": \\\"\\\", // Analysis of the issue, what could be the possible cause of the issue, and how can it be resolved from an support or engineer\'s point of view. If an legit error/bug, give solution on worldline\'s product. string
 \\\"reply\\\": \\\"\\\" // Possible reply to the support text. string
@@ -108,6 +109,7 @@ json format:
 "subject" : "", // Generate the title for provided text, string
 "summary": "", // Generate a summary of the text, with all description, string
 "attachments": [] // do not modify, use the incoming values
+"status":,"open" // always string: 'open'
 "product_type": "", // retrieve the product type from the text & attachments, string: [ webgui, wlpfo, pass, wlsi, ]
 "issue_type": "", // retrieve the issue type from the text & attachments, string: [\'bug\', \'error\', \'issue\', \'story\', \'others\', \'feature\', \'enhancement\', \'support\']
 "priority": "", // Analyse the priority from the text & attachments, string: [\'crtical\', \'high\', \'medium\', \'low\']\\

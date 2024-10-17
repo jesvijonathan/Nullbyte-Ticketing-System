@@ -126,6 +126,7 @@ const addComment = () => {
     align-content: center;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
 }
 
 h3 {

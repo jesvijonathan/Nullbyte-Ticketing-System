@@ -45,7 +45,7 @@ def enhance():
         
 # pass an partially filled ticket json (summary/description) mandatory, and get is autofilled
 @text.route('/fill_ticket', methods=['GET', 'POST'])
-@jwt_required
+# @jwt_required
 def fill_ticket():
     if request.method == 'GET':
         return render_template('fill_ticket.html')
@@ -70,7 +70,7 @@ def fill_ticket():
                 return make_response(jsonify({'error': 'Failed to fill the ticket'}), 500)
             
             print("Filled Ticket JSON:", json_msg)            
-            return jsonify({'result': json_msg})
+            return jsonify({'result': json.loads(json_msg)})
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")

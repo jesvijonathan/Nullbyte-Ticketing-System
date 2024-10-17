@@ -49,7 +49,7 @@ class google_vertex_chat:
             vertex_model,
             system_instruction=[instruction]
         )
-        self.chat = self.model.start_chat()
+        self.chat = self.model.start_chat(response_validation=False)
     def send_message(self, message, document=None):
         merged_msg = []
         

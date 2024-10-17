@@ -1,0 +1,32 @@
+{
+    "chat_id": "d754326f-47b0-4cdd-9620-248acbea4dd7",
+    "ticket_id": "SVC-94320174",
+    "user": "admin",
+    "history": {},
+    "medium": "portal",
+    "comments": [],
+    "attachments": [
+        {
+            "name": "Score Report _ Cibil Dashboard.pdf",
+            "type": "application/pdf",
+            "size": 2312326,
+            "url": "./bucket/tickets\\SVC-94320174\\Score_Report___Cibil_Dashboard.pdf"
+        }
+    ],
+    "created": "2024-10-17T03:16:19.789Z",
+    "updated": "2024-10-17T03:16:19.789Z",
+    "logged_hrs": [],
+    "connection": "",
+    "text": "Rashmi Needs meth for continuing with her work here at worldline, she needs a high dosage to make sure she is high enough to get out of reality and break from the matrix ",
+    "subject": "Rashmi Needs Meth",
+    "summary": "",
+    "product_type": "certification",
+    "issue_type": "story",
+    "priority": "low",
+    "story_points": 1,
+    "estimation": 4,
+    "analysis": "",
+    "reply": "",
+    "assingee": "akil",
+    "status": ""
+}

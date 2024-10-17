@@ -5,8 +5,8 @@
     "medium": "",
     "connection": "closed",
     "text": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    "subject": "wlpfo Transaction Declined for P025 Value 28",
-    "summary": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
+    "subject": "",
+    "summary": "",
     "attachments": [
         {
             "name": "Transaction Logs",
@@ -16,14 +16,14 @@
             "size": "4382"
         }
     ],
-    "product_type": "wlpfo",
-    "issue_type": "bug",
-    "priority": "high",
-    "story_points": "5",
-    "estimation": "8",
-    "analysis": "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
+    "product_type": "",
+    "issue_type": "",
+    "priority": "",
+    "story_points": "",
+    "estimation": "",
+    "analysis": "",
     "reply": "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
-    "assingee": "developer_1",
+    "assingee": "",
     "status": "open",
     "created": "2021-07-15T10:00:00",
     "updated": "2021-07-15T10:00:00",

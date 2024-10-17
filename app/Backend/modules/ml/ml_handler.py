@@ -159,7 +159,7 @@ class ChatbotHandler:
         
         this_ticket_folder = os.path.join(ticket_folder, self.result["ticket_id"])
         os.makedirs(this_ticket_folder, exist_ok=True)
-        chat_file = os.path.join(this_ticket_folder, "chat.json")
+        chat_file = os.path.join(this_ticket_folder, "data.json")
         
         # have to store this details somewhere in db
         # final_file['ticket_id']=self.result["ticket_id"]
