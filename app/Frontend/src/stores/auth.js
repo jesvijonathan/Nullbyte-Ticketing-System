@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import router  from '../router/';
 import { jwtDecode } from "jwt-decode";
-
+import { useCookies } from 'vue3-cookies';
 
 export const useAuthStore = defineStore({
     id: 'auth',
@@ -37,6 +37,14 @@ export const useAuthStore = defineStore({
             this.user = user.token ? user : null;
             this.username=jwtDecode(user.token).username
             localStorage.setItem('user', JSON.stringify(this.user));
+            const { cookies } = useCookies();
+            cookies.set('token', user.token);
+            cookies.set('user', jwtDecode(user.token).user);
+            cookies.set('upn', jwtDecode(user.token).upn);
+            cookies.set('role', jwtDecode(user.token).role);
+            cookies.set('exp', jwtDecode(user.token).exp);
+            cookies.set('iat', jwtDecode(user.token).iat);
+            
             router.push('/dashboard');
             return "";
         },
