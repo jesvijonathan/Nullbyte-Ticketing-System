@@ -6,8 +6,9 @@ import json
 load_dotenv()
 
 secret_key = ""
-
-LDAP_SERVER = os.getenv("LDAP_SERVER", "ldap://DC01.nullbyte.exe") 
+CLOUD_SQL_CONNECTION_NAME = os.getenv("CLOUD_SQL_CONNECTION_NAME", "")
+useCloudSql = bool(CLOUD_SQL_CONNECTION_NAME)
+LDAP_SERVER = os.getenv("LDAP_SERVER", "ldap://dc01.nullbyte.exe") 
 JWT_SECRET = os.getenv("JWT_SECRET") or secrets.token_urlsafe(32)
 
 if not JWT_SECRET:

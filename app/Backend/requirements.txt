@@ -27,9 +27,9 @@ protobuf==5.28.2
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pycparser==2.22
-# pyldap==3.0.0.post1
-# python-ldap==3.4.4
-# python3-ldap==0.9.8.4
+pyldap==3.0.0.post1
+python-ldap==3.4.4
+python3-ldap==0.9.8.4
 python-dotenv
 google-cloud-aiplatform
 SQLAlchemy
@@ -47,3 +47,5 @@ virtualenv
 Werkzeug==3.0.4
 wsproto==1.2.0
 jira[cli]
+waitress==3.0.0
+cloud-sql-python-connector["pymysql"]
