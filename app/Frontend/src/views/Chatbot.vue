@@ -14,7 +14,7 @@ import { useCookies } from 'vue3-cookies';
 import { faL } from '@fortawesome/free-solid-svg-icons';
 
 // Socket connection
-const socket = io('http://localhost:5000', {
+const socket = io(document.baseMyURL, {
     transports: ['websocket'],
 });
 

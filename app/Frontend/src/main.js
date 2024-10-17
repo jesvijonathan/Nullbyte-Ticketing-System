@@ -17,6 +17,8 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 library.add(fas, far, fab); // Add all the icon packs at once
 
+// set baseurl globally for the app
+document.baseMyURL = 'http://localhost:5000';
 
 createApp(App)
   .component("font-awesome-icon", FontAwesomeIcon) // Register the component globally
