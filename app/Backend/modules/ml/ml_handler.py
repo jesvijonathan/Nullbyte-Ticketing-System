@@ -25,7 +25,6 @@ class ChatbotHandler:
         self.botid=botid if botid else 1
         self.token= token
         self.mail = {"response": "", "processing": False, "RepliedBot": ""}
-        self.user= payload['username']
         self.customer_id= payload["upn"]
         self.result= chat_json
         self.history = {}
@@ -34,6 +33,7 @@ class ChatbotHandler:
             self.user= payload['upn']
             self.result["user"]= payload['upn']
         else:
+            self.user= payload['username']
             self.socket= sockets[token]
             self.chat_id= self.socket["sid"]
             self.user= payload['username']
