@@ -5,7 +5,7 @@ services:
       - "3306:3306"
       - "33060:33060"
     volumes:
-      - /tmp/mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
   backend:
     build: ./app/Backend
     ports:
@@ -18,3 +18,7 @@ services:
       - "80:80"
     depends_on:
       - backend
+
+volumes:
+  jira_data:
+  mysql_data:

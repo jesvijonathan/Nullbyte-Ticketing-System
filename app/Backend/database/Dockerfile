@@ -1,11 +1,11 @@
+# Use the MySQL base image
 FROM mysql:8.0
 
 ENV MYSQL_ROOT_PASSWORD=root
-#ENV MYSQL_DATABASE=nullbyte
-#ENV MYSQL_USER=nullbyteadmin
-ENV MYSQL_ROOT_PASSWORD=rootpassword
-ENV MYSQL_OPTIONS="--secure-file-priv=false"
-
+ENV MYSQL_DATABASE=nullbyte
+ENV MYSQL_USER=nullbyteadmin
+ENV MYSQL_PASSWORD=rootpassword
+# ENV MYSQL_OPTIONS="--secure-file-priv="
 
 RUN mkdir -p /var/lib/mysql-files
 
