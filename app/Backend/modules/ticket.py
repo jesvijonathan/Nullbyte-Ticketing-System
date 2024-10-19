@@ -7,6 +7,7 @@ from .auth.auth import jwt_required
 from .db.database import db_session
 from .log import *
 from sqlalchemy import select
+from datetime import datetime, timezone
 
 ticket=Blueprint('ticket',__name__)
 
@@ -114,30 +115,37 @@ def create_ticket(payload):
             logger.error(f"Error updating ticket: {e}")
             return make_response(jsonify({'error': 'Failed to update ticket'}), 500)
     elif not ticket_id and request.form:
+        def validateAndGet(key):
+            value = request.form.get(key)
+            if value:
+                print(value.strip().strip('"'))
+            return value.strip().strip('"') if value is not None else None
+        
         new_ticket = Ticket(
-            Subject=request.form.get("subject"),
-            Summary=request.form.get("summary"),
-            Analysis=request.form.get("analysis"),
-            Type=request.form.get("type"),
-            Description=request.form.get("description"),
-            Status=request.form.get("status"),
-            Priority=request.form.get("priority"),
-            Issue_Type=request.form.get("issue_type"),
-            Channel=request.form.get("channel"),
-            Customer_ID=Customer().getIDfromEmail(payload['upn']),
-            Product_ID=request.form.get("product_type"),
-            Medium=request.form.get("medium"),
-            Team=request.form.get("team"),
-            Assignee_ID=request.form.get("assignee"),
-            Resolution=request.form.get("Resolution"),
-            Issue_Date=request.form.get("created"),
-            First_Response_Time=request.form.get("First_Response_Time"),
-            Time_to_Resolution=request.form.get("estimation"),
-            Reopens=request.form.get("reopens"),
-            Story_Points=request.form.get("story_points"),
+            Chat_Id=validateAndGet("chat_id"),
+            Subject=validateAndGet("subject"),
+            Summary=validateAndGet("summary"),
+            Analysis=validateAndGet("analysis"),
+            Type=validateAndGet("type"),
+            Description=validateAndGet("description"),
+            Status=validateAndGet("status"),
+            Priority=validateAndGet("priority").lower() if validateAndGet("priority") is not None else None,
+            Issue_Type=validateAndGet("issue_type"),
+            Channel=validateAndGet("channel"),
+            Customer_ID=Customer().getIDfromEmail(validateAndGet("user")),
+            Product_Type=validateAndGet("product_type"),
+            Medium=validateAndGet("medium"),
+            Team=validateAndGet("team"),
+            Assignee_ID=Employee().getIDfromEmail(validateAndGet('assignee')),
+            Resolution=validateAndGet("resolution"),
+            LastModified=datetime.now(timezone.utc),
+            Estimation=validateAndGet("estimation"),
+            Reopens=validateAndGet("reopens"),
+            Story_Points=validateAndGet("story_points"),
             comments=comments,
             attachments=attachments
-        )
+        )    
+
         try:
             validation_error = new_ticket.validate()
             if validation_error:
@@ -212,8 +220,8 @@ def modify_fields(*args, **kwargs):
             ticket.Channel = body["Channel"]
         if "Customer_ID" in body:
             ticket.Customer_ID = body["Customer_ID"]
-        if "Product_ID" in body:
-            ticket.Product_ID = body["Product_ID"]
+        if "Product_Type" in body:
+            ticket.Product_Type = body["Product_Type"]
         if "Medium" in body:
             ticket.Medium = body["Medium"]
         if "Team" in body:
@@ -224,8 +232,8 @@ def modify_fields(*args, **kwargs):
             ticket.Resolution = body["Resolution"]
         if "Issue_Date" in body:
             ticket.Issue_Date = body["Issue_Date"]
-        if "First_Response_Time" in body:
-            ticket.First_Response_Time = body["First_Response_Time"]
+        if "Estimation" in body:
+            ticket.Estimation = body["Estimation"]
         if "Time_to_Resolution" in body:
             ticket.Time_to_Resolution = body["Time_to_Resolution"]
         if "Reopens" in body:
@@ -319,8 +327,8 @@ class BotAdmin:
                 Medium=ticket.get("medium"),
                 Issue_Type=ticket.get("issue_type"),
                 Channel=ticket.get("connection"),
-                Assignee_ID=self.setAssignee(),#, //needed to be implemented based on scoring mechanism
-                Product_ID=ticket.get("product_id"),  
+                Assignee_ID=self.setAssignee(),
+                Product_Type=ticket.get("product_type"),  
                 Priority=ticket.get("priority"),
                 Story_Points=ticket.get("story_points"),
                 Status="Open"

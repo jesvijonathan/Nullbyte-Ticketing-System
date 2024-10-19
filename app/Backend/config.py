@@ -10,7 +10,7 @@ CLOUD_SQL_CONNECTION_NAME = os.getenv("CLOUD_SQL_CONNECTION_NAME", "")
 useCloudSql = False
 LDAP_SERVER = os.getenv("LDAP_SERVER", "ldap://dc01.nullbyte.exe") 
 JWT_SECRET = os.getenv("JWT_SECRET") or secrets.token_urlsafe(32)
-
+noSql =True
 if not JWT_SECRET:
     raise ValueError("JWT_SECRET must be set in the environment variables")
 

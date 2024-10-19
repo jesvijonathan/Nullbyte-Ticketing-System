@@ -10,23 +10,24 @@ class Ticket(Base):
     Ticket_Id = Column(Integer, primary_key=True, autoincrement=True)
     Chat_Id = Column(String(50))
     Subject = Column(String(255), nullable=False)
-    Summary = Column(Text, nullable=False)  # Changed to Text
+    Summary = Column(Text, nullable=False)
     Analysis = Column(Text)
     Type = Column(String(100))
     Description = Column(Text, nullable=False)
-    Status = Column(Enum('open', 'progress', 'closed', 'reopened', ''), nullable=False)  # Added empty string
-    Priority = Column(Enum('critical', 'high', 'medium', 'low', ''), nullable=False)  # Added empty string
-    Issue_Type = Column(Enum('bug', 'error', 'issue', 'story', 'others', 'feature', 'enhancement', 'support', ''), nullable=True)  # Added empty string
+    Status = Column(Enum('open', 'progress', 'closed', 'reopened'), nullable=False, default='open')
+    Priority = Column(Enum('critical', 'high', 'medium', 'low'), nullable=False, default='medium')
+    Issue_Type = Column(Enum('bug', 'error', 'issue', 'story', 'others', 'feature', 'enhancement', 'support'), nullable=True, default='issue')
     Channel = Column(String(100))
-    Customer_ID = Column(Integer, ForeignKey('customer.Id', ondelete='SET NULL'))  # Changed to SET NULL
-    Product_ID = Column(String(100))
+    Customer_ID = Column(Integer, ForeignKey('customer.Id', ondelete='SET NULL'))
+    Product_Type = Column(String(100))
     Medium = Column(String(100))
     Team = Column(String(50))
     Assignee_ID = Column(Integer, ForeignKey('employee.id', ondelete='SET NULL'))
     Resolution = Column(Text)
     Issue_Date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    First_Response_Time = Column(DateTime)
-    Time_to_Resolution = Column(Integer)
+    Created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    LastModified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    Estimation = Column(Integer)
     Reopens = Column(Integer, default=0)
     Story_Points = Column(Integer)
     Score = Column(Integer)
@@ -49,15 +50,14 @@ class Ticket(Base):
             'priority': self.Priority,
             'issue_type': self.Issue_Type,
             'channel': self.Channel,
-            'customer_id': self.Customer_ID,
-            'product_id': self.Product_ID,
+            'user': self.Customer_ID,
+            'product_type': self.Product_Type,
             'medium': self.Medium,
             'team': self.Team,
-            'assignee_id': self.Assignee_ID,
+            'assignee': self.Assignee_ID,
             'resolution': self.Resolution,
             'issue_date': self.Issue_Date.isoformat() if self.Issue_Date else None,
-            'first_response_time': self.First_Response_Time.isoformat() if self.First_Response_Time else None,
-            'time_to_resolution': self.Time_to_Resolution,
+            'estimation': self.Estimation,
             'reopens': self.Reopens,
             'story_points': self.Story_Points,
             'score': self.Score,
@@ -73,9 +73,10 @@ class Ticket(Base):
     def validate(self):
         if not self.Subject or len(self.Subject) > 255:
             return "Subject must be provided and less than 255 characters."
-        if self.Status not in ['open', 'progress', 'closed', 'reopened', '']:
+        if self.Status.lower()not in ["open", "progress", "closed", "reopened", ""]:
             self.Status = 'open'
-        if self.Priority not in ['critical', 'high', 'medium', 'low', '']:
+        if self.Priority.lower() not in ["critical", "high", "medium", "low", ""]:  
+            print(self.Priority)
             self.Priority = 'low'
         if self.Score is not None and (self.Score < 0 or self.Score > 100):
             return "Score must be between 0 and 100."
