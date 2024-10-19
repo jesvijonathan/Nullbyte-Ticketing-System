@@ -7,6 +7,7 @@ import modules.ml.wl_vertex as wl_vertex
 from modules.log import *
 import json
 import base64
+import os
 
 # Initialize the Blueprint
 text = Blueprint('text', __name__)
@@ -79,47 +80,48 @@ def fill_ticket():
         
 # pass an text, document, logs, etc file to get the analysis of it
 @text.route('/attachment', methods=['GET', 'POST'])
-# @jwt_required
 def attachment():
     try:
         if request.method == 'GET':
             return render_template('attachment.html')
 
         if request.method == 'POST':
-            chat_id = request.form.get('chat_id', None)
-            text = request.form.get('text', None)
-            file = request.files.get('file', None)
+            data = request.get_json()
+
+            chat_id = data.get('chat_id', None)
+            text = data.get('text', None)
+            file_data = data.get('file', None)
 
             if not chat_id:
                 return make_response(jsonify({'error': 'chat_id is required'}), 400)
             
-            if not text and not file:
+            if not text and not file_data:
                 return make_response(jsonify({'error': 'Please provide either text or an attachment'}), 400)
-            
-            # chat_folder = attachment_upload_folder + "/" + str(chat_id)
 
             chat_folder = os.path.join(attachment_upload_folder, str(chat_id))
             os.makedirs(chat_folder, exist_ok=True)
 
             attachment_data = None
-            file_path = os.path.join(chat_folder, file.filename)
-            if file:
-                # if bucket_mode:
-                #     file_data = file.read()
-                    
-                #     print("gooooooo : ", file_path, "\n\n", file)
-                #     file_url  = direct_upload_individual_file(bucket_name, file_path, file_data)
-                #     print("gooooooo : ", file_url)
-                #     encoded_file = 
-                # else:  
-                file.save(file_path)
-                with open(file_path, "rb") as f:
-                    encoded_file = base64.b64encode(f.read()).decode('utf-8')
-                attachment_data = {
-                    "filename": file.filename,
-                    "data": encoded_file
-                }
+            if file_data:
+                filename = file_data.get('name', '')
+                file_size = file_data.get('size', '')
+                file_type = file_data.get('type', '')
+                file_content = file_data.get('data', '')
 
+                # Save file to server
+                if filename and file_content:
+                    file_path = os.path.join(chat_folder, filename)
+                    with open(file_path, "wb") as f:
+                        f.write(base64.b64decode(file_content))
+
+                    attachment_data = {
+                        "filename": filename,
+                        "size": file_size,
+                        "type": file_type,
+                        "data": file_content
+                    }
+            print("Attachment Data:", attachment_data)
+            # Send message to Vertex AI
             response = wl_vertex.google_vertex_chat(instruction=instruction_analyse_attachments).send_message(
                 message=text,
                 document=[attachment_data] if attachment_data else None

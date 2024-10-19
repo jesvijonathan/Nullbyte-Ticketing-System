@@ -8,14 +8,43 @@
         async function uploadAttachment(event) {
             event.preventDefault();
 
-            const formData = new FormData(document.getElementById('uploadForm'));
+            const chat_id = "12345";  // Default chat_id
+            const text = document.getElementById('text').value;
+            const fileInput = document.getElementById('file');
 
-            console.log('Sending request with form data:', formData);
+            // Create the JSON payload
+            const formData = {
+                chat_id: chat_id,
+                text: text || null,
+                file: {
+                    name: "",
+                    size: "",
+                    type: "",
+                    data: ""
+                }
+            };
+
+            // If a file is selected, collect metadata and convert it to base64
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const base64File = await toBase64(file);
+                formData.file = {
+                    name: file.name || "",
+                    size: file.size || "",
+                    type: file.type || "",
+                    data: base64File
+                };
+            }
+
+            console.log('Sending request with JSON data:', formData);
 
             try {
                 const response = await fetch('/text/attachment', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
                 });
 
                 const data = await response.json();
@@ -29,11 +58,12 @@
                     document.getElementById('result').innerHTML = `
                         <p style="color:green;">
                             Result:<br><br> 
+                            <b>name</b>: ${data.result.name}<br>
                             <b>analysis</b>: ${data.result.analysis}<br>
-                            <b>attachment</b>: ${data.result.attachment}<br>
                             <b>details</b>: ${data.result.details}<br>
-                            <b>format</b>: ${data.result.format}<br>
-                            <b>reply</b>: ${data.result.reply}
+                            <b>type</b>: ${data.result.type}<br>
+                            <b>reply</b>: ${data.result.reply}<br>
+                            <b>size</b>: ${data.result.size}<br>
                         </p>`;
                     console.log('Result:', data.result);
                 }
@@ -46,17 +76,26 @@
                 document.getElementById('result').innerHTML = `<p style="color:red;">An error occurred</p>`;
             }
         }
+
+        // Helper function to convert file to base64
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]); // Only the base64 part
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
     </script>
 </head>
 <body>
-    <form id="uploadForm" action="/text/attachment" method="POST" enctype="multipart/form-data" onsubmit="uploadAttachment(event)">
+    <form id="uploadForm" onsubmit="uploadAttachment(event)">
         <label for="text">Message:</label>
         <textarea id="text" name="text" rows="4" cols="50" placeholder="Enter your message here"></textarea><br><br>
 
         <label for="file">Upload Attachment:</label>
         <input type="file" id="file" name="file"><br><br>
 
-        <input type="hidden" name="chat_id" value="12345"> 
         <button type="submit">Send</button>
     </form>
 

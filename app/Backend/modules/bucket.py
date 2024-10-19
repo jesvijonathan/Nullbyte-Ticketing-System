@@ -6,6 +6,7 @@ from config import *  # Assuming this imports google_credentials and vertex_proj
 
 # Global variable for storage client
 storage_client = None
+check_bucket_existing = False
 
 def authenticate_with_credentials(credentials_json, project_id):
     """Authenticates using the provided credentials JSON string."""
@@ -52,7 +53,10 @@ def upload_file_with_progress(args):
 
 def upload_files_from_directory(bucket_name, directory):
     """Uploads all new files from a specified directory to the bucket in parallel, creating necessary folders."""
-    existing_blobs = list_blobs(bucket_name)  # Get existing blobs in the bucket
+    if check_bucket_existing:
+        existing_blobs = list_blobs(bucket_name)  # Get existing blobs in the bucket
+    else :
+        existing_blobs = set()
 
     uploaded_files = []
     skipped_files = []
@@ -115,7 +119,10 @@ def list_all_data(bucket_name):
 
 def upload_individual_files(bucket_name, file_paths):
     """Uploads individual files to the bucket in parallel, creating the necessary folder structure."""
-    existing_blobs = list_blobs(bucket_name)  # Get existing blobs in the bucket
+    if check_bucket_existing:
+        existing_blobs = list_blobs(bucket_name)  # Get existing blobs in the bucket
+    else :
+        existing_blobs = set()
 
     uploaded_files = []
     skipped_files = []
@@ -172,7 +179,10 @@ def direct_upload_individual_file(bucket_name, file_path, file_data):
         destination_blob_name = file_path.replace("\\", "/")
         
         # Get existing blobs in the bucket to check for duplicates
-        existing_blobs = list_blobs(bucket_name)
+        if check_bucket_existing:
+            existing_blobs = list_blobs(bucket_name)  # Get existing blobs in the bucket
+        else :
+            existing_blobs = set()
         
         # Check if the file already exists in the bucket
         if destination_blob_name in existing_blobs:

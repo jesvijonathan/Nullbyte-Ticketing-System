@@ -6,11 +6,12 @@ import json
 load_dotenv()
 
 secret_key = ""
+
 CLOUD_SQL_CONNECTION_NAME = os.getenv("CLOUD_SQL_CONNECTION_NAME", "")
-useCloudSql = False
+
 LDAP_SERVER = os.getenv("LDAP_SERVER", "ldap://dc01.nullbyte.exe") 
 JWT_SECRET = os.getenv("JWT_SECRET") or secrets.token_urlsafe(32)
-noSql =True
+
 if not JWT_SECRET:
     raise ValueError("JWT_SECRET must be set in the environment variables")
 
@@ -38,6 +39,8 @@ users_token = {}
 sockets = {} # connection_status, chat_object
 socket_connection = {}
 mailchains={}
+ticket_db={}
+old_chat = {}
 
 # Database configuration
 DATABASE_HOST = os.getenv("DATABASE_HOST", "localhost")
@@ -46,6 +49,13 @@ DATABASE_USER = os.getenv("DATABASE_USER", "nullbyteadmin")
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "rootpassword")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "nullbyte")
 DATABASE_URL = f"mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
+
+
+
+db_add_closed_chat = False
+noSql =True
+useCloudSql = False
+baseMyURL = "http://localhost:5000"
 
 
 # Gen AI/ML Config
@@ -87,11 +97,12 @@ instruction_analyse_attachments="""receive an attachment and analyse it, describ
 input : string and attachment
 return result json format:
 {
-"attachment": "", // derived attachement name
-"format": "", // The format of the attachment, string: [\'image\', \'log\', \'text\', \'pdf\', \'doc\', \'others\']
+"name": "", // use the incoming values or else derived attachement name from the attachment if 
+"type": "", // use the incoming values or The format of the attachment, string: [\'image\', \'log\', \'text\', \'pdf\', \'doc\', \'others\']
 "details": "" // Do full analysis, file information about the attachent and explain the attachment and give a description about the input file/attachment
 "analysis": "" // Analysis of the issue, what could be the possible cause of the issue, and how can it be resolved from an support or engineer\'s point of view. If an legit error/bug, give solution on worldline\'s product. string
 "reply": "" // Possible reply to the support text. string
+"size": "" // do not modify, use the incoming values
 }
 """
 instructions_enhance="""receive an text string and enhance the message with better words and better explanation & considering all parameters. In the end, return one single plain enhanced string""" 
@@ -121,11 +132,7 @@ json format:
 "enhance": "", receive the text/summary/analysis and enhance the message with better words and better explanation & considering all parameters. 
 }
 """
-
-
 google_credentials = os.getenv("GOOGLE_CREDENTIALS", "").strip()
-
-# Check if credentials are not provided or set to "null"
 if not google_credentials or google_credentials == "null":
     try:
         with open('./google_credentials.json', 'r') as file:
@@ -136,10 +143,7 @@ if not google_credentials or google_credentials == "null":
 
 if not google_credentials:
     raise ValueError("GOOGLE_CREDENTIALS must be set in the environment variables or in ./google_credentials.json")
-
-
-# At this point, google_credentials is guaranteed to be a dictionary
-service_account_info = google_credentials  # Use it directly as it should be a dict now
+service_account_info = google_credentials
 
 chatbot_fallback=2 # 0 - only wl_vertex, 1 - only wl_llama, 2 - wl_vertex priority & fallback to wl_llama, 3 - wl_llama priority & fallback to wl_vertex  
 OLLAMA_MODEL = "nullbyte"
@@ -164,17 +168,15 @@ chat_json= {
     "reply": default_reply_msg, # Thank you for providing the details. I have created a ticket to investigate the EFTPOS transaction timeouts you are experiencing with WLPFO for overseas purchases during high TPS. Our team will analyze the issue and provide updates as they become available.
 }
 
+
+bucket_name="nullbyte"
+bucket_mode=False
+
 # bucket paths 
 tmp_folders_cleanup=False
 attachment_upload_folder='./bucket/attachments/'
 chats_folder='./bucket/chats/'
 ticket_folder = "./bucket/tickets"
-
-bucket_name="nullbyte"
-bucket_mode=True
-
-baseMyURL = "http://localhost:5000"
-
 
 if os.name == 'nt':
     ticket_folder = ticket_folder.replace("/", "\\")
@@ -183,16 +185,8 @@ if os.name == 'nt':
 
 
 # Jira Configs
-
 JIRA_CRED = dict({
     'username': os.getenv("JIRA_ADMIN",'jiraadmin'),
     'password': os.getenv("JIRA_PASS", 'Skibbidi@42069'),
     'server': os.getenv("JIRA_SERVER", 'http://localhost:8080')
 })
-
-db_add_closed_chat = False
-
-
-# tmp DB 
-ticket_db={}
-old_chat = {}
