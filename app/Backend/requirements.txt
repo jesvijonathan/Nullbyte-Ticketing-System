@@ -48,4 +48,4 @@ Werkzeug==3.0.4
 wsproto==1.2.0
 jira[cli]
 waitress==3.0.0
-cloud-sql-python-connector["pymysql"]
+cloud-sql-python-connector[pymysql]
