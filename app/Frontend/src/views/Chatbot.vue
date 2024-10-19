@@ -14,9 +14,12 @@ import { useCookies } from 'vue3-cookies';
 import { faL } from '@fortawesome/free-solid-svg-icons';
 
 // Socket connection
-const socket = io(document.baseMyURL, {
+const baseSocketURL = document.baseSocketURL || 'http://localhost'; // Ensure this is defined
+const socket = io(baseSocketURL, {
     transports: ['websocket'],
 });
+console.log("@@@@ BaseUri", document.baseSocketURL, document.baseMyURL);
+console.log("@@@@socket", socket);
 
 const current_user = ref(null);
 const { cookies } = useCookies();
