@@ -16,7 +16,7 @@ let bread_path_json = {
 
 const loading = ref(true);
 
-const get_tickets_url =(document.useDB)?document.baseMyURL+ "/ticket/get":document.baseMyURL+"/get_tickets";
+const get_tickets_url = document.baseMyURL+"/get_tickets";
 
 // get category passed via url params
 
