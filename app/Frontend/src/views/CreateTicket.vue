@@ -4,6 +4,7 @@ import NavigationBarView2 from '@/views/NavigationBarView_2.vue';
 import { onMounted, ref } from 'vue';
 import SidePane from '@/components/SidePane.vue';
 import LoaderToast from '@/components/LoaderToast.vue';
+import AiLoaderToast from '@/components/AiLoaderToast.vue';
 import { faLeaf } from '@fortawesome/free-solid-svg-icons';
 
 import { useRouter } from 'vue-router';
@@ -44,6 +45,7 @@ const removeAttachment = (index) => {
 
 
 const loading = ref(true);
+const using_ai = ref(false);
 
 const get_ticket_url = document.baseMyURL + "/get_ticket";
 const get_incomplete_ticket_url = document.baseMyURL + "/get_incomplete_ticket";
@@ -107,8 +109,12 @@ onMounted(() => {
 const auto_fill_url = document.baseMyURL + "/text/fill_ticket";
 // const auto_fill_url = document.baseMyURL + "/get_autofill";
 const autoFill = () => {
+    
+    using_ai.value = true;
     if (!ticket_data.value.subject && !ticket_data.value.text) {
         alert('Please fill either the subject or description');
+        
+    using_ai.value = false;
         return;
     }
     loading.value = true;
@@ -130,6 +136,8 @@ const autoFill = () => {
         })
         .finally(() => {
             loading.value = false;
+            
+    using_ai.value = false;
         }); 
 };
 
@@ -247,6 +255,7 @@ const submitForm = async () => {
 
 <template>
     <LoaderToast :loading="loading" />
+    <AiLoaderToast :loading="using_ai" />
     <!-- <NavigationBarView /> -->
     <NavigationBarView2 />
     <div class="home-container">
