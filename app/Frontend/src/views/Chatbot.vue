@@ -95,7 +95,37 @@ onMounted(() => {
         convo.value = data.live_chat;
         waiting_for_response = false
         const convoContainer = document.querySelector('.convo');
-        convoContainer.scrollTop = convoContainer.scrollHeight;
+        convoContainer.scrollTop = convoContainer.scrollHeight; 
+        // print last message
+        if (convo.value){
+            if (convo.value[Object.keys(convo.value).length].recipient == "wl_vertex"){
+                if (window.location.href.includes("llama")){
+                    sendMessage("/change");
+                }
+            }
+            else if(convo.value[Object.keys(convo.value).length].recipient == "wl_llama"){
+                if (window.location.href.includes("vertex")){
+                    sendMessage("/change");
+                }
+            }
+            else{
+                if (convo.value[Object.keys(convo.value).length - 1].message == "/change"){
+
+                }
+                else{
+                if (convo.value[Object.keys(convo.value).length - 1].recipient == "wl_vertex"){
+                    if (window.location.href.includes("llama")){
+                    sendMessage("/change");
+                }
+                }
+                else if(convo.value[Object.keys(convo.value).length - 1].recipient == "wl_llama"){
+                    if (window.location.href.includes("vertex")){
+                    sendMessage("/change");
+                }
+                }
+            }
+            }
+        }
     });
 
     socket.on('user_attachment_received', (attachment) => {
@@ -103,6 +133,7 @@ onMounted(() => {
         const message = `Attachment received: ${attachment.file_name} (${attachment.size_mb} MB)`;
         addMessageToChat('Bot', message);
     });
+
 
     convoContainer.scrollTop = convoContainer.scrollHeight;
 });
@@ -127,7 +158,14 @@ function sendMessage(msg = "") {
     if (msg != null) {
         messageInput.value = msg;
     }
-
+    
+    if (messageInput.value == '/change') {
+        if (bot == "Vertex AI") {
+            bot = "Llama AI";
+        } else {
+            bot = "Vertex AI";
+        }
+    }
 
     // "recipient": "admin",
     //     "time": "2024-10-09T21:53:28.668620",
@@ -270,6 +308,8 @@ watch(convo, () => {
     const convoContainer = document.querySelector('.convo');
     convoContainer.scrollTop = convoContainer.scrollHeight;
 });
+
+let bot="Vertex AI";
 </script>
 
 <template>
@@ -279,7 +319,7 @@ watch(convo, () => {
         <div class="main-pane">
             <BreadCrumb :data="bread_path_json" />
             <div class="bot_title">
-                <div :class="['who_are_you', { 'con_dis': !connected }]">Vertex AI</div>
+                <div :class="['who_are_you', { 'con_dis': !connected }]">{{ bot }}</div>
                 <div class="who_are_con">
                     <img :src="ChatbotImg" class="who_are" v-if="connected" />
                     <img src="@/assets/dis.png" class="who_are con_dis" v-else="connected" />
