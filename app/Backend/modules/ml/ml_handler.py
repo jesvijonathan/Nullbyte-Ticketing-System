@@ -21,24 +21,26 @@ from modules.bucket import *
 
 # chatbot handler for socketio and manager
 class ChatbotHandler:
-    def __init__(self, token, socketio=None,payload=None,botid=None):
+    def __init__(self, token, socketio=None, payload=None, medium=None):
         self.socketio= socketio
-        self.botid=botid if botid else 1
+        self.medium=medium if medium else 1 # 1 for socketio, 2 for email
         self.token= token
         self.mail = {"response": "", "processing": False, "RepliedBot": ""}
         self.customer_id= payload["upn"]
         self.result= chat_json
         self.history = {}
-        if(botid==2):
+        if(medium==2):
             self.chat_id=token
             self.user= payload['upn']
             self.result["user"]= payload['upn']
+            self.result["medium"]= "email"
         else:
             self.user= payload['username']
             self.socket= sockets[token]
             self.chat_id= self.socket["sid"]
             self.user= payload['username']
             self.result["user"]= payload['username']
+            self.result["medium"]= "chat"
         self.result["chat_id"]= self.chat_id
         self.result["user"]= payload['upn']
         self.result["ticket_id"]= "SVC-" + str(random.randint(10000, 99999))

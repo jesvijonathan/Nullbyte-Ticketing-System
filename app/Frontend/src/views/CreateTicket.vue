@@ -174,8 +174,8 @@ const reset_form = () => {
     loading.value = false;
 };
 
-// let create_url="http://127.0.0.1:5000/text_form";
-let create_url="http://127.0.0.1:5000/ticket/create";
+let create_url= document.baseMyURL + "/text_form";
+// let create_url="http://127.0.0.1:5000/ticket/create";
 
 
 const submitForm = async () => {

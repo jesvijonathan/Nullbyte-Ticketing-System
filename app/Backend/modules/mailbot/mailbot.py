@@ -61,7 +61,7 @@ class MailObj:
 			mailchainhash = hashlib.sha256(f"{str(self.useremail)}{str(tempsub)}".encode()).hexdigest()
 			payload = {"upn": self.useremail}
 
-			mailchains[mailchainhash] = ml_handler.ChatbotHandler(mailchainhash, None, payload=payload,botid=2)
+			mailchains[mailchainhash] = ml_handler.ChatbotHandler(mailchainhash, None, payload=payload,medium=2)
 
 			handler=mailchains[mailchainhash]
 			print(f"Mail chain hash: {mailchainhash}")
