@@ -50,7 +50,7 @@ const props = defineProps({
     padding: 2.3vw 1.5vw;
     gap: 2vw;
     width: 10vw;
-    background-color: rgb(250, 250, 250);
+    background-color: rgb(255, 255, 255);
     border: 0.1vw solid #dfdfdf;
     display: flex;
     border-radius: 0.5vw;
