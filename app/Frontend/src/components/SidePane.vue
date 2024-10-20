@@ -10,7 +10,7 @@ const TicketItems = ref([
 
 
 
-let get_tickets = document.baseMyURL+"/get_tickets"; 
+let get_tickets = document.baseMyURL+"/ticket/get"; 
 onMounted(async () => {
 
   const response = await fetch(get_tickets);

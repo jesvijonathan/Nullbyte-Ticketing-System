@@ -250,6 +250,8 @@ def text_form():
         upload_individual_files(bucket_name, files_to_upload)
 
         # Upload the chat file and attachments to the cloud
+        print("@@@@@@@@Chat histroy")
+        print(chat_history)
     return json.dumps(chat_history, indent=4) 
 
 

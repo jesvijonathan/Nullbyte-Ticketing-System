@@ -8,6 +8,7 @@ from modules.log import *
 import json
 import base64
 import os
+from modules.log import *
 
 # Initialize the Blueprint
 text = Blueprint('text', __name__)

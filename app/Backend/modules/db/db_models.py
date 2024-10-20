@@ -14,9 +14,9 @@ class Ticket(Base):
     Analysis = Column(Text)
     Type = Column(String(100))
     Description = Column(Text, nullable=False)
-    Status = Column(Enum('open', 'progress', 'closed', 'reopened'), nullable=False, default='open')
+    Status = Column(Enum('open', 'progress', 'closed', 'reopened','waiting for information'), nullable=False, default='open')
     Priority = Column(Enum('critical', 'high', 'medium', 'low'), nullable=False, default='medium')
-    Issue_Type = Column(Enum('bug', 'error', 'issue', 'story', 'others', 'feature', 'enhancement', 'support'), nullable=True, default='issue')
+    Issue_Type = Column(Enum('bug', 'error', 'issue', 'story', 'others', 'feature', 'enhancement', 'support','task'), nullable=True, default='issue')
     Channel = Column(String(100))
     Customer_ID = Column(Integer, ForeignKey('customer.Id', ondelete='SET NULL'))
     Product_Type = Column(String(100))
@@ -27,10 +27,10 @@ class Ticket(Base):
     Issue_Date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     Created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     LastModified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-    Estimation = Column(Integer)
+    Estimation = Column(Integer,default=0)
     Reopens = Column(Integer, default=0)
     Story_Points = Column(Integer)
-    Score = Column(Integer)
+    Score = Column(Integer,default=0)
     attachments = relationship("Attachment", back_populates="ticket")
     customer = relationship("Customer", back_populates="tickets")
     assignee = relationship("Employee", back_populates="assigned_tickets")
@@ -45,23 +45,24 @@ class Ticket(Base):
             'summary': self.Summary,
             'analysis': self.Analysis,
             'type': self.Type,
-            'description': self.Description,
+            'text': self.Description,
             'status': self.Status,
             'priority': self.Priority,
             'issue_type': self.Issue_Type,
             'channel': self.Channel,
-            'user': self.Customer_ID,
+            'user': Customer().getUserNamefromID(self.Customer_ID),
             'product_type': self.Product_Type,
             'medium': self.Medium,
             'team': self.Team,
-            'assignee': self.Assignee_ID,
+            'assignee': Employee().getUserNamefromID(self.Assignee_ID),
             'resolution': self.Resolution,
-            'issue_date': self.Issue_Date.isoformat() if self.Issue_Date else None,
+            'created': self.Created.isoformat() if self.Created else None,
+            'last_modified': self.LastModified.isoformat() if self.LastModified else None,
             'estimation': self.Estimation,
             'reopens': self.Reopens,
             'story_points': self.Story_Points,
             'score': self.Score,
-            'attachments': list(set([attachment.serialize()["url"] for attachment in self.attachments])),
+            'attachments': list([attachment.serialize() for attachment in self.attachments]),
             'comments': [comment.serialize() for comment in self.comments],
             'worklogs': [worklog.serialize() for worklog in self.worklogs]
         }
@@ -71,9 +72,13 @@ class Ticket(Base):
         return data
 
     def validate(self):
+        if self.Estimation ==None or self.Estimation=='':
+            self.Estimation=0
+        if self.Story_Points ==None or self.Story_Points=='':
+            self.Story_Points=0
         if not self.Subject or len(self.Subject) > 255:
             return "Subject must be provided and less than 255 characters."
-        if self.Status.lower()not in ["open", "progress", "closed", "reopened", ""]:
+        if self.Status.lower()not in ["open", "progress", "closed", "reopened", "waiting for information"]:
             self.Status = 'open'
         if self.Priority.lower() not in ["critical", "high", "medium", "low", ""]:  
             print(self.Priority)
@@ -90,6 +95,8 @@ class Customer(Base):
     name = Column(String(255), nullable=False)
     age = Column(Integer)
     gender = Column(Enum('Male', 'Female'))
+    username = Column(String(255), unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     phone = Column(String(15))
     company = Column(String(255))
@@ -104,6 +111,8 @@ class Customer(Base):
             'name': self.name,
             'age': self.age,
             'gender': self.gender,
+            'username': self.username,
+            'password': self.password,
             'email': self.email,
             'phone': self.phone,
             'company': self.company,
@@ -115,17 +124,23 @@ class Customer(Base):
             return {key: data[key] for key in keys if key in data}
         return data
 
-    def getIDfromEmail(self, email):
-        print("Email: ", email)
-        customer = db_session.query(Customer).filter_by(email=email).first()
+    def getIDfromUsername(self, username):
+        print("Username: ", username)
+        customer = db_session.query(Customer).filter_by(username=username).first()
         print(customer.Id if customer else 1)
         return customer.Id if customer else 1
+    def getUserNamefromID(self, id):
+        print("ID: ", id)
+        customer = db_session.query(Customer).filter_by(Id=id).first()
+        return customer.username if customer else "unassigned"
 
 class Employee(Base):
     __tablename__ = 'employee'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     age = Column(Integer)
+    username = Column(String(255), unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
     gender = Column(Enum('Male', 'Female'), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     phone = Column(String(15))
@@ -143,6 +158,7 @@ class Employee(Base):
             'id': self.id,
             'name': self.name,
             'age': self.age,
+            'username': self.username,
             'gender': self.gender,
             'email': self.email,
             'phone': self.phone,
@@ -156,35 +172,55 @@ class Employee(Base):
         if keys:
             return {key: data[key] for key in keys if key in data}
         return data
-    def getIDfromEmail(self, email):
-        print("Email: ", email)
-        employee = db_session.query(Employee).filter_by(email=email).first()
+    def getIDfromUsername(self, username):
+        print("Username: ", username)
+        employee = db_session.query(Employee).filter_by(username=username).first()
         print(employee.id if employee else 1)
         return employee.id if employee else 1
+    def getUserNamefromID(self, id):
+        print("ID: ", id)
+        employee = db_session.query(Employee).filter_by(id=id).first()
+        return employee.username if employee else "unassigned"
 
 class Attachment(Base):
     __tablename__ = 'attachments'
     Id = Column(Integer, primary_key=True, autoincrement=True)
     Ticket_Id = Column(Integer, ForeignKey('ticket.Ticket_Id', ondelete='CASCADE'), nullable=False)
-    url = Column(Text, nullable=False)
+    Name = Column(String(100), nullable=False)
+    Type = Column(String(50), nullable=True)
+    Size = Column(String(10), nullable=True)
+    Url = Column(Text, nullable=False)
+    
+    def __init__(self,name,url,size,type,ticket_no):
+        self.Name=name
+        self.Url=url
+        self.Type=type
+        self.Size=size
+        self.Ticket_Id=ticket_no
+
+
     ticket = relationship('Ticket', back_populates='attachments')
 
     def serialize(self, keys=None):
         data = {
-            'Id': self.Id,
-            'Ticket_Id': self.Ticket_Id,
-            'url': self.url
+            'name': self.Name,
+            'type': self.Type,
+            'size': self.Size,
+            'url': self.Url
         }
         
         if keys:
             return {key: data[key] for key in keys if key in data}
         return data
 
-    def addAttachment(self, ticket_id, url):
+    def add_attachment(self, ticket_id, name, type, size, url):
         try:
             new_attachment = Attachment(
                 Ticket_Id=ticket_id,
-                url=url
+                Name=name,
+                Type=type,
+                Size=size,
+                Url=url
             )
             db_session.add(new_attachment)
             db_session.commit()
@@ -193,6 +229,7 @@ class Attachment(Base):
             db_session.rollback()
             logger.error(f"Error adding attachment: {e}")
             return {'error': str(e)}
+
 class Comment(Base):
     __tablename__ = 'comments'
     Comment_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -207,7 +244,6 @@ class Comment(Base):
     def serialize(self, keys=None):
         data = {
             'comment_id': self.Comment_id,
-            'ticket_id': self.Ticket_id,
             'timestamp': self.Timestamp.isoformat() if self.Timestamp else None,
             'comment_user': self.Comment_user,
             'comment': self.Comment

@@ -1,6 +1,9 @@
+import mimetypes
+import random
 from flask import Blueprint
 from flask import request, make_response, jsonify, render_template
 from werkzeug.utils import secure_filename
+from modules.bucket import upload_individual_files
 from config import *
 from .db.db_models import Ticket, Employee,Customer,Attachment,Comment,Worklog
 from .auth.auth import jwt_required
@@ -8,6 +11,9 @@ from .db.database import db_session
 from .log import *
 from sqlalchemy import select
 from datetime import datetime, timezone
+from mimetypes import guess_extension
+import base64
+import datetime
 
 ticket=Blueprint('ticket',__name__)
 
@@ -33,137 +39,211 @@ def get_all_tickets(*args, **kwargs):
         return make_response(jsonify({'message': 'No tickets found for the given Assignee_ID'}), 404)
     return make_response(jsonify(ticket_list), 200)
 
+def parse_attachment(file_data, file_name, folder_this):
+    """ Save attachment to bucket/chat_id folder and return base64 encoded content. """
+    chat_folder = os.path.join(folder_this)
+    os.makedirs(chat_folder, exist_ok=True)
+    file_path = os.path.join(folder_this, file_name)
+
+    # Write the file to disk
+    with open(file_path, "wb") as f:
+        f.write(file_data)
+
+    # Convert file to base64
+    with open(file_path, "rb") as f:
+        file_ext = file_path.split('.')[-1]
+        mime_type = guess_extension(file_ext) or mimetypes.guess_type(file_path)[0] or "application/octet-stream"
+        
+    return file_name, mime_type,file_path
+
 @ticket.route('/create', methods=['POST'])
-@jwt_required
-def create_ticket(payload):
+def create_ticket():
     comments = []
-    attachments= []
-    ticket_id = None
+    attachments = []
+    ticket_id = request.json.get('ticket_id')
+    print("@@@@@ INcomming Data")
+    print(request.json)
     ticket = None
-    # if id is there we are just updating the ticket with comments, attachments and worklog
-    if 'id' in request.form:
-        ticket_id = request.form.get('id')
-        print(ticket_id)   
-        try:
-            ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
-            print("ticket",end=": ")
-            if not ticket:
-                return make_response(jsonify({'error': 'Ticket not found'}), 404)
-        except Exception as e:
-            logger.error(f"Error fetching ticket: {e}")
-            return make_response(jsonify({'error': 'Failed to fetch ticket? does ticket exist'}), 500)
-    
-    if 'comments' in request.form:
-        for comment in request.form.getlist('comments'):
-            Comment_user = Customer().getIDfromEmail(payload['upn'])
-            Comment_text = comment
-            new_comment = Comment(Comment_user=Comment_user, Comment=Comment_text)
+    if ticket_id:
+        ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
+        if not ticket:
+            return error_response('Ticket not found', 404)
+
+    if 'comments' in request.json:
+        comments = handle_comments(request.json['comments'], request.json.get('user'))
+
+    if 'logged_hrs' in request.json:
+        handle_worklogs(request.json['logged_hrs'], request.json.get('user'))
+
+    # Prepare new ticket data
+    new_ticket_data = prepare_new_ticket_data(request.json, comments)
+
+    # Create new ticket
+    new_ticket = Ticket(**new_ticket_data)
+    try:
+        validation_error = new_ticket.validate()
+        if validation_error:
+            return error_response(validation_error, 400)
+
+        db_session.add(new_ticket)
+        db_session.commit()
+        ticket_id ="SVC-"+str(new_ticket.Ticket_Id)
+    except Exception as e:
+        db_session.rollback()
+        logger.error(e)
+        return error_response(str(e), 500)
+
+    folder_this = os.path.join(ticket_folder, ticket_id)
+    os.makedirs(folder_this, exist_ok=True)
+    attachments = handle_attachments(request.json.get('attachments', []), folder_this)
+
+    chat_file,chat_history = prepare_chat_history(request.json, ticket_id, [x.serialize() for x in attachments])
+
+    try:
+        if attachments:
+            print(attachments[0].serialize())
+            ticket = db_session.query(Ticket).filter_by(Ticket_Id=new_ticket.Ticket_Id).first()
+            print(ticket)
+            ticket.attachments.extend(attachments)
+            db_session.commit()  # Commit attachments
+    except Exception as e:
+        db_session.rollback()
+        logger.error(f"Error updating ticket with attachments: {e}")
+        return error_response('Failed to update ticket with attachments', 500)
+    print("@@@@chatfile mine")
+    print(chat_history)
+    print("@@@@chatfile mine")
+
+    return json.dumps(chat_history, indent=4)
+    return make_response(jsonify({chat_file}), 201)
+
+def error_response(message, status_code):
+    return make_response(jsonify({'error': message}), status_code)
+
+def handle_comments(comments_data, user_email):
+    comments = []
+    comment_user = Customer().getIDfromUsername(user_email)
+    for comment in comments_data:
+        if 'comment_id' in comment:
+            existing_comment = db_session.query(Comment).filter_by(Comment_id=comment['comment_id']).first()
+            if existing_comment:
+                existing_comment.Comment = comment['comment']
+                comments.append(existing_comment)
+            else:
+                new_comment = Comment(Comment_user=comment_user, Comment=comment['comment'])
+                comments.append(new_comment)
+        else:
+            new_comment = Comment(Comment_user=comment_user, Comment=comment['comment'])
             comments.append(new_comment)
-    
-    if 'worklog' in request.form:
-        for worklog in request.form.getlist('worklog'):
-            Worklog_user = Customer().getIDfromEmail(payload['upn'])
-            Worklog_text = worklog
-            Worklog_hours = request.form.get('worklog_hours', type=int)
+    return comments
+
+def handle_worklogs(worklogs_data, user_email):
+    worklog_user = Employee().getIDfromUsername(user_email)
+    for worklog in worklogs_data:
+        if 'id' in worklog:
+            existing_worklog = db_session.query(Worklog).filter_by(Worklog_Id=worklog['id']).first()
+            if existing_worklog:
+                existing_worklog.Worklog = worklog['description']
+                existing_worklog.Worklog_Hours = worklog.get('hours', 0)
+            else:
+                new_worklog = Worklog(
+                    Worklog_User=worklog_user,
+                    Worklog=worklog['description'],
+                    Worklog_Hours=worklog.get('hours', 0)
+                )
+                db_session.add(new_worklog)
+        else:
             new_worklog = Worklog(
-                Worklog_User=Worklog_user,
-                Worklog=Worklog_text,
-                Worklog_Hours=Worklog_hours
+                Worklog_User=worklog_user,
+                Worklog=worklog['description'],
+                Worklog_Hours=worklog.get('hours', 0)
             )
             db_session.add(new_worklog)
-            db_session.commit()
+    db_session.commit()
 
-    files=request.files.getlist('files')
-    if not all(file.filename == '' for file in files):
-        try:
-            ticket_folder = "./bucket/tickets"
-            os.makedirs(ticket_folder, exist_ok=True)
-            this_ticket_folder = os.path.join(ticket_folder, str(ticket_id))
-            os.makedirs(this_ticket_folder, exist_ok=True)
-            
-            for file in files:
-                if file and file.filename != '':
-                    filename = secure_filename(file.filename)
-                    writefile = os.path.join(this_ticket_folder, filename)
-                    file.save(writefile)
-                    print(f"File saved to {this_ticket_folder}")
-                    new_attachment = Attachment(url=writefile)
-                    attachments.append(new_attachment)
-        except Exception as e:
-            logger.error(f"Error saving files: {e}")
-            return make_response(jsonify({'error': 'File upload failed'}), 500)
-    print(ticket_id)   
-    if ticket_id and len(comments) == 0 and len(attachments) == 0:
-        return make_response(jsonify({'error': 'Comments or attachments are required to update ticket if only id is provided'}), 400)
-    elif ticket_id:
-        try:
-            print(ticket)
-            print(comments)
-            if ticket is not None and len(comments) > 0:
-                print(comments)
-                ticket.comments.extend(comments)
-                db_session.commit()
-                print("comments added")
-            if ticket is not None and len(attachments) > 0:
-                print(attachments)
-                ticket.attachments.extend(attachments)
-                db_session.commit()
-                print("attachments added")
-            return make_response(jsonify({'message': 'Data added successfully'}), 200)
-        except Exception as e:
-            db_session.rollback()
-            logger.error(f"Error updating ticket: {e}")
-            return make_response(jsonify({'error': 'Failed to update ticket'}), 500)
-    elif not ticket_id and request.form:
-        def validateAndGet(key):
-            value = request.form.get(key)
-            if value:
-                print(value.strip().strip('"'))
-            return value.strip().strip('"') if value is not None else None
+def handle_attachments(attachments_data, folder_this):
+    attachments = []
+    existing_files = set()
+    
+    for attachment in attachments_data:
+        if 'data' in attachment:
+            b_file_data = base64.b64decode(attachment['data'])
+            filename, mime, file_path = parse_attachment(b_file_data, secure_filename(attachment['name']), folder_this)
+        else:
+            filename = attachment['name']
+            mime = attachment['type']
+            file_path = attachment['url']
         
-        new_ticket = Ticket(
-            Chat_Id=validateAndGet("chat_id"),
-            Subject=validateAndGet("subject"),
-            Summary=validateAndGet("summary"),
-            Analysis=validateAndGet("analysis"),
-            Type=validateAndGet("type"),
-            Description=validateAndGet("description"),
-            Status=validateAndGet("status"),
-            Priority=validateAndGet("priority").lower() if validateAndGet("priority") is not None else None,
-            Issue_Type=validateAndGet("issue_type"),
-            Channel=validateAndGet("channel"),
-            Customer_ID=Customer().getIDfromEmail(validateAndGet("user")),
-            Product_Type=validateAndGet("product_type"),
-            Medium=validateAndGet("medium"),
-            Team=validateAndGet("team"),
-            Assignee_ID=Employee().getIDfromEmail(validateAndGet('assignee')),
-            Resolution=validateAndGet("resolution"),
-            LastModified=datetime.now(timezone.utc),
-            Estimation=validateAndGet("estimation"),
-            Reopens=validateAndGet("reopens"),
-            Story_Points=validateAndGet("story_points"),
-            comments=comments,
-            attachments=attachments
-        )    
+        if file_path in existing_files:
+            continue  # Skip duplicate attachments
+        
+        existing_files.add(file_path)
+        
+        if 'id' in attachment:
+            existing_attachment = db_session.query(Attachment).filter_by(Attachment_Id=attachment['id']).first()
+            if existing_attachment:
+                existing_attachment.name = filename
+                existing_attachment.url = file_path
+                existing_attachment.size = attachment['size']
+                existing_attachment.type = mime
+                attachments.append(existing_attachment)
+            else:
+                new_attachment = Attachment(filename, file_path, attachment['size'], mime)
+                attachments.append(new_attachment)
+        else:
+            new_attachment = Attachment(filename, file_path, attachment['size'], mime)
+            attachments.append(new_attachment)
+        
+        attachment['url'] = file_path
+        if 'data' in attachment:
+            attachment.pop('data')
+    
+    return attachments
 
-        try:
-            validation_error = new_ticket.validate()
-            if validation_error:
-                return make_response(jsonify({'error': validation_error}), 400)
-            db_session.add(new_ticket)
-            db_session.commit()
-            return make_response(jsonify({'id': new_ticket.Ticket_Id}), 201)
-        except Exception as e:
-            db_session.rollback()
-            logger.error(e)
-            return make_response(jsonify({'error': str(e)}), 500)
-    else:
-        return make_response(jsonify({'error': 'Ticket ID is required to add comments. If creating a new ticket, do not include a ticket ID. To create new ticket pass form data without id'}), 400)
+def prepare_chat_history(request_data, ticket_id, attachments):
+    chat_file = os.path.join(ticket_folder, ticket_id, "data.json")
+    chat_history = {
+        "chat_id": request_data.get('chat_id'),
+        "ticket_id": ticket_id,
+        "user": request_data.get('user'),
+        "history": {},
+        "medium": "portal",
+        "comments": [],
+        "created": datetime.datetime.now().isoformat(),
+        "updated": datetime.datetime.now().isoformat(),
+        "logged_hrs": []
+    }
+    with open(chat_file, "w") as f:
+        json.dump(chat_history, f)
+        chat_attachment = Attachment("data.json", chat_file, os.path.getsize(chat_file), "application/json")
+        attachments.append(chat_attachment.serialize())
+        chat_history['attachments']=attachments
+    return chat_file,chat_history
+
+def prepare_new_ticket_data(request_data, comments):
+    return {
+        "Chat_Id": request_data.get("chat_id"),
+        "Subject": request_data.get("subject"),
+        "Summary": request_data.get("summary"),
+        "Analysis": request_data.get("analysis"),
+        "Description": request_data.get("text"),
+        "Status": request_data.get("status"),
+        "Priority": request_data.get("priority", "").lower(),
+        "Issue_Type": request_data.get("issue_type"),
+        "Channel": request_data.get("medium"),
+        "Customer_ID": Customer().getIDfromUsername(request_data.get("user")),
+        "Product_Type": request_data.get("product_type"),
+        "Assignee_ID": Employee().getIDfromUsername(request_data.get('assingee')),
+        "LastModified": datetime.datetime.now().isoformat(),
+        "Estimation": request_data.get("estimation"),
+        "Story_Points": request_data.get("story_points"),
+        "comments": comments,
+    }
 
 @ticket.route('/logwork', methods=['POST'])
 @jwt_required
 def log_work(payload):
-    Worklog_User = Employee().getIDfromEmail(payload['upn'])
+    Worklog_User = Employee().getIDfromUsername(payload['upn'])
     if not request.is_json:
         return make_response(jsonify({'error': 'Request must be JSON'}), 400)
 
@@ -185,129 +265,159 @@ def log_work(payload):
         logger.error(e)
         return make_response(jsonify({'error': str(e)}), 500)
 
-@ticket.route('/modify', methods=['PUT'])
-@jwt_required
+@ticket.route('/modify', methods=['POST'])
 def modify_fields(*args, **kwargs):
+    print("\n\n\n\@@@  modify value")
+    print(request.json)
     if not request.is_json:
         return make_response(jsonify({'error': 'Request must be JSON'}), 400)
+    
     body = request.json
-    ticket_id = body.get("Id")
+    ticket_id = body.get("ticket_id")  # Adjusted to match the new key
+    ticket_id = str(ticket_id).split('-')[-1]
+    print(ticket_id)
     if not ticket_id:
         return make_response(jsonify({'error': 'Ticket ID is required'}), 400)
     ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
     if not ticket:
         return make_response(jsonify({'error': 'Ticket not found'}), 404)
+    
     try:
-        if "Subject" in body:
-            ticket.Subject = body["Subject"]
-        if "Summary" in body:
-            ticket.Summary = body["Summary"]
-        if "Analysis" in body:
-            ticket.Analysis = body["Analysis"]
-        if "Attachments" in body:
-            ticket.Attachments = body["Attachments"]
-        if "Type" in body:
-            ticket.Type = body["Type"]
-        if "Description" in body:
-            ticket.Description = body["Description"]
-        if "Status" in body:
-            ticket.Status = body["Status"]
-        if "Priority" in body:
-            ticket.Priority = body["Priority"]
-        if "Issue_Type" in body:
-            ticket.Issue_Type = body["Issue_Type"]
-        if "Channel" in body:
-            ticket.Channel = body["Channel"]
-        if "Customer_ID" in body:
-            ticket.Customer_ID = body["Customer_ID"]
-        if "Product_Type" in body:
-            ticket.Product_Type = body["Product_Type"]
-        if "Medium" in body:
-            ticket.Medium = body["Medium"]
-        if "Team" in body:
-            ticket.Team = body["Team"]
-        if "Assignee_ID" in body:
-            ticket.Assignee_ID = body["Assignee_ID"]
-        if "Resolution" in body:
-            ticket.Resolution = body["Resolution"]
-        if "Issue_Date" in body:
-            ticket.Issue_Date = body["Issue_Date"]
-        if "Estimation" in body:
-            ticket.Estimation = body["Estimation"]
-        if "Time_to_Resolution" in body:
-            ticket.Time_to_Resolution = body["Time_to_Resolution"]
-        if "Reopens" in body:
-            ticket.Reopens = body["Reopens"]
-        if "Story_Points" in body:
-            ticket.Story_Points = body["Story_Points"]
-        if "Score" in body:
-            ticket.Score = body["Score"]
-        
+        if "subject" in body:
+            ticket.Subject = body["subject"]
+        if "summary" in body:
+            ticket.Summary = body["summary"]
+        if "analysis" in body:
+            ticket.Analysis = body["analysis"]
+        if "type" in body:
+            ticket.Type = body["type"]
+        if "text" in body:
+            ticket.Description = body["text"]
+        if "status" in body:
+            ticket.Status = body["status"]
+        if "priority" in body:
+            ticket.Priority = body["priority"]
+        if "issue_type" in body:
+            ticket.Issue_Type = body["issue_type"]
+        if "channel" in body:
+            ticket.Channel = body["channel"]
+        if "user" in body:
+            ticket.Customer_ID = Customer().getIDfromUsername(body["user"])
+        if "product_type" in body:
+            ticket.Product_Type = body["product_type"]
+        if "medium" in body:
+            ticket.Medium = body["medium"]
+        if "team" in body:
+            ticket.Team = body["team"]
+        if "assignee" in body:
+            ticket.Assignee_ID = Employee().getIDfromUsername(body["assignee"])
+        if "resolution" in body:
+            ticket.Resolution = body["resolution"]
+        if "issue_date" in body:
+            ticket.Issue_Date = body["issue_date"]
+        if "estimation" in body:
+            ticket.Estimation = body["estimation"]
+        if "reopens" in body:
+            ticket.Reopens = body["reopens"]
+        if "story_points" in body:
+            ticket.Story_Points = body["story_points"]
+        if "score" in body:
+            ticket.Score = body["score"]
+
+        ticket.LastModified = datetime.datetime.now().isoformat()
+        print("workey")
         validation_error = ticket.validate()
         if validation_error:
             return make_response(jsonify({'error': validation_error}), 400)
-        
+
         db_session.commit()
         return make_response(jsonify({'message': 'Ticket updated successfully'}), 200)
+
     except Exception as e:
         db_session.rollback()
         logger.error(e)
         return make_response(jsonify({'error': str(e)}), 500)
-    
-@ticket.route('/', methods=['GET'])
-@jwt_required
-def get_ticket(*args, **kwargs):
-    ticket_id = request.args.get('id')
-    if ticket_id:
-        if ticket_id.isnumeric():
-            ticket_id = int(ticket_id)
-        else:
-            ticket_id = ticket_id.split('-')[-1]
-    if not ticket_id:
-        return make_response(jsonify({'error': 'Ticket ID is required'}), 400)
-    db_session.expire_all()  # Expire all instances to ensure fresh data is fetched
-    ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
-    if not ticket:
-        return make_response(jsonify({'error': 'Ticket not found'}), 404)
-    return make_response(jsonify(ticket.serialize()), 200)
 
-@ticket.route('/attachments/add', methods=['POST'])
-@jwt_required
-def addattachment():
-    ticket_id = request.form.get('ticket_id')
+@ticket.route('/get', methods=['GET'])
+@ticket.route('/get/<ticket_id>', methods=['GET'])
+def get_ticket(ticket_id=None):
+    ticket = []
+    # time.sleep(random.randint(2,4))
+    if not ticket_id:
+        ticket_id = request.args.get('id')
+
+    if ticket_id:
+        if not ticket_id.isnumeric():
+            ticket_id = ticket_id.split('-')[-1]
+        db_session.expire_all()  # Ensure fresh data is fetched
+        ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
+        if ticket:
+            ticket = ticket.serialize()
+            ticket['ticket_id']=f"SVC-{ticket['ticket_id']}"
+    
+    if not ticket_id:
+        #assignee_id = Employee().getIDfromUsername("test@gmail.com")  # change later
+        assignee_id=1
+        if assignee_id:
+            print("@@@@ id")
+            print(assignee_id)
+            tickets = db_session.execute(select(Ticket).where(Ticket.Assignee_ID == assignee_id)).scalars().all()
+            ticket = [t.serialize() for t in tickets]
+            for x in ticket:
+                x['ticket_id'] = f"SVC-{x['ticket_id']}"
+            # print("@@@ id")
+            # print(ticket)
+    
+    if not ticket:
+        return jsonify({'error': 'Ticket not found'})
+    # print("@@@ Final res")
+    # print(ticket)
+
+    return jsonify(ticket)
+
+@ticket.route('/attachment/add', methods=['POST'])
+def attachment():
+    if not request.is_json:
+        return make_response(jsonify({'error': 'Request must be JSON'}), 400)
+    body = request.json
+    ticket_id = body.get('ticket_id')
     if not ticket_id:
         return make_response(jsonify({'error': 'Ticket ID is required'}), 400)
-    
-    ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
-    if not ticket:
-        return make_response(jsonify({'error': 'Ticket not found'}), 404)
-    full_ticket_id = 'SVC-' + str(ticket_id)
-    
-    if 'files' not in request.files:
-        return make_response(jsonify({'error': 'No files part'}), 400)
-    
-    files = request.files.getlist('files')
-    if not files or all(file.filename == '' for file in files):
-        return make_response(jsonify({'error': 'No selected files'}), 400)
-    
+    ticket_no = str(ticket_id).split('-')[-1]
+    attachments = body.get('attachments')
+    for attachment in attachments:
+        if attachment:
+            b_file_data = base64.b64decode(attachment['data'])
+            filePaththis = os.path.join(ticket_folder, ticket_id)
+            filename, mime, file_path = parse_attachment(b_file_data, secure_filename(attachment['name']), filePaththis)
+            file=Attachment(filename, file_path, attachment['size'], mime,ticket_no)
+            try:
+                db_session.add(file)
+                db_session.commit()
+                return make_response(jsonify({'message': 'Attachment added successfully'}), 201)
+            except Exception as e:
+                db_session.rollback()
+                logger.error(e)
+                return make_response(jsonify({'error': str(e)}), 500)
+    return make_response(jsonify({'error': 'Attachment data not found'}), 400)
+
+@ticket.route('/attachment/delete', methods=['DELETE'])
+def delete_attachment():
+    attachment_id = request.args.get('id')
+    if not attachment_id:
+        return make_response(jsonify({'error': 'Attachment ID is required'}), 400)
+    attachment = db_session.query(Attachment).filter_by(Id=attachment_id).first()
+    if not attachment:
+        return make_response(jsonify({'error': 'Attachment not found'}), 404)
     try:
-        ticket_folder = "./bucket/tickets"
-        os.makedirs(ticket_folder, exist_ok=True)
-        this_ticket_folder = os.path.join(ticket_folder, str(full_ticket_id))
-        os.makedirs(this_ticket_folder, exist_ok=True)
-        
-        for file in files:
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                writefile = os.path.join(this_ticket_folder, filename)
-                file.save(writefile)
-                print(f"File saved to {this_ticket_folder}")
-                Attachment().addAttachment(ticket_id, writefile)
-        
-        return make_response(jsonify({'message': 'Files uploaded successfully'}), 200)
+        db_session.delete(attachment)
+        db_session.commit()
+        return make_response(jsonify({'message': 'Attachment deleted successfully'}), 200)
     except Exception as e:
-        logger.error(f"Error saving files: {e}")
-        return make_response(jsonify({'error': 'File upload failed'}), 500)
+        db_session.rollback()
+        logger.error(e)
+        return make_response(jsonify({'error': str(e)}), 500)
+
 class BotAdmin:
         def create_ticket(self,ticket):
             description = ticket.get("description")
@@ -323,7 +433,7 @@ class BotAdmin:
                 Summary=ticket.get("summary"),
                 Analysis=analysis,
                 Description=description,
-                Customer_ID=Customer().getIDfromEmail(ticket.get("user")),
+                Customer_ID=Customer().getIDfromUsername(ticket.get("user")),
                 Medium=ticket.get("medium"),
                 Issue_Type=ticket.get("issue_type"),
                 Channel=ticket.get("connection"),

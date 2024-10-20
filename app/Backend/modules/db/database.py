@@ -2,7 +2,7 @@ import os
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy import engine as sengine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from google.cloud.sql.connector import Connector
 import pymysql
 from time import sleep
@@ -29,7 +29,10 @@ for _ in range(2):
                     password=DATABASE_PASSWORD,
                     database=DATABASE_NAME,
                     query={"unix_socket": unix_socket_path}
-                )
+                ),
+                pool_size=20,
+                max_overflow=0,
+                pool_timeout=30
             )
         else:
             print("Connecting to local database...")
@@ -42,12 +45,12 @@ for _ in range(2):
             with connection.cursor() as cursor:
                 cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}")
                 print(f"Database '{DATABASE_NAME}' created or already exists.")
-            engine = create_engine(DATABASE_URL)
+            engine = create_engine(DATABASE_URL,pool_size=20,max_overflow=0,pool_timeout=30)
 
         Base = declarative_base()
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
-        db_session = Session()
+        db_session = scoped_session(Session)
         print("Database connection established successfully")
         break
 

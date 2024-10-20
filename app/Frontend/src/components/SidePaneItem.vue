@@ -22,7 +22,7 @@
       <div class="detail">
         <span class="label">Assigned To</span>
         <span class="colon">:</span>
-        <span class="value">{{ ticket.assingee }}</span>
+        <span class="value">{{ ticket.assignee }}</span>
       </div>
       <div class="detail">
         <span class="label">Status</span>

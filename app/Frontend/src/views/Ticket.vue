@@ -43,7 +43,7 @@ let bread_path_json = {
 
 const loading = ref(true);
 
-const get_ticket_url = document.baseMyURL + "/get_ticket" + `?ticket_id=${ticket_id}`;
+const get_ticket_url = document.baseMyURL + "/ticket/get/" + ticket_id;
 const get_incomplete_ticket_url = document.baseMyURL + "/get_incomplete_ticket";
 // const auto_fill_url = document.baseMyURL + "/text/fill_ticket";
 const auto_fill_url = document.baseMyURL + "/get_autofill";
@@ -126,8 +126,9 @@ const autoFill = async () => {
 
         const data = await response.json();
         console.log("Ticket data fetched successfully:", data);
-
-        ticket_data.value = data;  // Assign the fetched data
+        console.log('before assignment',ticket_data.value)
+        ticket_data = data;  // Assign the fetched data
+        console.log('after assignment',ticket_data.value)
 
         get_attachments_from_data();  // Process attachments
         extract_links();  // Extract links if needed
@@ -354,16 +355,17 @@ function handle_delete(){
     
 }
 
-let update_url = document.baseMyURL+ "/update_ticket";
+let update_url = document.baseMyURL+ "/ticket/modify";
 
 function update_ticket(){
     // request /update_ticket
+    console.log(ticket_data.value)
     fetch(update_url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(ticket_data.value),
+        body: JSON.stringify(ticket_data),
     })
         .then(response => response.json())
         .then(data => {

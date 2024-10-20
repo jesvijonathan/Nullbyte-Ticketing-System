@@ -1,13 +1,13 @@
-name,age,gender,email,phone,company,role,score
-Unassigned,0,Male,unassigned@nullbyte.com,,unassigned,unassigned,0
-Ras Das,23,Female,ras.das@nullbyte.exe,6969420911,ICICI,Techinal Staff,3
-Alice Johnson,30,Female,alice.johnson@example.com,1234567890,Tech Corp,Customer,85
-Bob Smith,28,Male,bob.smith@example.com,1234567891,Innovate LLC,Customer,90
-Charlie Brown,35,Male,charlie.brown@example.com,1234567892,NextGen Inc,Customer,78
-Daisy White,22,Female,daisy.white@example.com,1234567893,Future Solutions,Customer,88
-Ethan Hunt,40,Male,ethan.hunt@example.com,1234567894,Prime Services,Customer,95
-Fiona Green,29,Female,fiona.green@example.com,1234567895,Global Enterprises,Customer,80
-George Black,45,Male,george.black@example.com,1234567896,Visionary Tech,Customer,70
-Hannah Brown,33,Female,hannah.brown@example.com,1234567897,Smart Solutions,Customer,82
-Ian Wright,27,Male,ian.wright@example.com,1234567898,Dynamica Industries,Customer,87
-Julia Roberts,31,Female,julia.roberts@example.com,1234567899,Innovation Hub,Customer,92
+name,age,gender,username,password,email,phone,company,role,score
+Unassigned,0,Male,unassigned,unassigned_password,unassigned@nullbyte.com,,unassigned,unassigned,0
+Ras Das,23,Female,ras.das,ras_password,ras.das@nullbyte.exe,6969420911,ICICI,Technical Staff,3
+Alice Johnson,30,Female,alice.johnson,alice_password,alice.johnson@example.com,1234567890,Tech Corp,Customer,85
+Bob Smith,28,Male,bob.smith,bob_password,bob.smith@example.com,1234567891,Innovate LLC,Customer,90
+Charlie Brown,35,Male,charlie.brown,charlie_password,charlie.brown@example.com,1234567892,NextGen Inc,Customer,78
+Daisy White,22,Female,daisy.white,daisy_password,daisy.white@example.com,1234567893,Future Solutions,Customer,88
+Ethan Hunt,40,Male,ethan.hunt,ethan_password,ethan.hunt@example.com,1234567894,Prime Services,Customer,95
+Fiona Green,29,Female,fiona.green,fiona_password,fiona.green@example.com,1234567895,Global Enterprises,Customer,80
+George Black,45,Male,george.black,george_password,george.black@example.com,1234567896,Visionary Tech,Customer,70
+Hannah Brown,33,Female,hannah.brown,hannah_password,hannah.brown@example.com,1234567897,Smart Solutions,Customer,82
+Ian Wright,27,Male,ian.wright,ian_password,ian.wright@example.com,1234567898,Dynamica Industries,Customer,87
+Julia Roberts,31,Female,julia.roberts,julia_password,julia.roberts@example.com,1234567899,Innovation Hub,Customer,92
