@@ -8,7 +8,6 @@ import time
 from google.api_core.exceptions import ResourceExhausted
 import json
 from modules.auth.auth import auth_ldap, jwt_required, cleanup_user
-from ml_image_eval import vision
 from modules.text import text
 from modules.ml.ml_handler import ChatbotHandler, create_jsonl
 from modules.ticket import ticket
@@ -22,7 +21,10 @@ from mimetypes import guess_extension
 from werkzeug.utils import secure_filename
 import random
 from modules.bucket import *
-
+import pickle
+import threading
+import pandas as pd
+import re
 
 # Flask configurations
 app = Flask(__name__)
@@ -35,7 +37,6 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 # Global routes
 app.register_blueprint(auth_ldap, url_prefix='/sso')
 app.register_blueprint(ticket, url_prefix='/ticket')
-app.register_blueprint(vision, url_prefix='/vision')
 app.register_blueprint(text, url_prefix='/text')
 
 @app.route('/')
@@ -51,7 +52,6 @@ def test():
     with open('dataset/test.json') as f:
         data = json.load(f)
     return jsonify(data)
-
 
 @app.route('/delete/<ticket_id>', methods=['DELETE'])
 def delete_ticket(ticket_id):
@@ -76,15 +76,9 @@ import requests
 @app.route('/get_ticket', methods=['GET'])
 @app.route('/get_ticket/<ticket_id>', methods=['GET'])
 def get_ticket(ticket_id=None):
-    # Check if ticket_id is None, meaning it might be passed as a query parameter
     if ticket_id is None:
-        # Fetch it from the query parameters
         ticket_id = request.args.get('ticket_id')
-
-    # Log to check if ticket_id is being passed
     print("######", ticket_id)
-
-    # Ensure ticket_id is not None before proceeding
     if ticket_id:
         ticket_path = os.path.join(ticket_folder, ticket_id)        
         if bucket_mode:
@@ -93,7 +87,7 @@ def get_ticket(ticket_id=None):
             response = requests.get(file_url)
             if response.status_code == 200:
                 try:
-                    data = response.json()  # Use response.json() to parse directly as JSON
+                    data = response.json()
                     if "closed_chat" in data:
                         return jsonify(data["closed_chat"])
                     else:
@@ -115,8 +109,6 @@ def get_ticket(ticket_id=None):
                     else:
                         return jsonify(data)
         return jsonify({"error": "Ticket not found"}), 404  
-    
-    # Return an empty response if ticket_id is None or not found
     return jsonify({})
 
 
@@ -249,8 +241,100 @@ def text_form():
         files_to_upload = [chat_file] + [attachment['url'] for attachment in attachments_list]
         upload_individual_files(bucket_name, files_to_upload)
 
-        # Upload the chat file and attachments to the cloud
     return json.dumps(chat_history, indent=4) 
+
+
+
+def convert_to_json(csv_file,user="unknown_user"):
+    df = pd.read_csv(csv_file)
+    json_data = []
+
+    df.columns = df.columns.str.strip()
+    for _, row in df.iterrows():
+        row = row.dropna()
+        row = row.apply(lambda x: re.sub(r"\s+", " ", str(x)).strip())
+        ticket_data = {
+            "chat_id": "",
+            "ticket_id": "SVC-" + str(random.randint(10000, 99999)),
+            "user": str(row.get("Assigned to", "")).replace(" ", "").lower() or user,
+            "medium": "other",
+            "connection": "closed",
+            "text": str(row.get("Short description", "")).strip() or "No description provided",
+            "subject": str(row.get("Short description", "")).strip() or str(row.get("Title", "")).strip()  or "No subject provided",
+            "summary": None,
+            "attachments": [],
+            "product_type": str(row.get("Service", "")).strip() or "Unknown Product",
+            "issue_type": str(row.get("Task type", "")).strip() or "Unknown Issue Type",
+            "priority": str(row.get("Priority", "")).strip() or str(row.get("Urgency", "")).strip() or None,
+            "story_points": None,
+            "estimation": None,
+            "analysis": None,
+            "reply": None,
+            "created": None,
+            "updated": None,
+            "comments": [],
+            "logged_hrs": [],
+            "status": str(row.get("State", "")).strip() or str(row.get("Status", "")).strip() or "Unknown",
+            "assignee": str(row.get("Assigned to", "")).replace(" ", "").lower() or "unassigned"
+        }
+
+        created_str = row.get("Created", "")
+        try:
+            created_dt = datetime.datetime.strptime(created_str, "%d-%m-%Y %H:%M")
+            ticket_data["created"] = created_dt.isoformat()
+        except ValueError:
+            ticket_data["created"] = datetime.datetime.now().isoformat()
+
+        ticket_data["updated"] = ticket_data["created"]
+        json_data.append(ticket_data)
+
+    return json_data
+
+
+@app.route('/import_tickets', methods=['GET', 'POST'])
+def import_tickets():
+    if request.method == 'GET':
+        return render_template('import.html')
+
+    total_tickets = []
+    unsuccessful_tickets = []
+    user = request.form.get('user', "unknown_user")
+
+    if 'csv_files' not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
+
+    files = request.files.getlist('csv_files')
+
+    for file in files:
+        try:
+            filename = datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "_" + secure_filename(file.filename)
+            csv_file_path = os.path.join(imports_folder, filename)
+            file.save(csv_file_path)
+            if not csv_file_path.endswith(".csv"):
+                unsuccessful_tickets.append({"file": filename, "error": "File is not a CSV"})
+                continue
+            json_data = convert_to_json(csv_file_path, user)
+            for ticket in json_data:
+                ticket_id = ticket.get('ticket_id')
+                ticket_path = os.path.join(ticket_folder, str(ticket_id))
+                os.makedirs(ticket_path, exist_ok=True)
+                ticket_file = os.path.join(ticket_path, "data.json")
+                with open(ticket_file, "w") as f:
+                    json.dump(ticket, f)
+                total_tickets.append(ticket)
+
+        except Exception as e:
+            unsuccessful_tickets.append({"file": file.filename, "error": str(e)})
+            print(f"Failed to import tickets: {e}")
+            return jsonify({"error": f"Failed to import tickets: {str(e)}"}), 500
+
+    return jsonify({
+        "message": "Tickets imported successfully",
+        "total_tickets": total_tickets,
+        "unsuccessful_tickets": unsuccessful_tickets
+    })
+
+
 
 
 @app.route('/sync_bucket')
@@ -274,11 +358,9 @@ def parse_attachment(file_data, file_name, folder_this):
     os.makedirs(chat_folder, exist_ok=True)
     file_path = os.path.join(folder_this, file_name)
 
-    # Write the file to disk
     with open(file_path, "wb") as f:
         f.write(file_data)
 
-    # Convert file to base64
     with open(file_path, "rb") as f:
         file_ext = file_path.split('.')[-1]
         mime_type = guess_extension(file_ext) or mimetypes.guess_type(file_path)[0] or "application/octet-stream"
@@ -296,8 +378,8 @@ def move_to_cloud(local_directory):
         "skipped_files": skipped_files
         })
 
-import pickle
-import threading
+
+
 @app.route('/save')
 def save_obj():
     with open('data_bank.pkl', 'wb') as f:
@@ -316,6 +398,10 @@ def load_obj():
     print(users_token)
     print(mailchains)
     print(old_chat)
+
+
+
+
 
 
 # Socket IO event handling

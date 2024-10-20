@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Import</title>
+    <script>
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            const formData = new FormData();
+
+            for (const file of files) {
+                formData.append('csv_files', file);
+            }
+
+            sendDataToBackend(formData);
+        }
+
+        function sendDataToBackend(formData) {
+            fetch('/import_tickets', {
+                method: 'POST',
+                body: formData,  // Sends the file using multipart/form-data
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert("CSV files successfully sent to the server.");
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert("Failed to send CSV files to the server.");
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>CSV File Import</h1>
+    <form>
+        <label for="csvFiles">Select CSV files:</label>
+        <input type="file" id="csvFiles" name="csvFiles" accept=".csv" multiple onchange="handleFileUpload(event)">
+    </form>
+</body>
+</html>

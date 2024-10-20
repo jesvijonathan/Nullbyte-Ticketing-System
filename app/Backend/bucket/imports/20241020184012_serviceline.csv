@@ -1,0 +1,37 @@
+Number,Priority,State,Assigned to,Short description,Created,Task type,Service
+CHG0325611,P3,Closed,Suhas Jadhav,ToM backend update to version 2.1.44.4,03-06-2024 14:53,Change Request,PS_ACQ_FO
+CHG0334175,P3,Closed,,ToM backend update to version 2.1.44.4,08-07-2024 17:53,Change Request,Tap on Mobile
+CHG0340498,P3,Closed,,ToM backend update to version 2.1.45.5,12-08-2024 12:32,Change Request,PS_ACQ_FO
+CHG0341876,P3,Closed,,ToM backend update to version 2.1.45.5,20-08-2024 20:03,Change Request,PS_ACQ_FO
+CTASK0976080,P3,Canceled,,500 - Preparation Task,17-05-2024 18:04,Change Task,Tap on Mobile
+CTASK0976082,P3,Canceled,Suhas Jadhav,790 - Customer Communication,17-05-2024 18:04,Change Task,Tap on Mobile
+CTASK0976083,P3,Closed,Suhas Jadhav,800 - Implementation task,17-05-2024 18:04,Change Task,Tap on Mobile
+CTASK0987625,P3,Canceled,,500 - Preparation Task,03-06-2024 14:53,Change Task,PS_ACQ_FO
+CTASK0987628,P3,Closed,Suhas Jadhav,800 - Implementation task,03-06-2024 14:53,Change Task,PS_ACQ_FO
+CTASK1016164,P3,Canceled,,500 - Preparation Task,08-07-2024 17:53,Change Task,Tap on Mobile
+CTASK1016166,P3,Canceled,,790 - Customer Communication,08-07-2024 17:53,Change Task,Tap on Mobile
+CTASK1016167,P3,Canceled,,800 - Implementation task,08-07-2024 17:53,Change Task,Tap on Mobile
+CTASK1036549,P3,Canceled,,500 - Preparation Task,12-08-2024 12:32,Change Task,PS_ACQ_FO
+CTASK1036552,P3,Closed,Suhas Jadhav,800 - Implementation task,12-08-2024 12:32,Change Task,PS_ACQ_FO
+CTASK1040949,P3,Canceled,,500 - Preparation Task,20-08-2024 20:03,Change Task,PS_ACQ_FO
+CTASK1040952,P3,Closed,Suhas Jadhav,800 - Implementation task,20-08-2024 20:03,Change Task,PS_ACQ_FO
+CTASK1058443,P3,Canceled,,500 - Preparation Task,18-09-2024 17:30,Change Task,PS_ACQ_FO
+CTASK1058446,P3,Pending,,800 - Implementation task,18-09-2024 17:30,Change Task,PS_ACQ_FO
+GAPRV0416115,,Closed Complete,,,17-05-2024 18:09,Group approval,Tap on Mobile
+GAPRV0435777,,Closed Complete,,,08-07-2024 17:59,Group approval,Tap on Mobile
+GAPRV0438382,,Closed Complete,,Please use USER approvals to make a decision about this request,16-07-2024 02:18,Group approval,PS_ACQ_FO
+GAPRV0445688,,Closed Complete,,,12-08-2024 13:07,Group approval,PS_ACQ_FO
+GAPRV0447903,,Closed Complete,,,20-08-2024 20:07,Group approval,PS_ACQ_FO
+INC0783431,P2,Canceled,Suhas Jadhav,"*TEST - DRY RUN* Receipt issue for new merchants - ""Error: Something went wrong""",12-03-2024 09:43,Incident,PS_ACQ_FO
+INC0798809,P4,Canceled,Suhas Jadhav,Clear Text PAN Discovery process,03-04-2024 16:04,Incident,Tap on Mobile
+INC0836315,P4,Canceled,Prateek Amin,TOM Developer Issue // VP 900493689 // TID:,28-05-2024 05:51,Incident,PS_ACQ_FO
+INC0908100,P3,On Hold,Prateek Amin,MPSS agent has raised TOM missing transaction VP 900376729 TID 51005341,16-09-2024 10:29,Incident,PS_ACQ_FO
+PRB0048088,P2,Closed,Suhas Jadhav,Full outage on Tap on Mobile APAC on February 7th,06-03-2024 18:15,Problem,PS_ACQ_FO
+PRB0048603,P3,Closed,Suhas Jadhav,Swap memory,24-06-2024 11:01,Problem,PS_ACQ_FO
+PRB0048605,P4,Closed,Suhas Jadhav,PuppetRunPerpetualChange false alert,24-06-2024 11:15,Problem,PS_ACQ_FO
+PTASK0015924,P3,Awaiting 3rd party,Suhas Jadhav,Develop and implement new monitoring checks to detect this failure mode earlier,02-09-2024 11:02,Problem Task,(empty)
+RITM0112235,,Closed Complete,Suhas Jadhav,OAuth2 credentials for Shout for Good on Sandbox,12-03-2024 18:17,Requested Item,PS_ACQ_FO
+RITM0118374,,Closed Complete,Suhas Jadhav,Modify user group,14-05-2024 12:14,Requested Item,(empty)
+SCTASK0109340,P3,Closed Complete,Suhas Jadhav,OAuth2 credentials for Shout for Good on Sandbox,12-03-2024 18:17,Catalog Task,Tap on Mobile
+SCTASK0110672,P3,Closed Complete,Kailas Biradar,Please create a ACQ role for peter.kosmopoulos@worldline.com in AU TAP ON MOBILE SANDBOX environment.,26-03-2024 15:00,Catalog Task,PS_ACQ_FO
+SCTASK0112005,P3,Closed Complete,Suhas Jadhav,New Softpos Access Request,10-04-2024 05:29,Catalog Task,PS_ACQ_FO

@@ -177,6 +177,7 @@ tmp_folders_cleanup=False
 attachment_upload_folder='./bucket/attachments/'
 chats_folder='./bucket/chats/'
 ticket_folder = "./bucket/tickets"
+imports_folder = "./bucket/imports"
 
 if os.name == 'nt':
     ticket_folder = ticket_folder.replace("/", "\\")
