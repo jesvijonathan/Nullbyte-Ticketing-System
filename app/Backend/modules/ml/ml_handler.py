@@ -115,7 +115,7 @@ class ChatbotHandler:
                 attachment_count+=1
 
         # print("\n\n\n\n", attachments)
-        if response_msg == "/close" or response_msg == "close":
+        if response_msg == "/close" or response_msg == "close" or response_msg == "end" or response_msg == "/end":
             self.close_chat()
         elif response_msg == "/change" or response_msg == "change":
             if self.bot == "wl_vertex":
@@ -150,14 +150,17 @@ class ChatbotHandler:
         self.result["connection"]= "closed"
         # logic to add details to db here, for later
         if db_add_closed_chat:
-            print("\n\nresult starts here:")
-            res=self.result
-            tid=BotAdmin().create_ticket(res)['id']
-            if[tid]:
-                self.result["ticket_id"]=str(tid)
-            print(res)
-            print("\n\nresult ends here:")
-        
+            try:
+                print("\n\nresult starts here:")
+                res=self.result
+                tid=BotAdmin().create_ticket(res)['id']
+                if[tid]:
+                    self.result["ticket_id"]=str(tid)
+                print(res)
+                print("\n\nresult ends here:")
+            except:
+                print("Error adding ticket to db")
+                pass
         ticket_folder = "./bucket/tickets"
         os.makedirs(ticket_folder, exist_ok=True)
         
@@ -190,8 +193,12 @@ class ChatbotHandler:
                             attachment_file = os.path.join(this_ticket_folder, attachments[attachment]["filename"])
                             os.rename(self.history[key]["attachment"][attachment]["path"], attachment_file)
                             self.history[key]["attachment"][attachment]["path"] = attachment_file
-                            print("\n\n\nattachment issue starts here:")
-                            Attachment().addAttachment(self.result["ticket_id"], attachment_file)
+                            try:
+                                print("\n\n\nattachment issue starts here:")
+                                Attachment().addAttachment(self.result["ticket_id"], attachment_file)
+                                print("Error adding attachment to db")
+                            except:
+                                pass
                             print("\n\n\nattachment issue ends here:")
                         except:
                             print("Error moving attachment file")
@@ -428,6 +435,7 @@ class ChatbotHandler:
             #         return None, text_response.strip()  
 
         try:
+            print(json_msg)
             json_msg_dict = json.loads(json_msg)
             reply_msg = json_msg_dict.get("reply") or default_reply_msg
             return json_msg_dict, reply_msg

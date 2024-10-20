@@ -3,15 +3,20 @@ import json
 from mimetypes import guess_type
 import base64
 from config import *
+import requests
+import json
+import base64
+from mimetypes import guess_type
 
 class OllamaChat:
-    def __init__(self):
+    def __init__(self, http_mode=ollama_http):
         self.context = []
+        self.llama_http = http_mode
+        self.ollama_url = ollama_url  
 
     def send_message(self, message):
         try:
             self.context.append(message)
-            
             attachment_data = ""
             if message['attachments']:
                 for count, attachment in enumerate(message['attachments'], start=1):
@@ -26,15 +31,15 @@ class OllamaChat:
                             file_content = f.read()
                         attachment_info = f"Attachment {count}: {file_content}"
                         attachment_data += attachment_info + "\n"
-            
+
             last_message = ""
             message_history = ""
             try:
-                message_history= json.loads(message["message"])
+                message_history = json.loads(message["message"])
             except:
                 pass
 
-            try: 
+            try:
                 for key in sorted(message_history.keys()):
                     msg = message_history[key]
                     if not (msg['recipient'] == "wl_vertex" or msg['recipient'] == "wl_llama"):
@@ -51,15 +56,32 @@ class OllamaChat:
                 pass
 
             ollama_text = f"{last_message}\n\n{history}\n\n{attachment_data}"
-            command = f'ollama run {OLLAMA_MODEL} """{ollama_text}"""'
-            print(f"Executing command: {command}")
-            response = os.popen(command).read().strip()
-            
-            self.context.append(response)
-            return response
+
+            if self.llama_http:
+                payload = {
+                    "model": OLLAMA_MODEL,  
+                    "input": ollama_text
+                }
+                
+                response = requests.post(self.ollama_url, json=payload)
+
+                if response.status_code == 200:
+                    response_data = response.json()
+                    self.context.append(response_data['output'])
+                    return response_data['output']
+                else:
+                    error_message = f"HTTP error {response.status_code}: {response.text}"
+                    print(error_message)
+                    return json.dumps({"error": error_message})
+            else:
+                command = f'ollama run {OLLAMA_MODEL} """{ollama_text}"""'
+                print(f"Executing command: {command}")
+                response = os.popen(command).read().strip()
+
+                self.context.append(response)
+                return response
 
         except Exception as e:
             error_message = f"Failed to execute command: {e}"
             print(error_message)
             return json.dumps({"error": error_message})
-

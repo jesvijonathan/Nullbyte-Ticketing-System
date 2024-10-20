@@ -97,7 +97,9 @@ onMounted(() => {
         const convoContainer = document.querySelector('.convo');
         convoContainer.scrollTop = convoContainer.scrollHeight; 
         // print last message
+        
         if (convo.value){
+
             if (convo.value[Object.keys(convo.value).length].recipient == "wl_vertex"){
                 if (window.location.href.includes("llama")){
                     sendMessage("/change");
@@ -109,8 +111,8 @@ onMounted(() => {
                 }
             }
             else{
-                if (convo.value[Object.keys(convo.value).length - 1].message == "/change"){
-
+                if (convo.value[Object.keys(convo.value).length - 1].message == "/change" || convo.value[Object.keys(convo.value).length - 1].recipient == current_user){ 
+                    console.log("No need to change");
                 }
                 else{
                 if (convo.value[Object.keys(convo.value).length - 1].recipient == "wl_vertex"){
