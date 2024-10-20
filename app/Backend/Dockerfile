@@ -20,6 +20,14 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # COPY ./Backend/Modelfile /Modelfile
 # RUN ollama create nullbyte -f /Modelfile
 
+
+# newer and better ollama commands
+# sudo systemctl stop ollama 
+# ollama serve
+# ollama run jesvi/nullbyte
+
+
+
 EXPOSE 5000
 
 COPY . .
