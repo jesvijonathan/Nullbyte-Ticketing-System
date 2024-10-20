@@ -66,7 +66,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 let ticket_data = ref({
     "chat_id": uuidv4(),
-    // "ticket_id": "SVC-" + uuidv4().replace(/\D/g, '').slice(0, 8),
+    "ticket_id": "SVC-" + uuidv4().replace(/\D/g, '').slice(0, 8),
     "user": current_user.value,
     "medium": "portal",
     "connection": "",
@@ -174,8 +174,11 @@ const reset_form = () => {
     loading.value = false;
 };
 
-let create_url= document.baseMyURL + "/text_form";
-// let create_url="http://127.0.0.1:5000/ticket/create";
+let create_url='';
+if(document.useDB) 
+create_url=document.baseMyURL+"/ticket/create";
+else
+create_url=document.baseMyURL + "/text_form";
 
 
 const submitForm = async () => {
@@ -200,8 +203,11 @@ const submitForm = async () => {
         });
         const result = await response.json();
         console.log("result",result);
-        
+        if(document.useDB)
         router.push('/ticket/' + result['ticket_id']);
+        else
+        router.push('/ticket/' + ticket_data.value.ticket_id);
+
     } catch (error) {
         console.error('Error submitting form:', error);
     }

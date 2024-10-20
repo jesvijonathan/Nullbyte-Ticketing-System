@@ -15,7 +15,11 @@ let bread_path_json = {
 
 const loading = ref(true);
 
-const get_tickets_url = document.baseMyURL + "/get";
+const get_tickets_url='';
+if(document.useDB)
+get_tickets_url= document.baseMyURL + "/get";
+else
+get_tickets_url = document.baseMyURL + "/get_tickets";
 
 
 

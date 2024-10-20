@@ -43,7 +43,15 @@ let bread_path_json = {
 
 const loading = ref(true);
 
-const get_ticket_url = document.baseMyURL + "/ticket/get/" + ticket_id;
+let get_ticket_url = document.baseMyURL;
+
+if (document.useDB) {
+    get_ticket_url += "/ticket/get/" + ticket_id;
+} else {
+    get_ticket_url += "/get_ticket?ticket_id=" + ticket_id;
+}
+
+
 const get_incomplete_ticket_url = document.baseMyURL + "/get_incomplete_ticket";
 // const auto_fill_url = document.baseMyURL + "/text/fill_ticket";
 const auto_fill_url = document.baseMyURL + "/get_autofill";
@@ -127,7 +135,11 @@ const autoFill = async () => {
         const data = await response.json();
         console.log("Ticket data fetched successfully:", data);
         console.log('before assignment',ticket_data.value)
-        ticket_data = data;  // Assign the fetched data
+        if(document.useDB)
+        ticket_data = data;
+        else
+        ticket_data.value=data;
+        // Assign the fetched data
         console.log('after assignment',ticket_data.value)
 
         get_attachments_from_data();  // Process attachments
@@ -355,7 +367,12 @@ function handle_delete(){
     
 }
 
-let update_url = document.baseMyURL+ "/ticket/modify";
+let update_url=''; 
+if(document.useDB)
+update_url= document.baseMyURL+ "/ticket/modify";
+else
+update_url = document.baseMyURL+ "/update_ticket";
+
 
 function update_ticket(){
     // request /update_ticket
@@ -365,7 +382,7 @@ function update_ticket(){
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(ticket_data),
+        body: JSON.stringify((document.useDB)?ticket_data:ticket_data.value),
     })
         .then(response => response.json())
         .then(data => {
