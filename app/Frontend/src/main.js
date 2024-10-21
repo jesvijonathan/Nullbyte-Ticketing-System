@@ -20,7 +20,7 @@ library.add(fas, far, fab); // Add all the icon packs at once
 // set baseurl globally for the app
 document.baseMyURL = 'http://localhost:5000';
 document.baseSocketURL='http://localhost:5000';
-document.useDB=false
+
 // document.baseSocketURL=document.location.origin;
 // document.baseMyURL = document.location.origin+'/api';
 

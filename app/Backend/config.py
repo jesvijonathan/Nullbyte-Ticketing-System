@@ -147,8 +147,8 @@ service_account_info = google_credentials
 
 chatbot_fallback=2 # 0 - only wl_vertex, 1 - only wl_llama, 2 - wl_vertex priority & fallback to wl_llama, 3 - wl_llama priority & fallback to wl_vertex  
 OLLAMA_MODEL = "nullbyte"
-ollama_http=False
-ollama_url = "http://127.0.0.1:11434"
+ollama_http=True
+ollama_url = "http://127.0.0.1:11434/api/chat"
 ollama_amnesia = 0 # 0 - no amnesia, 1 - amnesia
 chat_json= {
     "chat_id": "", # 1234567890

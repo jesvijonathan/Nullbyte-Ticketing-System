@@ -67,6 +67,23 @@ onMounted(() => {
     const convoContainer = document.querySelector('.convo');
     convoContainer.scrollTop = convoContainer.scrollHeight;
 
+    if (window.location.href.includes("vertex")) {
+        bot = "Vertex AI";
+        bread_path_json = {
+            "NULLBYTE": "/",
+            "CHATBOT": "/chatbot",
+            "VERTEX AI": "/vertex"
+        };
+
+    } else {
+        bot = "Llama AI";
+        bread_path_json = {
+            "NULLBYTE": "/",
+            "CHATBOT": "/chatbot",
+            "LLAMA": "/llama"
+        };
+    }
+
     socket.on('connect', () => {
         connected.value = true
         console.log('Connected to server');
@@ -84,7 +101,7 @@ onMounted(() => {
 
     socket.on('close_chat', (data) => {
         console.log('Chat closed:', data['closed_chat']);
-        closed_chat.value = data["closed_chat"];    
+        closed_chat.value = data["closed_chat"];
         return
         // socket.disconnect();
     });
@@ -95,37 +112,37 @@ onMounted(() => {
         convo.value = data.live_chat;
         waiting_for_response = false
         const convoContainer = document.querySelector('.convo');
-        convoContainer.scrollTop = convoContainer.scrollHeight; 
+        convoContainer.scrollTop = convoContainer.scrollHeight;
         // print last message
-        
-        if (convo.value){
 
-            if (convo.value[Object.keys(convo.value).length].recipient == "wl_vertex"){
-                if (window.location.href.includes("llama")){
+        if (convo.value) {
+
+            if (convo.value[Object.keys(convo.value).length].recipient == "wl_vertex") {
+                if (window.location.href.includes("llama")) {
                     sendMessage("/change");
                 }
             }
-            else if(convo.value[Object.keys(convo.value).length].recipient == "wl_llama"){
-                if (window.location.href.includes("vertex")){
+            else if (convo.value[Object.keys(convo.value).length].recipient == "wl_llama") {
+                if (window.location.href.includes("vertex")) {
                     sendMessage("/change");
                 }
             }
-            else{
-                if (convo.value[Object.keys(convo.value).length - 1].message == "/change" || convo.value[Object.keys(convo.value).length - 1].recipient == current_user){ 
+            else {
+                if (convo.value[Object.keys(convo.value).length - 1].message == "/change" || convo.value[Object.keys(convo.value).length - 1].recipient == current_user) {
                     console.log("No need to change");
                 }
-                else{
-                if (convo.value[Object.keys(convo.value).length - 1].recipient == "wl_vertex"){
-                    if (window.location.href.includes("llama")){
-                    sendMessage("/change");
+                else {
+                    if (convo.value[Object.keys(convo.value).length - 1].recipient == "wl_vertex") {
+                        if (window.location.href.includes("llama")) {
+                            sendMessage("/change");
+                        }
+                    }
+                    else if (convo.value[Object.keys(convo.value).length - 1].recipient == "wl_llama") {
+                        if (window.location.href.includes("vertex")) {
+                            sendMessage("/change");
+                        }
+                    }
                 }
-                }
-                else if(convo.value[Object.keys(convo.value).length - 1].recipient == "wl_llama"){
-                    if (window.location.href.includes("vertex")){
-                    sendMessage("/change");
-                }
-                }
-            }
             }
         }
     });
@@ -160,13 +177,26 @@ function sendMessage(msg = "") {
     if (msg != null) {
         messageInput.value = msg;
     }
-    
     if (messageInput.value == '/change') {
-        if (bot == "Vertex AI") {
-            bot = "Llama AI";
-        } else {
+        if (window.location.href.includes("llama")) {
             bot = "Vertex AI";
-        }
+    bread_path_json = {
+        "NULLBYTE": "/",
+        "CHATBOT": "/chatbot",
+        "VERTEX AI": "/vertex"
+    };
+
+    router.push('/vertex');
+}
+else {
+    bot = "Llama AI";
+    bread_path_json = {
+        "NULLBYTE": "/",
+        "CHATBOT": "/chatbot",
+        "LLAMA": "/llama"
+    };
+    router.push('/llama');
+}
     }
 
     // "recipient": "admin",
@@ -188,7 +218,7 @@ function sendMessage(msg = "") {
     //             "size": 31031
     //         }
     //     }
-    
+
 
     const message = messageInput.value;
     const files = fileInput.value ? fileInput.value.files : [];
@@ -311,7 +341,24 @@ watch(convo, () => {
     convoContainer.scrollTop = convoContainer.scrollHeight;
 });
 
-let bot="Vertex AI";
+let bot = "Vertex AI";
+
+if (window.location.href.includes("llama")) {
+    bot = "Llama AI";
+    bread_path_json = {
+        "NULLBYTE": "/",
+        "CHATBOT": "/chatbot",
+        "LLAMA": "/llama"
+    };
+}
+else {
+    bot = "Vertex AI";
+    bread_path_json = {
+        "NULLBYTE": "/",
+        "CHATBOT": "/chatbot",
+        "VERTEX AI": "/vertex"
+    };
+}
 </script>
 
 <template>
@@ -337,9 +384,11 @@ let bot="Vertex AI";
                             <div :class="['convo_them', { 'convo_me_msg': convoItem.recipient == current_user }]">
                                 <div class="convo_message">{{ convoItem.message }}</div>
                                 <div v-if="convoItem.attachments && convoItem.attachments.length">
-                                    <div v-for="(attachment, aIndex) in convoItem.attachments" :key="aIndex" class="attachment_item" :title="getFileTitle(attachment)">
+                                    <div v-for="(attachment, aIndex) in convoItem.attachments" :key="aIndex"
+                                        class="attachment_item" :title="getFileTitle(attachment)">
                                         <div class="attachment-preview">
-                                            <img v-if="attachment.type && attachment.type.includes('image')" :src="attachment.url" class="attachment-img" />
+                                            <img v-if="attachment.type && attachment.type.includes('image')"
+                                                :src="attachment.url" class="attachment-img" />
                                             <span v-else class="attachment-icon">📄</span>
                                         </div>
                                         <div class="attachment-info">
@@ -349,9 +398,11 @@ let bot="Vertex AI";
                                     </div>
                                 </div>
                                 <div v-if="convoItem.attachment && Object.keys(convoItem.attachment).length">
-                                    <div v-for="(attachment, aIndex) in convoItem.attachment" :key="aIndex" class="attachment_item" :title="getFileTitle(attachment)">
+                                    <div v-for="(attachment, aIndex) in convoItem.attachment" :key="aIndex"
+                                        class="attachment_item" :title="getFileTitle(attachment)">
                                         <div class="attachment-preview">
-                                            <img v-if="attachment.mime_type && attachment.mime_type.includes('image')" :src="attachment.path" class="attachment-img" />
+                                            <img v-if="attachment.mime_type && attachment.mime_type.includes('image')"
+                                                :src="attachment.path" class="attachment-img" />
                                             <span v-else class="attachment-icon">📄</span>
                                         </div>
                                         <div class="attachment-info">
@@ -415,7 +466,7 @@ let bot="Vertex AI";
             <div v-else class="closed_chat">
                 <!-- go to /ticket/ticket_id -->
                 <div class="closed_button" @click="router.push(`/ticket/${closed_chat.ticket_id}`)">
-                Chat Closed & Linked with Ticket : {{ closed_chat.ticket_id }}</div>
+                    Chat Closed & Linked with Ticket : {{ closed_chat.ticket_id }}</div>
             </div>
         </div>
     </div>
@@ -424,7 +475,7 @@ let bot="Vertex AI";
 
 
 <style>
-.closed_button{
+.closed_button {
     background-color: rgba(128, 128, 128, 0.2);
     padding: 0.5vw;
     border-radius: 0.5vw;
@@ -442,11 +493,13 @@ let bot="Vertex AI";
     gap: 1.2vw;
     cursor: pointer;
 }
-.closed_button:hover{
+
+.closed_button:hover {
     background-color: rgba(128, 128, 128, 0.3);
     cursor: pointer;
 }
-.closed_chat{
+
+.closed_chat {
     margin-top: 2.6vw;
     display: flex;
     width: 100%;
@@ -459,6 +512,7 @@ let bot="Vertex AI";
     color: rgba(128, 128, 128, 0.35);
     cursor: pointer;
 }
+
 .btn_cancel_file {
     padding: 0vw 0vw;
     color: rgba(77, 4, 4, 0.557);

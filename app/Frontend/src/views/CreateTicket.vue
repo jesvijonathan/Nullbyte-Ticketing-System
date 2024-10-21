@@ -174,11 +174,7 @@ const reset_form = () => {
     loading.value = false;
 };
 
-let create_url='';
-if(document.useDB) 
-create_url=document.baseMyURL+"/ticket/create";
-else
-create_url=document.baseMyURL + "/text_form";
+let create_url=document.baseMyURL + "/text_form";
 
 
 const submitForm = async () => {
@@ -203,9 +199,7 @@ const submitForm = async () => {
         });
         const result = await response.json();
         console.log("result",result);
-        if(document.useDB)
-        router.push('/ticket/' + result['ticket_id']);
-        else
+        
         router.push('/ticket/' + ticket_data.value.ticket_id);
 
     } catch (error) {
