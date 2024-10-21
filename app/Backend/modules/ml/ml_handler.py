@@ -43,7 +43,7 @@ class ChatbotHandler:
             self.result["medium"]= "chat"
         self.result["chat_id"]= self.chat_id
         self.result["user"]= payload['upn']
-        self.result["ticket_id"]= "SVC-" + str(random.randint(10000, 99999))
+        self.result["ticket_id"]= str(random.randint(10000, 99999))
         self.attachments = []
         
         self.bot, self.chat= self.initialize_bot(chatbot_fallback)

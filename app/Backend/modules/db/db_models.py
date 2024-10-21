@@ -14,9 +14,9 @@ class Ticket(Base):
     Analysis = Column(Text)
     Type = Column(String(100))
     Description = Column(Text, nullable=False)
-    Status = Column(Enum('open', 'progress', 'closed', 'reopened','waiting for information'), nullable=False, default='open')
-    Priority = Column(Enum('critical', 'high', 'medium', 'low'), nullable=False, default='medium')
-    Issue_Type = Column(Enum('bug', 'error', 'issue', 'story', 'others', 'feature', 'enhancement', 'support','task'), nullable=True, default='issue')
+    Status = Column(Enum('open', 'progress', 'closed', 'reopened','waiting for information'), default='open')
+    Priority = Column(Enum('critical', 'high', 'medium', 'low'), default='medium')
+    Issue_Type = Column(Enum('bug', 'error', 'issue', 'story', 'others', 'feature', 'enhancement', 'support','task'), default='issue')
     Channel = Column(String(100))
     Customer_ID = Column(Integer, ForeignKey('customer.Id', ondelete='SET NULL'))
     Product_Type = Column(String(100))
@@ -39,7 +39,7 @@ class Ticket(Base):
 
     def serialize(self, keys=None):
         data = {
-            'ticket_id': self.Ticket_Id,
+            'ticket_id': str(self.Ticket_Id),
             'chat_id': self.Chat_Id,
             'subject': self.Subject,
             'summary': self.Summary,
@@ -76,6 +76,10 @@ class Ticket(Base):
             self.Estimation=0
         if self.Story_Points ==None or self.Story_Points=='':
             self.Story_Points=0
+        # if self.Priority ==None or self.Priority=='':
+        #     self.Priority='low'
+        # if self.Issue_Type ==None or self.Issue_Type=='':
+        #     self.Issue_Type='issue'
         if not self.Subject or len(self.Subject) > 255:
             return "Subject must be provided and less than 255 characters."
         if self.Status.lower()not in ["open", "progress", "closed", "reopened", "waiting for information"]:
@@ -306,3 +310,14 @@ class Worklog(Base):
             if keys:
                 return {key: data[key] for key in keys if key in data}
             return data
+        
+class AuthView(Base):
+    __tablename__ = 'auth_view'
+    user_id = Column(Integer, primary_key=True)
+    name = Column(String)
+    username = Column(String)
+    password = Column(String)
+    email = Column(String)
+    phone = Column(String)
+    role = Column(String)
+    user_type = Column(String)

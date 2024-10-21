@@ -20,7 +20,7 @@ ticket=Blueprint('ticket',__name__)
 # @jwt_required
 @ticket.route('/list', methods=['GET'])
 def get_all_tickets(*args, **kwargs):
-    tickets = db_session.query(Ticket).all()
+    tickets = db_session.query(Ticket).order_by(Ticket.LastModified.desc()).limit(20).all()
     ticket_list = [ticket.serialize() for ticket in tickets]
     if not ticket_list:
         return make_response(jsonify({'message': 'No tickets found'}), 404)
@@ -47,25 +47,26 @@ def parse_attachment(file_data, file_name, folder_this):
 def create_ticket(request):
     comments = []
     attachments = []
-    ticket_id = request.json.get('ticket_id')
-    if(ticket_id):
-        ticket_no = int(str(ticket_id).split('-')[-1])
-    else :
-        ticket_no = None
+    # ticket_id = request.json.get('ticket_id')
+    # if(ticket_id):
+    #     ticket_no = int(str(ticket_id).split('-')[-1])
+    # else :
+    ticket_no = None
     print("@@@@@ INcomming Data")
     print(request.json)
     ticket = None
+    ticket_id = None
     if ticket_id:
         ticket_no = str(ticket_id).split('-')[-1]
         ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_no).first()
         if not ticket:
             return error_response('Ticket not found', 404)
 
-    if 'comments' in request.json:
-        comments = handle_comments(request.json['comments'], request.json.get('user'),ticket_no)
+    # if 'comments' in request.json:
+    #     comments = handle_comments(request.json['comments'], request.json.get('user'),ticket_no)
 
-    if 'logged_hrs' in request.json:
-        handle_worklogs(request.json['logged_hrs'], request.json.get('user'))
+    # if 'logged_hrs' in request.json:
+    #     handle_worklogs(request.json['logged_hrs'], request.json.get('user'))
     
     if 'attachments' in request.json:
         attachments = handle_attachments(request.json['attachments'], ticket_no)
@@ -86,7 +87,7 @@ def create_ticket(request):
 
         db_session.add(new_ticket)
         db_session.commit()
-        ticket_id ="SVC-"+str(new_ticket.Ticket_Id)
+        ticket_id =str(new_ticket.Ticket_Id)
     except Exception as e:
         db_session.rollback()
         logger.error(e)
@@ -344,6 +345,18 @@ def modify_fields(request):
             ticket.Story_Points = body["story_points"]
         if "score" in body:
             ticket.Score = body["score"]
+        
+        if 'comments' in request.json:
+            comments = handle_comments(request.json['comments'], request.json.get('user'),ticket_no)
+
+        if 'logged_hrs' in request.json:
+            handle_worklogs(request.json['logged_hrs'], request.json.get('user'))
+    
+        if 'attachments' in request.json:
+            attachments = handle_attachments(request.json['attachments'], ticket_no)
+        print("@@@@attachment")
+        print(attachments)
+
 
         ticket.LastModified = datetime.datetime.now().isoformat()
         print("workey")
@@ -359,14 +372,15 @@ def modify_fields(request):
         logger.error(e)
         return make_response(jsonify({'error': str(e)}), 500)
 
-@ticket.route('/get', methods=['GET'])
-@ticket.route('/get/<ticket_id>', methods=['GET'])
+# @ticket.route('/get', methods=['GET'])
+# @ticket.route('/get/<ticket_id>', methods=['GET'])
 def get_ticket(ticket_id=None):
     ticket = []
     # time.sleep(random.randint(2,4))
     if not ticket_id:
-        ticket_id = request.args.get('id')
-
+        ticket_id = request.args.get('ticket_id')
+    print("@@@@ ticket_id")
+    print(ticket_id)
     if ticket_id:
         if not ticket_id.isnumeric():
             ticket_id = ticket_id.split('-')[-1]
@@ -374,7 +388,7 @@ def get_ticket(ticket_id=None):
         ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
         if ticket:
             ticket = ticket.serialize()
-            ticket['ticket_id']=f"SVC-{ticket['ticket_id']}"
+            ticket['ticket_id']=ticket['ticket_id']
     
     if not ticket_id:
         #assignee_id = Employee().getIDfromUsername("test@gmail.com")  # change later
@@ -382,10 +396,10 @@ def get_ticket(ticket_id=None):
         if assignee_id:
             print("@@@@ id")
             print(assignee_id)
-            tickets = db_session.execute(select(Ticket).where(Ticket.Assignee_ID == assignee_id)).scalars().all()
+            tickets = db_session.execute(select(Ticket).where(Ticket.Assignee_ID == assignee_id).limit(10)).scalars().all()
             ticket = [t.serialize() for t in tickets]
             for x in ticket:
-                x['ticket_id'] = f"SVC-{x['ticket_id']}"
+                x['ticket_id'] = f"{x['ticket_id']}"
             # print("@@@ id")
             # print(ticket)
     
@@ -393,7 +407,7 @@ def get_ticket(ticket_id=None):
         return jsonify({'error': 'Ticket not found'})
     # print("@@@ Final res")
     # print(ticket)
-
+    print(ticket)
     return jsonify(ticket)
 
 @ticket.route('/attachment/add', methods=['POST'])

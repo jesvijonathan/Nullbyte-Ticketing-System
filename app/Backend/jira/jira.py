@@ -5,11 +5,10 @@ import datetime
 from enum import Enum
 #from config import *
 JIRA_CRED = dict({
-    'username': os.getenv("JIRA_ADMIN",'jiraadmin'),
-    'password': os.getenv("JIRA_PASS", 'Skibbidi@42069'),
-    'server': os.getenv("JIRA_SERVER", 'http://localhost:8080')
+    'token':  os.getenv("JIRA_SERVER_token", 'http://34.132.196.121:8080')
+    'server': os.getenv("JIRA_SERVER", 'http://34.132.196.121:8080')
 })
-jira = JIRA(server=JIRA_CRED['server'], basic_auth=(JIRA_CRED['username'], JIRA_CRED['password']))
+jira = JIRA(server=JIRA_CRED['server'],token_auth=JIRA_CRED['token'])
 
 class IssueType(Enum):
     BUG = "Bug"
