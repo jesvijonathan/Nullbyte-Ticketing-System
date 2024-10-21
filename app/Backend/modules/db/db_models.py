@@ -125,7 +125,7 @@ class Customer(Base):
         return data
 
     def getIDfromUsername(self, username):
-        print("Username: ", username)
+        print("Customer Username: ", username)
         customer = db_session.query(Customer).filter_by(username=username).first()
         print(customer.Id if customer else 1)
         return customer.Id if customer else 1
@@ -133,6 +133,9 @@ class Customer(Base):
         print("ID: ", id)
         customer = db_session.query(Customer).filter_by(Id=id).first()
         return customer.username if customer else "unassigned"
+    def getallUsers(self):
+        customers = db_session.query(Customer).all()
+        return [customer.username for customer in customers]
 
 class Employee(Base):
     __tablename__ = 'employee'
@@ -173,7 +176,7 @@ class Employee(Base):
             return {key: data[key] for key in keys if key in data}
         return data
     def getIDfromUsername(self, username):
-        print("Username: ", username)
+        print("Employee Username: ", username)
         employee = db_session.query(Employee).filter_by(username=username).first()
         print(employee.id if employee else 1)
         return employee.id if employee else 1
@@ -181,6 +184,9 @@ class Employee(Base):
         print("ID: ", id)
         employee = db_session.query(Employee).filter_by(id=id).first()
         return employee.username if employee else "unassigned"
+    def getallUsers(self):
+        employees = db_session.query(Employee).all()
+        return [employee.username for employee in employees]
 
 class Attachment(Base):
     __tablename__ = 'attachments'
@@ -191,14 +197,6 @@ class Attachment(Base):
     Size = Column(String(10), nullable=True)
     Url = Column(Text, nullable=False)
     
-    def __init__(self,name,url,size,type,ticket_no):
-        self.Name=name
-        self.Url=url
-        self.Type=type
-        self.Size=size
-        self.Ticket_Id=ticket_no
-
-
     ticket = relationship('Ticket', back_populates='attachments')
 
     def serialize(self, keys=None):
@@ -212,7 +210,6 @@ class Attachment(Base):
         if keys:
             return {key: data[key] for key in keys if key in data}
         return data
-
     def add_attachment(self, ticket_id, name, type, size, url):
         try:
             new_attachment = Attachment(
@@ -244,14 +241,46 @@ class Comment(Base):
     def serialize(self, keys=None):
         data = {
             'comment_id': self.Comment_id,
-            'timestamp': self.Timestamp.isoformat() if self.Timestamp else None,
-            'comment_user': self.Comment_user,
-            'comment': self.Comment
+            'date': self.Timestamp.isoformat() if self.Timestamp else None,
+            'user': self.Comment_user,
+            'text': self.Comment
         }
         
         if keys:
             return {key: data[key] for key in keys if key in data}
         return data
+    def add_comment(self, ticket_id, user_id, comment):
+        try:
+            new_comment = Comment(
+                Ticket_id=ticket_id,
+                Comment_user=user_id,
+                Comment=comment
+            )
+            db_session.add(new_comment)
+            db_session.commit()
+            return new_comment.Comment_id
+        except Exception as e:
+            db_session.rollback()
+            logger.error(f"Error adding comment: {e}")
+            return {'error': str(e)}
+    def edit_comment(self, comment_id, comment):
+        try:
+            db_session.query(Comment).filter_by(Comment_id=comment_id).update({'Comment': comment})
+            db_session.commit()
+            return comment_id
+        except Exception as e:
+            db_session.rollback()
+            logger.error(f"Error editing comment: {e}")
+            return {'error': str(e)}
+    def delete_comments(self, ticket_id):
+        try:
+            db_session.query(Comment).filter_by(Ticket_id=ticket_id).delete()
+            db_session.commit()
+            return ticket_id
+        except Exception as e:
+            db_session.rollback()
+            logger.error(f"Error deleting comments: {e}")
+            return {'error': str(e)}
     
 class Worklog(Base):
         __tablename__ = 'worklog'

@@ -53,7 +53,7 @@ DATABASE_URL = f"mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_H
 
 
 db_add_closed_chat = False
-noSql =True
+noSql= not True
 useCloudSql = False
 baseMyURL = "http://localhost:5000"
 

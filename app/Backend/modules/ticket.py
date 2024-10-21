@@ -17,26 +17,13 @@ import datetime
 
 ticket=Blueprint('ticket',__name__)
 
+# @jwt_required
 @ticket.route('/list', methods=['GET'])
-@jwt_required
 def get_all_tickets(*args, **kwargs):
-    payload = kwargs.get('payload')
-    assignee_id = request.args.get('Assignee_ID')
-
-    if not assignee_id:
-        username = payload.get('upn')        
-        if not username:
-            return make_response(jsonify({'error': 'User details not found in token'}), 400)
-        user = db_session.query(Employee).filter_by(email=username).first()
-        if not user:
-            return make_response(jsonify({'error': 'User not found'}), 404)
-        assignee_id = user.id
-        print(assignee_id)
-    print(assignee_id)
-    tickets = db_session.execute(select(Ticket).where(Ticket.Assignee_ID == assignee_id))
-    ticket_list = [ticket[0].serialize() for ticket in tickets.all()]
+    tickets = db_session.query(Ticket).all()
+    ticket_list = [ticket.serialize() for ticket in tickets]
     if not ticket_list:
-        return make_response(jsonify({'message': 'No tickets found for the given Assignee_ID'}), 404)
+        return make_response(jsonify({'message': 'No tickets found'}), 404)
     return make_response(jsonify(ticket_list), 200)
 
 def parse_attachment(file_data, file_name, folder_this):
@@ -56,29 +43,41 @@ def parse_attachment(file_data, file_name, folder_this):
         
     return file_name, mime_type,file_path
 
-@ticket.route('/create', methods=['POST'])
-def create_ticket():
+    
+def create_ticket(request):
     comments = []
     attachments = []
     ticket_id = request.json.get('ticket_id')
+    if(ticket_id):
+        ticket_no = int(str(ticket_id).split('-')[-1])
+    else :
+        ticket_no = None
     print("@@@@@ INcomming Data")
     print(request.json)
     ticket = None
     if ticket_id:
-        ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
+        ticket_no = str(ticket_id).split('-')[-1]
+        ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_no).first()
         if not ticket:
             return error_response('Ticket not found', 404)
 
     if 'comments' in request.json:
-        comments = handle_comments(request.json['comments'], request.json.get('user'))
+        comments = handle_comments(request.json['comments'], request.json.get('user'),ticket_no)
 
     if 'logged_hrs' in request.json:
         handle_worklogs(request.json['logged_hrs'], request.json.get('user'))
+    
+    if 'attachments' in request.json:
+        attachments = handle_attachments(request.json['attachments'], ticket_no)
+        print("@@@@attachment")
+        print(attachments)
 
-    # Prepare new ticket data
+    if ticket_id:
+        # fetch new ticket data and serialize send
+        ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_no).first()
+        return jsonify(ticket.serialize())
     new_ticket_data = prepare_new_ticket_data(request.json, comments)
 
-    # Create new ticket
     new_ticket = Ticket(**new_ticket_data)
     try:
         validation_error = new_ticket.validate()
@@ -95,9 +94,10 @@ def create_ticket():
 
     folder_this = os.path.join(ticket_folder, ticket_id)
     os.makedirs(folder_this, exist_ok=True)
-    attachments = handle_attachments(request.json.get('attachments', []), folder_this)
 
-    chat_file,chat_history = prepare_chat_history(request.json, ticket_id, [x.serialize() for x in attachments])
+    print("@@@@chatfile")
+    print(attachments)
+    chat_file,chat_history = prepare_chat_history(request.json, ticket_id, [x.serialize() for x in attachments],[x.serialize() for x in comments])
 
     try:
         if attachments:
@@ -115,26 +115,35 @@ def create_ticket():
     print("@@@@chatfile mine")
 
     return json.dumps(chat_history, indent=4)
-    return make_response(jsonify({chat_file}), 201)
 
 def error_response(message, status_code):
     return make_response(jsonify({'error': message}), status_code)
 
-def handle_comments(comments_data, user_email):
+def handle_comments(comments_data, user_email, ticket_no):
     comments = []
     comment_user = Customer().getIDfromUsername(user_email)
+    print("came here")
+    print(ticket_no)
+    if ticket_no is not None:
+        try:
+            Comment().delete_comments(ticket_no)
+        except Exception as e:
+            logger.error(f"Error deleting comments: {e}")
+            return error_response('Failed to delete existing comments', 500)
     for comment in comments_data:
-        if 'comment_id' in comment:
-            existing_comment = db_session.query(Comment).filter_by(Comment_id=comment['comment_id']).first()
-            if existing_comment:
-                existing_comment.Comment = comment['comment']
-                comments.append(existing_comment)
-            else:
-                new_comment = Comment(Comment_user=comment_user, Comment=comment['comment'])
-                comments.append(new_comment)
-        else:
-            new_comment = Comment(Comment_user=comment_user, Comment=comment['comment'])
-            comments.append(new_comment)
+        new_comment = Comment(Comment_user=comment_user, Comment=comment['text'])
+        if ticket_no is not None:
+            new_comment.Ticket_id = ticket_no
+        comments.append(new_comment)
+    if ticket_no is not None:
+        try:
+            db_session.add_all(comments)
+            db_session.commit()
+            comments = db_session.query(Comment).filter_by(Ticket_id=ticket_no).all()
+        except Exception as e:
+            db_session.rollback()
+            logger.error(f"Error adding comments: {e}")
+            return error_response('Failed to add comments', 500)
     return comments
 
 def handle_worklogs(worklogs_data, user_email):
@@ -161,46 +170,42 @@ def handle_worklogs(worklogs_data, user_email):
             db_session.add(new_worklog)
     db_session.commit()
 
-def handle_attachments(attachments_data, folder_this):
+def handle_attachments(attachments_data, ticket_no=None):
     attachments = []
-    existing_files = set()
-    
+    print(type(ticket_no))
+    if ticket_no is not None:
+        print("@@@@attachment ticket no")
+        should_delete = bool(ticket_no)
+        print(ticket_no)
+        print(should_delete)
+        try:
+            db_session.query(Attachment).filter_by(Ticket_Id=ticket_no).delete()
+        except Exception as e:
+            logger.error(f"Error deleting attachments: {e}")
     for attachment in attachments_data:
-        if 'data' in attachment:
+        if attachment:
             b_file_data = base64.b64decode(attachment['data'])
-            filename, mime, file_path = parse_attachment(b_file_data, secure_filename(attachment['name']), folder_this)
-        else:
-            filename = attachment['name']
-            mime = attachment['type']
-            file_path = attachment['url']
-        
-        if file_path in existing_files:
-            continue  # Skip duplicate attachments
-        
-        existing_files.add(file_path)
-        
-        if 'id' in attachment:
-            existing_attachment = db_session.query(Attachment).filter_by(Attachment_Id=attachment['id']).first()
-            if existing_attachment:
-                existing_attachment.name = filename
-                existing_attachment.url = file_path
-                existing_attachment.size = attachment['size']
-                existing_attachment.type = mime
-                attachments.append(existing_attachment)
-            else:
-                new_attachment = Attachment(filename, file_path, attachment['size'], mime)
-                attachments.append(new_attachment)
-        else:
-            new_attachment = Attachment(filename, file_path, attachment['size'], mime)
-            attachments.append(new_attachment)
-        
-        attachment['url'] = file_path
-        if 'data' in attachment:
-            attachment.pop('data')
-    
+            filePaththis = os.path.join(ticket_folder, ticket_no if ticket_no else "")
+            filename, mime, file_path = parse_attachment(b_file_data, secure_filename(attachment['name']), filePaththis)
+            file = Attachment(Name=filename, Url=file_path, Size=attachment['size'], Type=mime)
+            if ticket_no is not None:
+                file.Ticket_Id = ticket_no
+            attachments.append(file)
+
+    if ticket_no is not None:
+        try:
+            db_session.add_all(attachments)
+            db_session.commit()
+            attachments = db_session.query(Attachment).filter_by(Ticket_Id=ticket_no).all()
+        except Exception as e:
+            db_session.rollback()
+            logger.error(f"Error adding attachments: {e}")
+            # return error_response('Failed to add attachments', 500)
+    print("@@@@attachment")
+    print(attachments)
     return attachments
 
-def prepare_chat_history(request_data, ticket_id, attachments):
+def prepare_chat_history(request_data, ticket_id, attachments=[],comments=[]):
     chat_file = os.path.join(ticket_folder, ticket_id, "data.json")
     chat_history = {
         "chat_id": request_data.get('chat_id'),
@@ -208,18 +213,32 @@ def prepare_chat_history(request_data, ticket_id, attachments):
         "user": request_data.get('user'),
         "history": {},
         "medium": "portal",
-        "comments": [],
+        "comments": comments,
         "created": datetime.datetime.now().isoformat(),
         "updated": datetime.datetime.now().isoformat(),
-        "logged_hrs": []
+        "logged_hrs": [],
+        "attachments": attachments
     }
-    with open(chat_file, "w") as f:
-        json.dump(chat_history, f)
-        chat_attachment = Attachment("data.json", chat_file, os.path.getsize(chat_file), "application/json")
-        attachments.append(chat_attachment.serialize())
-        chat_history['attachments']=attachments
+    # with open(chat_file, "w") as f:
+        # json.dump(chat_history, f)
+        # chat_attachment = Attachment(Name="data.json", chat_file, os.path.getsize(chat_file), "application/json")
+        # attachments.append(chat_attachment.serialize())
+        # chat_history['attachments']=attachments
     return chat_file,chat_history
 
+def delete_ticket(ticket_id):
+    ticket_no = str(ticket_id).split('-')[-1]
+    ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_no).first()
+    if not ticket:
+        return make_response(jsonify({'error': 'Ticket not found'+ticket_no}), 404)
+    try:
+        db_session.delete(ticket)
+        db_session.commit()
+        return make_response(jsonify({'message': 'Ticket deleted successfully'}), 200)
+    except Exception as e:
+        db_session.rollback()
+        logger.error(e)
+        return make_response(jsonify({'error': str(e)}), 500)
 def prepare_new_ticket_data(request_data, comments):
     return {
         "Chat_Id": request_data.get("chat_id"),
@@ -265,8 +284,8 @@ def log_work(payload):
         logger.error(e)
         return make_response(jsonify({'error': str(e)}), 500)
 
-@ticket.route('/modify', methods=['POST'])
-def modify_fields(*args, **kwargs):
+# @ticket.route('/modify', methods=['POST'])
+def modify_fields(request):
     print("\n\n\n\@@@  modify value")
     print(request.json)
     if not request.is_json:
@@ -278,7 +297,9 @@ def modify_fields(*args, **kwargs):
     print(ticket_id)
     if not ticket_id:
         return make_response(jsonify({'error': 'Ticket ID is required'}), 400)
-    ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_id).first()
+    ticket_no= str(ticket_id).split('-')[-1]
+    print(ticket_no)
+    ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_no).first()
     if not ticket:
         return make_response(jsonify({'error': 'Ticket not found'}), 404)
     
