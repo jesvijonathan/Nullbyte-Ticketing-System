@@ -26,6 +26,7 @@ import threading
 import pandas as pd
 import re
 
+
 # Flask configurations
 app = Flask(__name__)
 app.secret_key = secret_key
@@ -39,6 +40,9 @@ app.register_blueprint(auth_ldap, url_prefix='/sso')
 app.register_blueprint(ticket, url_prefix='/ticket')
 app.register_blueprint(text, url_prefix='/text')
 
+if enable_jira:
+    from modules.jira.jira_int import jiraint
+    app.register_blueprint(jiraint, url_prefix='/jira')
 @app.route('/')
 def home():
     return render_template('index.html', token_param="")

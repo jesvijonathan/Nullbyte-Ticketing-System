@@ -189,8 +189,8 @@ if os.name == 'nt':
 
 
 # Jira Configs
+enable_jira = False
 JIRA_CRED = dict({
-    'username': os.getenv("JIRA_ADMIN",'jiraadmin'),
-    'password': os.getenv("JIRA_PASS", 'Skibbidi@42069'),
-    'server': os.getenv("JIRA_SERVER", 'http://localhost:8080')
+    'server':  os.getenv("JIRA_SERVER", '<server url>'),
+    'token': os.getenv("JIRA_SERVER_TOKEN", '<jira token>')
 })
