@@ -149,18 +149,18 @@ class ChatbotHandler:
     def close_chat(self):
         self.result["connection"]= "closed"
         # logic to add details to db here, for later
-        if db_add_closed_chat:
-            try:
-                print("\n\nresult starts here:")
-                res=self.result
-                tid=BotAdmin().create_ticket(res)['id']
-                if[tid]:
-                    self.result["ticket_id"]=str(tid)
-                print(res)
-                print("\n\nresult ends here:")
-            except:
-                print("Error adding ticket to db")
-                pass
+        # if db_add_closed_chat:
+        try:
+            print("\n\nresult starts here:")
+            res=self.result
+            tid=BotAdmin().create_ticket(res)['id']
+            if[tid]:
+                self.result["ticket_id"]=str(tid)
+            print(res)
+            print("\n\nresult ends here:")
+        except:
+            print("Error adding ticket to db")
+            pass
         ticket_folder = "./bucket/tickets"
         os.makedirs(ticket_folder, exist_ok=True)
         

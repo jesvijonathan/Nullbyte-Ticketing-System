@@ -189,7 +189,7 @@ if os.name == 'nt':
 
 
 # Jira Configs
-enable_jira = False
+enable_jira = True
 JIRA_CRED = dict({
     'server':  os.getenv("JIRA_SERVER", '<server url>'),
     'token': os.getenv("JIRA_SERVER_TOKEN", '<jira token>')

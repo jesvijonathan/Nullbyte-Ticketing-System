@@ -88,7 +88,6 @@ class JiraIntegration:
             'reporter': obj.fields.reporter.displayName if obj.fields.reporter else None,
             'created': obj.fields.created,
             'updated': obj.fields.updated,
-            'analysis'
             'attachments': [{'filename': attachment.filename, 'size': attachment.size} for attachment in obj.fields.attachment]
         }
         return res
@@ -99,14 +98,10 @@ class JiraIntegration:
         return [(issue.key, issue.fields.summary) for issue in issues]
 
 jira_integration = JiraIntegration(jira)
-
-
 jiraint=Blueprint('jira',__name__)
-
 @jiraint.route('/get_projects',methods=['GET'])
 def get_projects():
     return jira_integration.get_projects()
-
 @jiraint.route('/create_issue',methods=['POST'])
 def create_issue():
     project = request.json['project']
@@ -125,7 +120,6 @@ def create_issue():
     if reporter:
         jira_integration.assign_issue(issue.key, reporter=reporter)
     return issue.key
-
 @jiraint.get('/get_similar_issues')
 def get_similar_issues():
     keyword = request.args.get('keyword')

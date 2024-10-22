@@ -457,7 +457,8 @@ class BotAdmin:
         def create_ticket(self,ticket):
             description = ticket.get("description")
             analysis = ticket.get("analysis")
-            
+            print("@@@ Came here \n\n\n\n")
+            print(ticket)
             if analysis and description=="":
                 description = analysis
                 analysis = ""
@@ -476,7 +477,7 @@ class BotAdmin:
                 Product_Type=ticket.get("product_type"),  
                 Priority=ticket.get("priority"),
                 Story_Points=ticket.get("story_points"),
-                Status="Open"
+                Status="open"
             )
             try:
                 validation_error = new_ticket.validate()
@@ -484,6 +485,7 @@ class BotAdmin:
                     return {'error': validation_error}
                 db_session.add(new_ticket)
                 db_session.commit()
+                print("@@@@ ticket created")
                 return {'id': new_ticket.Ticket_Id}
             except Exception as e:
                 db_session.rollback()

@@ -72,26 +72,31 @@ class Ticket(Base):
         return data
 
     def validate(self):
-        if self.Estimation ==None or self.Estimation=='':
-            self.Estimation=0
-        if self.Story_Points ==None or self.Story_Points=='':
-            self.Story_Points=0
-        # if self.Priority ==None or self.Priority=='':
-        #     self.Priority='low'
-        # if self.Issue_Type ==None or self.Issue_Type=='':
-        #     self.Issue_Type='issue'
-        if not self.Subject or len(self.Subject) > 255:
-            return "Subject must be provided and less than 255 characters."
-        if self.Status.lower()not in ["open", "progress", "closed", "reopened", "waiting for information"]:
-            self.Status = 'open'
-        if self.Priority.lower() not in ["critical", "high", "medium", "low", ""]:  
-            print(self.Priority)
+        if self.Estimation == None or self.Estimation == '':
+            self.Estimation = 0
+            print(f"Estimation set to: {self.Estimation}")
+        if self.Story_Points == None or self.Story_Points == '':
+            self.Story_Points = 0
+            print(f"Story Points set to: {self.Story_Points}")
+        if self.Priority == None or self.Priority == '':
             self.Priority = 'low'
+            print(f"Priority set to: {self.Priority}")
+        if self.Issue_Type == None or self.Issue_Type == '':
+            self.Issue_Type = 'issue'
+            print(f"Issue Type set to: {self.Issue_Type}")
+        if not self.Subject or len(self.Subject) > 255:
+            print("Subject validation failed.")
+            return "Subject must be provided and less than 255 characters."
+        if self.Status.lower() not in ["open", "progress", "closed", "reopened", "waiting for information"]:
+            self.Status = 'open'
+            print(f"Status set to: {self.Status}")
+        if self.Priority.lower() not in ["critical", "high", "medium", "low", ""]:
+            print(f"Invalid Priority: {self.Priority}")
+            self.Priority = 'low'
+            print(f"Priority set to: {self.Priority}")
         if self.Score is not None and (self.Score < 0 or self.Score > 100):
+            print("Score validation failed.")
             return "Score must be between 0 and 100."
-        if self.Reopens and not isinstance(self.Reopens, int):
-            return "Reopens must be an integer."
-        return None
 
 class Customer(Base):
     __tablename__ = 'customer'
