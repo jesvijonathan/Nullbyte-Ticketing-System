@@ -20,9 +20,9 @@ onMounted(async () => {
     const response = await fetch(get_employeees);
     const data = await response.json();
     
-    Object.keys(data).forEach(user_id => {
-        const user_info = data[user_id];
-        users.value[user_id] = user_info.toLowerCase();
+    Object.keys(data).forEach((user, index) => {
+        const user_info = user;
+        users.value[index] = user_info.toLowerCase();
     });
 
     filtered_users.value = Object.values(users.value); 
