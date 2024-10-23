@@ -7,6 +7,7 @@ import datetime
 import time
 from google.api_core.exceptions import ResourceExhausted
 import json
+from modules.mailbot.mailbot import MailBot
 from modules.auth.auth import auth_ldap, jwt_required, cleanup_user
 from modules.text import text
 from modules.ml.ml_handler import ChatbotHandler, create_jsonl
@@ -546,4 +547,8 @@ def shutdown_session(exception=None):
 load_obj()
 
 if __name__ == '__main__':
+    if enable_mailbot:
+        mail_bot = MailBot()
+        flask_thread = threading.Thread(target=lambda: mail_bot.poll_inbox())
+        flask_thread.start()
     socketio.run(app, debug=True, host="0.0.0.0", port=5000)

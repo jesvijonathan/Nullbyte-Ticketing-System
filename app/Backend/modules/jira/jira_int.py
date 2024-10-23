@@ -5,6 +5,12 @@ import datetime
 from enum import Enum
 from flask import Blueprint, request, make_response, jsonify
 from config import *
+import base64
+from werkzeug.utils import secure_filename
+from mimetypes import guess_extension
+import mimetypes
+
+
 jira = JIRA(server=JIRA_CRED['server'],token_auth=JIRA_CRED['token'])
 
 class IssueType(Enum):
@@ -19,6 +25,24 @@ class Priority(Enum):
     MEDIUM = "Medium"
     LOW = "Low"
     LOWEST = "Lowest"
+def parse_attachment(file_data, file_name, folder_this):
+    """ Save attachment to bucket/chat_id folder and return base64 encoded content. """
+    chat_folder = os.path.join(folder_this)
+    os.makedirs(chat_folder, exist_ok=True)
+    file_path = os.path.join(folder_this, file_name)
+
+    # Write the file to disk
+    with open(file_path, "wb") as f:
+        f.write(file_data)
+
+    # Convert file to base64
+    with open(file_path, "rb") as f:
+        file_ext = file_path.split('.')[-1]
+        mime_type = guess_extension(file_ext) or mimetypes.guess_type(file_path)[0] or "application/octet-stream"
+        
+    return file_name, mime_type,file_path
+
+    
 
 class JiraIntegration:
     def __init__(self, jira):
@@ -41,6 +65,17 @@ class JiraIntegration:
             response_message += f" Reporter set to {reporter}."
         
         return response_message
+    def process_attachment(self,key,incomming_attachment):
+        # print(attachments)
+        attachments = []
+        for attachment in incomming_attachment:
+            if attachment:
+                # print(f"Attachment {filename} has been added to issue {key}. File Path: {file_path}")
+                b_file_data = base64.b64decode(attachment['data'])
+                filePaththis = ticket_folder
+                print(filePaththis)
+                filename, mime, file_path = parse_attachment(b_file_data, secure_filename(attachment['name']), filePaththis)
+                return self.add_attachment(key, file_path)
 
     def create_issue(self, project: str, summary: str, description: str, issuetype: IssueType, priority: Priority = Priority.LOWEST):
         issue_dict = {
@@ -104,17 +139,19 @@ def get_projects():
     return jira_integration.get_projects()
 @jiraint.route('/create_issue',methods=['POST'])
 def create_issue():
-    project = request.json['project']
-    summary = request.json['summary']
-    description = request.json['description']
-    issuetype = IssueType[request.json['issuetype'].upper()]
-    priority = Priority[request.json['priority'].upper()]
+    project = request.json.get('project') if 'project' in request.json else 'NULL'
+    summary = request.json.get('summary')
+    description = request.json.get('description')
+    if description is None:
+        description = ""
+    issuetype = IssueType[request.json.get('issue_type').upper()]
+    priority = Priority[request.json.get('priority').upper()]
     issue = jira_integration.create_issue(project, summary, description, issuetype, priority)
     assignee = request.json.get('assignee')
     reporter = request.json.get('reporter')
-    attachment = request.json.get('attachment')
+    attachment = request.json.get('attachments')
     if attachment:
-        jira_integration.add_attachment(issue.key, attachment)
+        jira_integration.process_attachment(issue.key, attachment)
     if assignee:
         jira_integration.assign_issue(issue.key, assignee=assignee)
     if reporter:
