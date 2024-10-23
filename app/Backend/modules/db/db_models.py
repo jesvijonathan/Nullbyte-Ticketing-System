@@ -51,11 +51,11 @@ class Ticket(Base):
             'priority': self.Priority,
             'issue_type': self.Issue_Type,
             'channel': self.Channel,
-            'user': Customer().getUserNamefromID(self.Customer_ID),
+            'user': Customer().getUserNamefromID(self.Customer_ID) or Employee().getUserNamefromID(self.Assignee_ID),
             'product_type': self.Product_Type,
             'medium': self.Medium,
             'team': self.Team,
-            'assignee': Employee().getUserNamefromID(self.Assignee_ID),
+            'assignee': Employee().getUserNamefromID(self.Assignee_ID) or Customer().getUserNamefromID(self.Customer_ID),
             'resolution': self.Resolution,
             'created': self.Created.isoformat() if self.Created else None,
             'last_modified': self.LastModified.isoformat() if self.LastModified else None,
@@ -134,21 +134,22 @@ class Customer(Base):
             return {key: data[key] for key in keys if key in data}
         return data
     def get_all_customers(self):
-        customer_list= {}
         customers = db_session.query(Customer).all()
+        customers_dict = {}
         for customer in customers:
-            customer_data = {}
-            customer_data['Id']= customer.Id
-            customer_data['age']= customer.age
-            customer_data['gender']= customer.gender
-            customer_data['username']= customer.username
-            customer_data['email']= customer.email,
-            customer_data['phone']= customer.phone,
-            customer_data['company']= customer.company
-            customer_data['role']= customer.role
-            customer_data['score']= customer.score
-            customer_list[customer.name]=customer_data
-        return customer_list
+            customers_dict[customer.username] = {} 
+            customers_dict[customer.username]['name'] = customer.name
+            customers_dict[customer.username]['age'] = customer.age
+            customers_dict[customer.username]['email'] = customer.email
+            customers_dict[customer.username]['company'] = customer.company
+            customers_dict[customer.username]['score'] = customer.score
+            customers_dict[customer.username]['gender'] = customer.gender
+            customers_dict[customer.username]['Id'] = customer.Id
+            customers_dict[customer.username]['phone'] = customer.phone
+            customers_dict[customer.username]['role'] = customer.role
+            customers_dict[customer.username]['password'] = customer.password
+            customers_dict[customer.username]['type'] = 'customer'
+        return customers_dict
 
     def getIDfromUsername(self, username):
         print("Customer Username: ", username)
@@ -233,6 +234,7 @@ class Employee(Base):
             emp_detail['experience'] = employee.experience
             emp_detail['closed_tickets'] = employee.closed_tickets
             emp_detail['open_tickets'] = employee.open_tickets
+            emp_detail["type"] = "employee"
             employees_dict[employee.username] = emp_detail
         return employees_dict
     
@@ -409,3 +411,9 @@ class AuthView(Base):
             logger.error(f"Error changing password: {e}")
             return False
         
+def get_all_users():
+    customers = Customer().get_all_customers()
+    employees = Employee().get_all_employees()
+    all_users = {**customers, **employees}
+    print("\n\n\n", all_users)
+    return all_users

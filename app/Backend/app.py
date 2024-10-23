@@ -165,6 +165,11 @@ def get_employee():
 def get_customer():
     return db_models.Customer().get_all_customers()
 
+@app.route('/get_users', methods=['GET'])
+def get_users():
+    return db_models.get_all_users()
+
+
 @app.route('/get_incomplete_ticket', methods=['GET'])
 def get_incomplete_ticket():
     with open('dataset/ticket_not.json') as f:
