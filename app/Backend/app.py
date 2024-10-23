@@ -9,7 +9,7 @@ from google.api_core.exceptions import ResourceExhausted
 import json
 from modules.auth.auth import auth_ldap, jwt_required, cleanup_user
 from modules.text import text
-from modules.ml.ml_handler import ChatbotHandler, create_jsonl, eval_ticket_employee
+from modules.ml.ml_handler import ChatbotHandler, create_jsonl, eval_ticket_employee, eval_ticket_employee_vertex
 from modules.ticket import create_ticket, modify_fields,ticket,delete_ticket as delete_ticket_sql, get_ticket as get_ticket_sql,get_all_tickets
 from config import *
 from modules.log import *
@@ -170,12 +170,20 @@ def get_customer():
 def get_users():
     return db_models.get_all_users()
 
-@app.route('/eval_ticket', methods=['GET'])
+@app.route('/eval_ticket', methods=['POST'])
 def eval_ticket():
     ticket = request.json
-    result = eval_ticket_employee(ticket)
+    result = eval_ticket_employee_vertex(ticket)
+    # result = eval_ticket_employee(ticket)
+    print("aaaaaaaa : ", result)
     return jsonify(result)
-    
+
+@app.route('/eval_ticket_reg', methods=['POST'])
+def eval_ticket_reg():
+    ticket = request.json
+    result = eval_ticket_employee(ticket)
+    print("aaaaaaaa : ", result)
+    return jsonify(result)
 
 
 @app.route('/get_incomplete_ticket', methods=['GET'])

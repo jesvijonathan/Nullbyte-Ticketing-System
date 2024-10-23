@@ -132,6 +132,9 @@ json format:
 "enhance": "", receive the text/summary/analysis and enhance the message with better words and better explanation & considering all parameters. 
 }
 """
+instructions_assign="""Assign the ticket to the most suitable user based on the ticket details (e.g., story points, estimation, priority, issue type, product type) and the user's skill level. Return one user who can handle the ticket effectively, considering that lower-level tickets should go to juniors and higher-level tickets to senior engineers.
+return <string: username>
+"""
 google_credentials = os.getenv("GOOGLE_CREDENTIALS", "").strip()
 if not google_credentials or google_credentials == "null":
     try:
