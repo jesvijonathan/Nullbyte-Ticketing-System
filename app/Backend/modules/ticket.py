@@ -525,7 +525,7 @@ class BotAdmin:
                         "ticket_id": ticket_id,
                         "user": form_data.get('user'),
                         "history": {},
-                        "medium": "",
+                        "medium": request.get('medium'),
                         "comments": [],
                         "attachments": attachments_list,
                         "created": datetime.datetime.now().isoformat(),
