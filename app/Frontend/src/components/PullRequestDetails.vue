@@ -1,5 +1,5 @@
 <template>
-    <div v-if="pr" class="github-pr-container">
+    <div v-if="pr" class="github-pr-container" @mouseenter="adjustHeight">
       <div v-if="loading" class="github-loading">Loading...</div>
       <div v-else-if="error" class="github-error">{{ error }}</div>
       <div v-else class="github-pr-details">
@@ -49,6 +49,13 @@
     repo.value = urlParts[4];
     pullNumber.value = urlParts[6];
   }
+
+  function adjustHeight(){
+    const cont = document.querySelector('.github-pr-container');
+    const height = cont.scrollHeight / window.innerHeight * 100;
+    cont.style.height = height + 'vh';
+
+  }
   
   onMounted(async () => {
     loading.value = true;
@@ -77,7 +84,7 @@
     border-radius: 0.4vw;
     font-family: wl1;
     /* width: fit-content; */
-    width: 42vw;
+
     margin: 2vw auto;
     margin-top:1vw;
     /* border-right : none;
@@ -190,5 +197,32 @@
     border-radius: 0vw;
     font-size: 0.7vw;
   }
+
+  .github-pr-container {
+  border: 0.1vw solid #d1d5da;
+  padding: 0.7vw;
+  border-radius: 0.4vw;
+  font-family: wl1;
+  width: 43vw;
+  height: 5vw; /* Initial height */
+  margin: 2vw auto;
+  margin-top: 1vw;
+  resize: both;
+  overflow: auto;
+  transition: height 0.3s ease; /* Keep the transition only for the height */
+}
+
+.github-pr-container::-webkit-scrollbar{
+    width: 0.4vw;
+    height: 0.4vw;
+}
+.github-pr-container::-webkit-scrollbar-thumb{
+    background-color: #d1d5da;
+    border-radius: 0.2vw;}
+.github-pr-container::-webkit-scrollbar-track{
+    background-color: #f6f8fa;}
+
+
+
   </style>
   
