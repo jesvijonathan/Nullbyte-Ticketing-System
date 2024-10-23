@@ -70,7 +70,7 @@ let ticket_data = ref({
     "estimation": "1",
     "analysis": "",
     "reply": "",
-    "assingee": "",
+    "assignee": "",
     "status": "open",
     "created": "",
     "updated": "",
@@ -163,7 +163,7 @@ const reset_form = () => {
         "estimation": "1",
         "analysis": "",
         "reply": "",
-        "assingee": "",
+        "assignee": "",
         "status": "open",
         "created": ticket_data.value.created,
         "updated": "",
@@ -452,8 +452,8 @@ function update_ticket(){
                         <div class="tinfo_text">
                             <div>Assigned To&nbsp;&nbsp;:</div>&nbsp;
                             <input type="text" placeholder="Add Username" class="input_field drop_inpt drop_input_tex"
-                                id="assingee" v-model="ticket_data.assingee"
-                                :class="{ 'inp_desc_none': !ticket_data.assingee }">
+                                id="assignee" v-model="ticket_data.assignee"
+                                :class="{ 'inp_desc_none': !ticket_data.assignee }">
                         </div>
                     </div>
                     <hv></hv>

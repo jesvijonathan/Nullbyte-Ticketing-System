@@ -157,6 +157,14 @@ def update_ticket(request):
                 return jsonify(data)
     return jsonify({"error": "Ticket not found"}), 404
 
+@app.route('/get_employees', methods=['GET'])
+def get_employee():
+    return db_models.Employee().get_all_employees()
+
+@app.route('/get_customers', methods=['GET'])
+def get_customer():
+    return db_models.Customer().get_all_customers()
+
 @app.route('/get_incomplete_ticket', methods=['GET'])
 def get_incomplete_ticket():
     with open('dataset/ticket_not.json') as f:

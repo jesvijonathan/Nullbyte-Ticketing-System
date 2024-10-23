@@ -61,7 +61,9 @@ def create_ticket(request):
         ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_no).first()
         if not ticket:
             return error_response('Ticket not found', 404)
-
+    # print("@@@ getting name \n\n\n\n")
+    # print(request.json["user"])
+    print(Customer().getIDfromUsername(request.json["user"]))
     # if 'comments' in request.json:
     #     comments = handle_comments(request.json['comments'], request.json.get('user'),ticket_no)
 
@@ -304,7 +306,8 @@ def modify_fields(request):
     ticket = db_session.query(Ticket).filter_by(Ticket_Id=ticket_no).first()
     if not ticket:
         return make_response(jsonify({'error': 'Ticket not found'}), 404)
-    
+    # print("@@@@ticket Body")
+    # print(body)
     try:
         if "subject" in body:
             ticket.Subject = body["subject"]
@@ -463,7 +466,9 @@ class BotAdmin:
             if analysis and description=="":
                 description = analysis
                 analysis = ""
-
+            # print("@@@ getting name \n\n\n\n")
+            # print(ticket.get("user"))
+            print(Customer().getIDfromUsername(ticket.get("user")))
             new_ticket = Ticket(
                 Chat_Id=ticket.get("chat_id"),
                 Subject=ticket.get("subject"),

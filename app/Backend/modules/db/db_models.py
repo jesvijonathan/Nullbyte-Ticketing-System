@@ -133,6 +133,12 @@ class Customer(Base):
         if keys:
             return {key: data[key] for key in keys if key in data}
         return data
+    def get_all_customers(self):
+        customers = db_session.query(Customer).all()
+        customers_dict = {}
+        for customer in customers:
+            customers_dict[customer.Id] = customer.username
+        return customers_dict
 
     def getIDfromUsername(self, username):
         print("Customer Username: ", username)
@@ -197,6 +203,13 @@ class Employee(Base):
     def getallUsers(self):
         employees = db_session.query(Employee).all()
         return [employee.username for employee in employees]
+    def get_all_employees(self):
+        employees = db_session.query(Employee).all()
+        employees_dict = {}
+        for employee in employees:
+            employees_dict[employee.id] = employee.username
+        return employees_dict
+    
 
 class Attachment(Base):
     __tablename__ = 'attachments'

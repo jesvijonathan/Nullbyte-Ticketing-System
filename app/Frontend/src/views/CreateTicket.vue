@@ -81,7 +81,7 @@ let ticket_data = ref({
     "estimation": "",
     "analysis": "",
     "reply": "",
-    "assingee": "",
+    "assignee": "",
     "status": "open",
     "created": (new Date()).toISOString(),
     "updated": (new Date()).toISOString(),
@@ -160,7 +160,7 @@ const reset_form = () => {
     "estimation": "",
     "analysis": "",
     "reply": "",
-    "assingee": "",
+    "assignee": "",
     "status": "open",
     "created": (new Date()).toISOString(),
     "updated": (new Date()).toISOString(),
@@ -313,9 +313,9 @@ const submitForm = async () => {
                                     id="created_by" v-model="ticket_data.user">
                             </div>
                             <div class="input_cont">
-                                <label for="assingee">Assigned To</label>
+                                <label for="assignee">Assigned To</label>
                                 <input type="text" placeholder="Enter the name of the person" class="input_field"
-                                    id="assingee" v-model="ticket_data.assingee">
+                                    id="assignee" v-model="ticket_data.assignee">
                             </div>
                         </div>
 
@@ -364,8 +364,8 @@ const submitForm = async () => {
 
                             </div>
                             <div class="input_cont">
-                                <label for="assingee">Status</label>
-                                <select  class="input_field" id="assingee" v-model="ticket_data.status" default="open">
+                                <label for="assignee">Status</label>
+                                <select  class="input_field" id="assignee" v-model="ticket_data.status" default="open">
                                     <option value="open">Open</option>
                                     <option value="closed">Closed</option>
                                     <option value="pending">Pending</option>
