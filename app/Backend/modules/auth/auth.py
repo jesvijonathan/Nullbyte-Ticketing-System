@@ -30,11 +30,11 @@ def authenticate():
 
     emptype= normal_auth(username, password)
     if emptype:
-        payload = {'username': ADMIN_CRED['username'], 'ou': [emptype], 'upn': username}
+        payload = {'username': ADMIN_CRED['username'].lower(), 'ou': [emptype], 'upn': username}
     elif username == ADMIN_CRED_2['username'] and password == ADMIN_CRED_2['password']:
-        payload = {'username': ADMIN_CRED_2['username'], 'ou': [], 'upn': 'nig@nullbyte.exe'}
+        payload = {'username': ADMIN_CRED_2['username'].lower(), 'ou': [], 'upn': 'nig@nullbyte.exe'}
     else:
-        payload = {'username': username, 'ou': [], 'upn': username}
+        payload = {'username': username.lower(), 'ou': [], 'upn': username}
     # elif lwrapper.Authenticate(username, password):
         # payload = lwrapper.getPayload(username)
 
@@ -48,14 +48,14 @@ def authenticate():
         response = make_response(jsonify({'token': token, 'message': 'Authentication successful'}), 201)
         for cookie in request.cookies:
             response.set_cookie(cookie, '', expires=0)
-        print("usrname : ", username)
+        print("usrname : ", username.lower())
         response.set_cookie('session', token, httponly=False, secure=False, samesite='None', expires=None)
-        response.set_cookie('user', username, httponly=False, secure=False,samesite='None', expires=None)
+        response.set_cookie('user', username.lower(), httponly=False, secure=False,samesite='None', expires=None)
         if username in users_token:
             del users[users_token[username]]
         users_token[username] = token
         users[token] = {
-            'username': username,
+            'username': username.lower(),
             'added': payload.get('iat'),
             'exp': payload.get('exp'),
         }

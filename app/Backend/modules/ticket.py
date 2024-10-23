@@ -5,7 +5,7 @@ from flask import request, make_response, jsonify, render_template
 from werkzeug.utils import secure_filename
 from modules.bucket import upload_individual_files
 from config import *
-from .db.db_models import Ticket, Employee,Customer,Attachment,Comment,Worklog
+from .db.db_models import Ticket, Employee,Customer,Attachment,Comment,Worklog, get_all_users
 from .auth.auth import jwt_required
 from .db.database import db_session
 from .log import *
@@ -244,6 +244,22 @@ def delete_ticket(ticket_id):
         logger.error(e)
         return make_response(jsonify({'error': str(e)}), 500)
 def prepare_new_ticket_data(request_data, comments):
+    # admin
+    print(request_data.get("user"))
+    all_users = get_all_users()
+    print("\n\n", all_users[request_data.get("user")], "\n\n")
+    if request_data.get("user") in all_users:
+        customer_id = all_users[request_data.get("user")]["id"]
+    else:
+        customer_id = 1
+
+    if request_data.get("assignee") in all_users:
+        assignee_id = all_users[request_data.get("assignee")]["id"]
+    else:
+        assignee_id = 1
+
+    print( assignee_id , " : ", customer_id)
+
     return {
         "Chat_Id": request_data.get("chat_id"),
         "Subject": request_data.get("subject"),
@@ -254,9 +270,11 @@ def prepare_new_ticket_data(request_data, comments):
         "Priority": request_data.get("priority", "").lower(),
         "Issue_Type": request_data.get("issue_type"),
         "Channel": request_data.get("medium"),
-        "Customer_ID": Customer().getIDfromUsername(request_data.get("user")),
+        "Customer_Username": request_data.get("user"),
+        "Customer_ID": customer_id,
         "Product_Type": request_data.get("product_type"),
-        "Assignee_ID": Employee().getIDfromUsername(request_data.get('assingee')),
+        "Assignee_ID": assignee_id,
+        "Assignee_Username": request_data.get("assignee"),
         "LastModified": datetime.datetime.now().isoformat(),
         "Estimation": request_data.get("estimation"),
         "Story_Points": request_data.get("story_points"),
@@ -328,7 +346,7 @@ def modify_fields(request):
         if "channel" in body:
             ticket.Channel = body["channel"]
         if "user" in body:
-            ticket.Customer_ID = Customer().getIDfromUsername(body["user"])
+            ticket.Customer_Username = body["user"]
         if "product_type" in body:
             ticket.Product_Type = body["product_type"]
         if "medium" in body:
@@ -336,7 +354,7 @@ def modify_fields(request):
         if "team" in body:
             ticket.Team = body["team"]
         if "assignee" in body:
-            ticket.Assignee_ID = Employee().getIDfromUsername(body["assignee"])
+            ticket.Assignee_Username = body["assignee"]
         if "resolution" in body:
             ticket.Resolution = body["resolution"]
         if "issue_date" in body:

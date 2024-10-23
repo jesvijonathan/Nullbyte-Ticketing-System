@@ -20,10 +20,12 @@ class Ticket(Base):
     Issue_Type = Column(Enum('bug', 'error', 'issue', 'story', 'others', 'feature', 'enhancement', 'support','task'), default='issue')
     Channel = Column(String(100))
     Customer_ID = Column(Integer, ForeignKey('customer.Id', ondelete='SET NULL'))
+    Customer_Username = Column(String(255)) 
     Product_Type = Column(String(100))
     Medium = Column(String(100))
     Team = Column(String(50))
     Assignee_ID = Column(Integer, ForeignKey('employee.id', ondelete='SET NULL'))
+    Assignee_Username = Column(String(255))
     Resolution = Column(Text)
     Issue_Date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     Created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
@@ -51,11 +53,11 @@ class Ticket(Base):
             'priority': self.Priority,
             'issue_type': self.Issue_Type,
             'channel': self.Channel,
-            'user': Customer().getUserNamefromID(self.Customer_ID) or Employee().getUserNamefromID(self.Assignee_ID),
+            'user': self.Customer_Username,
             'product_type': self.Product_Type,
             'medium': self.Medium,
             'team': self.Team,
-            'assignee': Employee().getUserNamefromID(self.Assignee_ID) or Customer().getUserNamefromID(self.Customer_ID),
+            'assignee': self.Assignee_Username,
             'resolution': self.Resolution,
             'created': self.Created.isoformat() if self.Created else None,
             'last_modified': self.LastModified.isoformat() if self.LastModified else None,
@@ -144,7 +146,7 @@ class Customer(Base):
             customers_dict[customer.username]['company'] = customer.company
             customers_dict[customer.username]['score'] = customer.score
             customers_dict[customer.username]['gender'] = customer.gender
-            customers_dict[customer.username]['Id'] = customer.Id
+            customers_dict[customer.username]['id'] = customer.Id
             customers_dict[customer.username]['phone'] = customer.phone
             customers_dict[customer.username]['role'] = customer.role
             customers_dict[customer.username]['password'] = customer.password

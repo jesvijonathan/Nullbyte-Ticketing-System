@@ -3,7 +3,7 @@ import { ref, onMounted, watch, toRef, defineEmits } from 'vue';
 
 const emit = defineEmits(); 
 
-const get_employeees = document.baseMyURL + "/get_customers"; 
+const get_employeees = document.baseMyURL + "/get_users"; 
 const users = ref({}); 
 const filtered_users = ref([]); 
 const props = defineProps({
