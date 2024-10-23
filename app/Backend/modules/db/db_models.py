@@ -164,6 +164,9 @@ class Employee(Base):
     email = Column(String(255), unique=True, nullable=False)
     phone = Column(String(15))
     role = Column(String(100))
+    closed_tickets = Column(Integer)
+    open_tickets = Column(Integer)
+    team = Column(String(50))
     score = Column(Integer)
     manager = Column(Integer, ForeignKey('employee.id', ondelete='SET NULL'))
     gcm = Column(Integer)
@@ -207,7 +210,19 @@ class Employee(Base):
         employees = db_session.query(Employee).all()
         employees_dict = {}
         for employee in employees:
-            employees_dict[employee.id] = employee.username
+            emp_detail={}
+            emp_detail['id'] = employee.id
+            emp_detail['gcm'] = employee.gcm
+            emp_detail['email'] = employee.email
+            emp_detail['phone'] = employee.phone
+            emp_detail['role'] = employee.role
+            emp_detail['team'] = employee.team
+            emp_detail['score'] = employee.score
+            emp_detail['manager'] = employee.manager
+            emp_detail['experience'] = employee.experience
+            emp_detail['closed_tickets'] = employee.closed_tickets
+            emp_detail['open_tickets'] = employee.open_tickets
+            employees_dict[employee.username] = emp_detail
         return employees_dict
     
 
@@ -382,3 +397,4 @@ class AuthView(Base):
             db_session.rollback()
             logger.error(f"Error changing password: {e}")
             return False
+        
