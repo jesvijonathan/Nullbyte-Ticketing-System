@@ -25,6 +25,7 @@ import pickle
 import threading
 import pandas as pd
 import re
+from modules.db.database import db_session
 
 
 # Flask configurations
@@ -536,6 +537,11 @@ if tmp_folders_cleanup:
                         shutil.rmtree(file_path)
                 except Exception as e:
                     print(f"Failed to delete {file_path}. Reason: {e}")
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
+        
 
 load_obj()
 

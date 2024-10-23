@@ -236,6 +236,9 @@ class Employee(Base):
             emp_detail['experience'] = employee.experience
             emp_detail['closed_tickets'] = employee.closed_tickets
             emp_detail['open_tickets'] = employee.open_tickets
+            emp_detail['name'] = employee.name
+            emp_detail['age'] = employee.age
+            emp_detail["password"] = employee.password
             emp_detail["type"] = "employee"
             employees_dict[employee.username] = emp_detail
         return employees_dict

@@ -6,7 +6,7 @@ from .ldap_wrapper import Lwrapper
 from modules.log import *
 from config import *
 # from flask import session
-from modules.db.db_models import AuthView
+from modules.db.db_models import AuthView, get_all_users
 
 auth_ldap = Blueprint('auth', __name__)
 lwrapper=Lwrapper()
@@ -34,7 +34,24 @@ def authenticate():
     elif username == ADMIN_CRED_2['username'] and password == ADMIN_CRED_2['password']:
         payload = {'username': ADMIN_CRED_2['username'].lower(), 'ou': [], 'upn': 'nig@nullbyte.exe'}
     else:
-        payload = {'username': username.lower(), 'ou': [], 'upn': username}
+        users_data = get_all_users()
+        logedd=False
+        for user in users_data:
+            print("\n\n\n\n\n")
+            print(users_data[user], user)
+            user_data = users_data[user]
+            if user_data['email'].lower() == username.lower():
+                print("llooooggign", user_data['email'].lower(), username)
+                payload = {'username': user.lower(), 'ou': [user_data['type']], 'upn': user.lower()}
+                username = user.lower()
+                logedd = True
+            elif user == username:
+                print("llooooggign", user_data['username'], username)
+                payload = {'username': user.lower(), 'ou': [user_data['type']], 'upn': user.lower()}
+                logedd = True
+        if not logedd:
+            return make_response(jsonify({'error': 'Invalid credentials'}), 401)
+
     # elif lwrapper.Authenticate(username, password):
         # payload = lwrapper.getPayload(username)
 

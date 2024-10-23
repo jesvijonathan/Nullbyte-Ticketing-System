@@ -17,6 +17,7 @@ INSERT INTO customer (name, age, gender, username, password, email, phone, compa
 INSERT INTO employee (name, age, gender, username, password, email, phone, role, score, manager, gcm, experience) VALUES
 ('Unassigned', 0, 'Male', 'unassigned', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'unassigned.name.dev@nullbyte.exe', '9876543210', 'unassigned', 0, 1, 0, 1),
 ('Admin', 78, 'Male', 'admin', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'administrator.admin.mgmt@nullbyte.exe', '2345678901', 'Admin', 0, 1, 0, 0),
+('Jesvi Jonathan', 22, 'Male', 'jesvi.jonathan', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'jesvi.jonathan.dev@nullbyte.exe', '7010493945', 'Development', 95, 3, 2, 2),
 ('Akileswar Prathapkumar', 22, 'Male', 'akileswar.prathapkumar', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'akileswar.prathapkumar.dev@nullbyte.exe', '8345678912', 'Development', 92, 2, 2, 2),
 ('Alice Smith', 30, 'Female', 'alice.smith', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'alice.smith.dev@nullbyte.com', '5678901234', 'Development', 85, 2, 1, 5),
 ('Bob Jhonson', 28, 'Male', 'bob.johnson', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'bob.johnson.dev@nullbyte.exe', '1234567891', 'Development', 90, 1, 2, 3),

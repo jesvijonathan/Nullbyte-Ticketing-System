@@ -24,8 +24,25 @@ if (!current_user.value) {
     }
 }
 
+const get_profile_url = document.baseMyURL + "/get_users";
+
+// {
+//     "closed_tickets": null,
+//     "email": "administrator.admin.mgmt@nullbyte.exe",
+//     "experience": 0,
+//     "gcm": 0,
+//     "id": 2,
+//     "manager": 1,
+//     "open_tickets": null,
+//     "phone": "2345678901",
+//     "role": "Admin",
+//     "score": 0,
+//     "team": null,
+//     "type": "employee"
+// }
+
 const profile = ref({
-    "name": "Jesvi Jonathan",
+    "name": "<your_name>",
     "username": "jesvi",
     "email": "jesvin@nullbyte.com",
     "phone": "1234567890",
@@ -33,14 +50,36 @@ const profile = ref({
     "score": "5",
     "experience": "7",
     "role": "Admin",
-    "department": "IT",
+    "department": "WLPFO",
     "Team": ["Titan", "Fulcrum", "Nullbyte"],
     "location": "Chennai",
     "status": "Active",
     "organization": "Nullbyte",
     "created": "2021-10-10",
-    "updated": "2021-10-10"
+    "updated": "2021-10-10",
+    "open_tickets": 1,
+    "closed_tickets": 9
 })
+
+
+onMounted(async () => {
+
+    const response = await fetch(get_profile_url);
+    const data = await response.json();
+    console.log('Profile:', data[current_user.value]);
+    Object.assign(profile.value, data[current_user.value]);
+})
+
+function downloadProfile() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(profile.value));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "profile.json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
 
 </script>
 
@@ -53,14 +92,14 @@ const profile = ref({
             <div class="prof_con">
                 <img src="https://img.icons8.com/?size=100&id=ckaioC1qqwCu&format=png&color=000000" alt="Avatar" style="width: 5vw; height: 5vw; border-radius: 50%;" />
                 <div class="prof_con_grp">
-                    <div class="prof_con_text">User Information</div>
+                    <div class="prof_con_text">User Information #{{profile.id}}</div>
                     <div class="prof_con_elem">
                         <label>Name</label>
                         <input v-model="profile.name" />
                     </div>
                     <div class="prof_con_elem">
                         <label>Username</label>
-                        <input v-model="profile.username" />
+                        <input v-model="current_user" />
                     </div>
                     <div class="prof_con_elem">
                         <label>Email</label>
@@ -116,6 +155,16 @@ const profile = ref({
                         <label>Organization</label>
                         <input v-model="profile.organization" />
                     </div>
+
+                    <div class="prof_con_elem">
+                        <label>Open Tickets</label>
+                        <input v-model="profile.open_tickets" type="number"/>
+                    </div>
+
+                    <div class="prof_con_elem">
+                        <label>Closed Tickets</label>
+                        <input v-model="profile.closed_tickets" type="number" />
+                    </div>
                 </div>
 
 
@@ -132,11 +181,11 @@ const profile = ref({
                     </div>
                     <br><br><br><br>
                     <div class="prof_con_elem">
-                        <button>Logout</button>
+                        <button @click="router.push('/logout')">Logout</button>
                         <button>Reset Account</button>
                         <button>Delete Profile</button>
                         <button>Save Profile</button>
-                        <button>Download</button>
+                        <button @click="downloadProfile">Download</button>
                     </div>
                 </div>
 
