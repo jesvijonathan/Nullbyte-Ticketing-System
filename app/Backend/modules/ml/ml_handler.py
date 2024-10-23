@@ -154,7 +154,7 @@ class ChatbotHandler:
         if sqlmode:
             print("\n\nresult starts here:")
             res=self.result
-            tid=BotAdmin().create_ticket(res)['id']
+            tid=BotAdmin().create_ticket(res)["id"]
             if[tid]:
                 self.result["ticket_id"]=str(tid)
             print(res)
@@ -163,7 +163,6 @@ class ChatbotHandler:
 
         print("oooooooooooooo")
         if dirmode:
-            # if self.result["ticket_id"]
             print(res)
             BotAdmin().create_ticket_dirmode(res)
 

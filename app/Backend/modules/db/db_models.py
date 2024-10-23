@@ -85,9 +85,9 @@ class Ticket(Base):
         if self.Issue_Type == None or self.Issue_Type == '':
             self.Issue_Type = 'issue'
             print(f"Issue Type set to: {self.Issue_Type}")
-        if not self.Subject or len(self.Subject) > 255:
+        if not self.Subject and not self.Description:
             print("Subject validation failed.")
-            return "Subject must be provided and less than 255 characters."
+            return "Subject or Description must be provided and less than 255 characters."
         if self.Status.lower() not in ["open", "progress", "closed", "reopened", "waiting for information"]:
             self.Status = 'open'
             print(f"Status set to: {self.Status}")

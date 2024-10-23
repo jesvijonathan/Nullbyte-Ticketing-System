@@ -91,6 +91,7 @@ def create_ticket(request):
     except Exception as e:
         db_session.rollback()
         logger.error(e)
+        print(e)
         return error_response(str(e), 500)
 
     folder_this = os.path.join(ticket_folder, ticket_id)
@@ -509,13 +510,9 @@ class BotAdmin:
                 if attachments_list:
                     attachment_count = 0
                     for attachment in attachments_list:
-                        binary_file_data = attachment['data']
-                        b_file_data = base64.b64decode(attachment['data'])
-                        filename, mime = parse_attachment(b_file_data, secure_filename(attachment['name']), folder_this)
-                        filename = filename
-                        file_path = os.path.join(folder_this, filename)
-                        attachments_list[attachment_count]['url'] = file_path
-                        attachments_list[attachment_count].pop('data')
+                        filename = attachments_list[attachment_count]['filename']
+                        # file_path = os.path.join(folder_this, filename)
+                        attachments_list[attachment_count]['url'] = attachments_list[attachment_count]['path']
                         attachment_count += 1
                         # attachments.append(file_path)
                 chat_file = os.path.join(folder_this, "data.json")
