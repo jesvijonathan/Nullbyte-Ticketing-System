@@ -51,11 +51,10 @@ DATABASE_NAME = os.getenv("DATABASE_NAME", "nullbyte")
 DATABASE_URL = f"mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 
 
-
-db_add_closed_chat = False
 sqlmode= True
 dirmode=True
 useCloudSql = False
+enable_jira = False
 baseMyURL = "http://localhost:5000"
 
 
@@ -189,7 +188,6 @@ if os.name == 'nt':
 
 
 # Jira Configs
-enable_jira = True
 JIRA_CRED = dict({
     'server':  os.getenv("JIRA_SERVER", '<server url>'),
     'token': os.getenv("JIRA_SERVER_TOKEN", '<jira token>')
