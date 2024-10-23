@@ -265,7 +265,7 @@ const submitForm = async () => {
             <BreadCrumb :data="bread_path_json" />
 
             <div class="tile-container ">
-                <h1 class="main_title">Create Ticket<div class="ticket_id">{{ ticket_data.ticket_id }}</div></h1>
+                <h1 class="main_title">Create Ticket<div class="ticket_id">SVC-{{ ticket_data.ticket_id }}</div></h1>
                 <div class="creat_form_cont">
                     <div class="input_cont_2 attach_cont">
 
