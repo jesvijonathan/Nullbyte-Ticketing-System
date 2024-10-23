@@ -18,8 +18,7 @@ const props = defineProps({
 });
 
 
-// const loggs = computed(() => props.logged_hrs);
-const loggs = computed(() => props.logged_hrs);
+const loggs = computed(() => props.logged_hrs || []);
 const estimated_hrs = computed(() => props.estimated_hrs);
 let esthours = ref(0);
 
@@ -62,7 +61,7 @@ watchEffect(() => {
         esthours.value = estimated_hrs.value;
     }
 
-    if (loggs.value.length === 0) {
+    if (loggs.value && loggs.value.length === 0) {
         loggs.value.push({
             user: user,
             logged: "0",

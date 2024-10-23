@@ -41,12 +41,10 @@ def authenticate():
             print(users_data[user], user)
             user_data = users_data[user]
             if user_data['email'].lower() == username.lower():
-                print("llooooggign", user_data['email'].lower(), username)
                 payload = {'username': user.lower(), 'ou': [user_data['type']], 'upn': user.lower()}
                 username = user.lower()
                 logedd = True
-            elif user == username:
-                print("llooooggign", user_data['username'], username)
+            elif user.lower() == username.lower():
                 payload = {'username': user.lower(), 'ou': [user_data['type']], 'upn': user.lower()}
                 logedd = True
         if not logedd:
