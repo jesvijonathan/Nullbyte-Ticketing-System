@@ -208,6 +208,7 @@ function autoExpand(event) {
 
 // Reactive attachment list
 const attachments = ref([]);
+const newAttachments = ref([]);
 // get attachments from ticket_data.attachments
 // attachments.value = ticket_data.value.attachments;
 // example : 
@@ -272,6 +273,22 @@ const handleFileChange = (event) => {
         details: null
 
     }));
+    loading.value = true;
+    const files = Array.from(event.target.files);
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            attachments.value.push({
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                data: btoa(e.target.result)
+            });
+        };
+        reader.readAsDataURL(file); // or reader.readAsArrayBuffer(file) if needed
+    });
+    event.target.value = '';
+    loading.value = false;
 
     attachments.value = [...attachments.value, ...newAttachments];
     check_padd();
@@ -342,6 +359,7 @@ function total_logged_hrs() {
 
 
 import { useCookies } from 'vue3-cookies';
+import { reach } from 'yup';
 const { cookies } = useCookies();
 const current_user = cookies.get('user');
 
@@ -416,7 +434,25 @@ function update_ticket() {
 // https://github.com/jesvijonathan/Nullbyte-Ticketing-System/pull/4
 let gitlab = "";
 
-
+function handle_jira() {
+    // request /jira/<ticket_id>
+        console.log('ticket_data.value:', ticket_data.value);
+        fetch(document.baseMyURL + `/jira/create_issue`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ticket_data.value),
+    })
+        .then(response => response.json())
+        .then(data => {
+            window.location.href=data.url;
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error moving ticket to Jira');
+        });
+}
 function updateAssignee(event){
     ticket_data.value.assignee = event;
     show_employee_menu.value = false;
@@ -628,7 +664,7 @@ const show_employee_menu = ref(false);
 
 
                                 <div class="input_cont_2 but_con al_but">
-                                    <button class="btn jira">Move To Jira</button>
+                                    <button class="btn jira" @click="handle_jira">Move To Jira</button>
                                     <button class="btn_cancel save" @click="update_ticket">
                                         <img src="https://img.icons8.com/ios/50/000000/save.png">
                                     </button>

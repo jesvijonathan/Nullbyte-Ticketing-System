@@ -15,9 +15,12 @@ jira = JIRA(server=JIRA_CRED['server'],token_auth=JIRA_CRED['token'])
 
 class IssueType(Enum):
     BUG = "Bug"
+    FEATURE = "Story"
+    SUPPORT = "Task"
     TASK = "Task"
     STORY = "Story"
     EPIC = "Epic"
+    ISSUE = "Task"
 
 class Priority(Enum):
     HIGHEST = "Highest"
@@ -132,6 +135,9 @@ class JiraIntegration:
         issues = self.jira.search_issues(jql_query, maxResults=5)
         return [(issue.key, issue.fields.summary) for issue in issues]
 
+    def geturlfromIssue(self,issue_key):
+        issue = self.jira.issue(issue_key)
+        return issue.permalink()
 jira_integration = JiraIntegration(jira)
 jiraint=Blueprint('jira',__name__)
 @jiraint.route('/get_projects',methods=['GET'])
@@ -139,16 +145,15 @@ def get_projects():
     return jira_integration.get_projects()
 @jiraint.route('/create_issue',methods=['POST'])
 def create_issue():
-    project = request.json.get('project') if 'project' in request.json else 'NULL'
-    summary = request.json.get('summary')
-    description = request.json.get('description')
-    if description is None:
-        description = ""
-    issuetype = IssueType[request.json.get('issue_type').upper()]
-    priority = Priority[request.json.get('priority').upper()]
+    print(request.json)
+    project = request.json.get('project', 'NULL')
+    summary = request.json.get('subject', '')
+    description = f"{request.json.get('summary', '')}\n{request.json.get('description', '')}"
+    issuetype = IssueType[request.json.get('issue_type', 'TASK').upper() if request.json.get('issue_type') else 'TASK']
+    priority = Priority[request.json.get('priority', 'LOWEST').upper() if request.json.get('priority') else 'LOWEST']
     issue = jira_integration.create_issue(project, summary, description, issuetype, priority)
-    assignee = request.json.get('assignee')
-    reporter = request.json.get('reporter')
+    assignee = request.json.get('assignee', '')
+    reporter = request.json.get('reporter', '')
     attachment = request.json.get('attachments')
     if attachment:
         jira_integration.process_attachment(issue.key, attachment)
@@ -156,7 +161,9 @@ def create_issue():
         jira_integration.assign_issue(issue.key, assignee=assignee)
     if reporter:
         jira_integration.assign_issue(issue.key, reporter=reporter)
-    return issue.key
+    url=jira_integration.geturlfromIssue(issue.key)
+    # redirect(url)
+    return make_response(jsonify({'issue_key': issue.key,'url':url}), 200)
 @jiraint.get('/get_similar_issues')
 def get_similar_issues():
     keyword = request.args.get('keyword')
