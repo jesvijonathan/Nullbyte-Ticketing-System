@@ -389,6 +389,10 @@ def import_tickets():
     })
 
 
+@app.route('/changes_test', methods=['GET'])
+def changes_test(user_id):
+    if not user_id:
+        user_id = request.args.get('oh_my_gawd') 
 
 
 @app.route('/sync_bucket')

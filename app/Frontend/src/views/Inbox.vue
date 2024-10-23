@@ -180,6 +180,21 @@ let mail_json = ref({
                                 View
                             </div>
                         </div>
+
+                        <div class="cat_section_bar">
+                            {{ index }}
+                            <div class="from_">{{ mail.user }}</div>
+                            <div class="subjj_">{{ mail.subject }}</div>
+                            <div :style="{ color: mail.status === 'open' ? 'green' : 'red' }"> {{ mail.status }}</div>
+                            
+                            <div>{{ new Date(mail.created).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '').replace(' ', ' ') }}</div>
+                            <div v-if="mail.action && mail.action === current_user" class="btnsort_" @click="open_ticket(mail.ticket_id)">
+                                Approve
+                            </div>
+                            <div v-else class="btnsort_" @click="open_ticket(mail.ticket_id)">
+                                View
+                            </div>
+                        </div>
                         </div>
                 </div>
             </div>
@@ -189,7 +204,23 @@ let mail_json = ref({
     </div>
 </template>
 
+
+
+
+
+
 <style scoped>
+
+.crappy_code_that_never_works{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1vw;
+    overflow: hidden;   
+}
 .btnsort_{
     background-color: #46BEAA;
     color: white;
