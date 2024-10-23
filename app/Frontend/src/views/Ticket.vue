@@ -9,6 +9,7 @@ import { useRoute } from 'vue-router';
 import Sla from '@/components/Sla.vue';
 import Activity from '@/components/Activity.vue';
 import PullRequestDetails from '@/components/PullRequestDetails.vue';
+import GetEmployees from '@/components/GetEmployees.vue';
 
 const urlParams = new URLSearchParams(window.location.search);
 let ticket_id = urlParams.get('id');
@@ -21,7 +22,7 @@ if (!ticket_id) {
 let service_tag = "SVC-";
 
 
-function service_tag_assign(){
+function service_tag_assign() {
     // add logix here later
 }
 
@@ -114,6 +115,11 @@ onMounted(() => {
     // }
 
     extract_links();
+    setTimeout(() => {
+        autoExpand({ target: document.getElementById('desc_te') });
+        autoExpand({ target: document.getElementById('summary_te') });
+        autoExpand({ target: document.getElementById('analysis') });
+    }, 500);
     // sla_json_data.value.estimated = ticket_data.value.estimation;
 });
 
@@ -407,6 +413,17 @@ function update_ticket() {
 }
 // https://github.com/jesvijonathan/Nullbyte-Ticketing-System/pull/4
 let gitlab = "";
+
+
+function updateAssignee(event){
+    ticket_data.value.assignee = event;
+    show_employee_menu.value = false;
+}
+function close_me(){
+    show_employee_menu = false
+}
+const show_employee_menu = ref(false);
+
 </script>
 
 
@@ -419,8 +436,8 @@ let gitlab = "";
         <div class="main-pane">
             <BreadCrumb :data="bread_path_json" />
             <div class="tile-container ">
-                <h1 class="main_title">{{service_tag}}{{ ticket_data.ticket_id }}:<div class="ticket_id"> <input class="subject_edit"
-                            type="text" v-model="ticket_data.subject"
+                <h1 class="main_title">{{ service_tag }}{{ ticket_data.ticket_id }}:<div class="ticket_id"> <input
+                            class="subject_edit" type="text" v-model="ticket_data.subject"
                             :class="{ 'inp_desc_none': !ticket_data.subject }">
                     </div>
                 </h1>
@@ -476,7 +493,9 @@ let gitlab = "";
                             <div>Assigned To&nbsp;&nbsp;:</div>&nbsp;
                             <input type="text" placeholder="Add Username" class="input_field drop_inpt drop_input_tex"
                                 id="assignee" v-model="ticket_data.assignee"
-                                :class="{ 'inp_desc_none': !ticket_data.assignee }">
+                                :class="{ 'inp_desc_none': !ticket_data.assignee }" @focus="show_employee_menu = true"  @blur="close_me()" autocomplete="off">
+                                <GetEmployees sty="width: 20vw;" :cur_text="ticket_data.assignee" @select="updateAssignee($event)
+                                " v-if="show_employee_menu"/>
                         </div>
                     </div>
                     <hv></hv>
@@ -566,11 +585,11 @@ let gitlab = "";
                             </div>
                         </div>
 
-                        <div class="input_cont con_spl" >
-                        <div v-if="gitlab" class="git_lab"> 
-                            <label for="links" class="inpt_desc_lab">Gitlab Analyzer</label>
-                            <PullRequestDetails :pr="gitlab" />
-                        </div>
+                        <div class="input_cont con_spl">
+                            <div v-if="gitlab" class="git_lab">
+                                <label for="links" class="inpt_desc_lab">Gitlab Analyzer</label>
+                                <PullRequestDetails :pr="gitlab" />
+                            </div>
                         </div>
 
 
@@ -656,9 +675,10 @@ let gitlab = "";
 </template>
 
 <style scoped>
-.git_lab{
-    margin-top: 1vw; 
+.git_lab {
+    margin-top: 1vw;
 }
+
 vv {
     width: 20vw;
     height: 0.1vw;
