@@ -59,6 +59,7 @@ class OllamaChat:
                     
                     if 'message' in response_data and 'content' in response_data['message']:
                         self.context.append(response_data) 
+                        print("%%%%%%%%%%%%%% : ", str(response.json()))
                         return response_data['message']['content']  
                     else:
                         error_message = "Response format is unexpected."
