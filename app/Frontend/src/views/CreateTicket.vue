@@ -6,6 +6,7 @@ import SidePane from '@/components/SidePane.vue';
 import LoaderToast from '@/components/LoaderToast.vue';
 import AiLoaderToast from '@/components/AiLoaderToast.vue';
 import { faLeaf } from '@fortawesome/free-solid-svg-icons';
+import GetEmployees from '@/components/GetEmployees.vue';
 
 import { useRouter } from 'vue-router';
 
@@ -252,6 +253,16 @@ const submitForm = async () => {
 //     }
 // };
 
+
+function updateAssignee(event){
+    ticket_data.value.assignee = event;
+    show_employee_menu.value = false;
+}
+function close_me(){
+    show_employee_menu = false
+}
+const show_employee_menu = ref(false);
+
 </script>
 
 <template>
@@ -265,7 +276,7 @@ const submitForm = async () => {
             <BreadCrumb :data="bread_path_json" />
 
             <div class="tile-container ">
-                <h1 class="main_title">Create Ticket<div class="ticket_id">{{ ticket_data.ticket_id }}</div></h1>
+                <h1 class="main_title">Create Ticket<div class="ticket_id">SVC-{{ ticket_data.ticket_id }}</div></h1>
                 <div class="creat_form_cont">
                     <div class="input_cont_2 attach_cont">
 
@@ -315,7 +326,15 @@ const submitForm = async () => {
                             <div class="input_cont">
                                 <label for="assignee">Assigned To</label>
                                 <input type="text" placeholder="Enter the name of the person" class="input_field"
-                                    id="assignee" v-model="ticket_data.assignee">
+                                    id="assignee" v-model="ticket_data.assignee" @focus="show_employee_menu = true"  @blur="close_me()" autocomplete="off">
+                                <GetEmployees :cur_text="ticket_data.assignee" @select="updateAssignee($event)" 
+                                :tot="false"
+                                :style="{
+                                    left: '67vw',
+                                    top: '60vh',
+                                    width: '23vw'
+                                }"
+                                v-if="show_employee_menu"/>
                             </div>
                         </div>
 
