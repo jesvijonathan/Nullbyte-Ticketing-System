@@ -5,9 +5,9 @@
     @mouseover="isHovered = true"
     @mouseleave="isHovered = false"
   >
-    <div v-if="!isExpanded" class="ticket">{{ ticket.ticket_id }} : {{ ticket.subject }}</div>
+    <div v-if="!isExpanded" class="ticket">SVC-{{ ticket.ticket_id }} : {{ ticket.subject }}</div>
     <div v-if="isExpanded" class="ticket-details">
-      <div class="detail"><span class="ticket_name_det">{{ ticket.ticket_id }} : {{ ticket.subject }}</span></div>
+      <div class="detail"><span class="ticket_name_det">svc-{{ ticket.ticket_id }} : {{ ticket.subject }}</span></div>
       <hr class="splitter" />
       <div class="detail">
         <span class="label">Date</span>

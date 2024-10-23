@@ -199,7 +199,7 @@ function getStoryPointsColor(story_points) {
                             <tr v-for="(ticket, index) in ticket_data" :key="ticket.ticket_id"
                                 @click="open_ticket(ticket.ticket_id)">
                                 <td>{{ index + 1 }}</td>
-                                <td>{{ ticket.ticket_id }}</td>
+                                <td>SVC-{{ ticket.ticket_id }}</td>
                                 <td class="td_subdes"><a class="subdes">{{ ticket.subject || ticket.text }}</a>
                                 </td>
                                 <td :style="{ color: getPriorityColor(ticket.priority) }">{{ ticket.priority }}</td>

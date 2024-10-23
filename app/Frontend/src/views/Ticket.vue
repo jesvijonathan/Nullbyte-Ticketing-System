@@ -18,10 +18,17 @@ if (!ticket_id) {
     ticket_id = route.params.id;
 }
 
+let service_tag = "SVC-";
+
+
+function service_tag_assign(){
+    // add logix here later
+}
+
 let bread_path_json = {
     "NULLBYTE": "/",
     "TICKETS": "/tickets",
-    [`${ticket_id}`]: "/ticket?id=${ticket_id}",
+    [`${service_tag}${ticket_id}`]: "/ticket?id=${ticket_id}",
 };
 
 // const attachments = ref([]);
@@ -171,6 +178,8 @@ const reset_form = () => {
         "logged_hrs": []
     };
 
+    service_tag = "SVC-";
+
     attachments.value = [];
     loading.value = false;
 };
@@ -190,7 +199,6 @@ function autoExpand(event) {
     }
 
 }
-
 
 // Reactive attachment list
 const attachments = ref([]);
@@ -411,7 +419,7 @@ let gitlab = "";
         <div class="main-pane">
             <BreadCrumb :data="bread_path_json" />
             <div class="tile-container ">
-                <h1 class="main_title">{{ ticket_data.ticket_id }}:<div class="ticket_id"> <input class="subject_edit"
+                <h1 class="main_title">{{service_tag}}{{ ticket_data.ticket_id }}:<div class="ticket_id"> <input class="subject_edit"
                             type="text" v-model="ticket_data.subject"
                             :class="{ 'inp_desc_none': !ticket_data.subject }">
                     </div>
