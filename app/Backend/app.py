@@ -10,7 +10,7 @@ import json
 from modules.mailbot.mailbot import MailBot
 from modules.auth.auth import auth_ldap, jwt_required, cleanup_user
 from modules.text import text
-from modules.ml.ml_handler import ChatbotHandler, create_jsonl
+from modules.ml.ml_handler import ChatbotHandler, create_jsonl, eval_ticket_employee
 from modules.ticket import create_ticket, modify_fields,ticket,delete_ticket as delete_ticket_sql, get_ticket as get_ticket_sql,get_all_tickets
 from config import *
 from modules.log import *
@@ -171,6 +171,13 @@ def get_customer():
 def get_users():
     return db_models.get_all_users()
 
+@app.route('/eval_ticket', methods=['GET'])
+def eval_ticket():
+    ticket = request.json
+    result = eval_ticket_employee(ticket)
+    return jsonify(result)
+    
+
 
 @app.route('/get_incomplete_ticket', methods=['GET'])
 def get_incomplete_ticket():
@@ -246,13 +253,16 @@ def handle_ticket_creation():
     result=None
     if sqlmode:
         result = create_ticket(request)
+        print("@@@@@@@@@@@@@@! : ",result)
     if dirmode:
-        print("@@@\n\n\n\n")
-        print(result)
         try:
             result = result.get_json()
         except AttributeError:
-            pass 
+            try:
+                result = json.loads(result)
+            except json.JSONDecodeError:
+                pass
+        print("\n\n\n", result, "\n\n\n")
         if result is not None and 'ticket_id' in result:
             result = text_form(request, result['ticket_id'])
         else:
