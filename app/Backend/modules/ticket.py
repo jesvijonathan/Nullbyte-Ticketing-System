@@ -247,18 +247,23 @@ def prepare_new_ticket_data(request_data, comments):
     # admin
     print(request_data.get("user"))
     all_users = get_all_users()
-    print("\n\n", all_users[request_data.get("user")], "\n\n")
-    if request_data.get("user") in all_users:
-        customer_id = all_users[request_data.get("user")]["id"]
-    else:
-        customer_id = 1
 
-    if request_data.get("assignee") in all_users:
-        assignee_id = all_users[request_data.get("assignee")]["id"]
-    else:
-        assignee_id = 1
+    customer_id = None
+    assignee_id = None
 
-    print( assignee_id , " : ", customer_id)
+
+    # print("\n\n", all_users[request_data.get("user")], "\n\n")
+    # if request_data.get("user") in all_users:
+    #     customer_id = all_users[request_data.get("user")]["id"]
+    # else:
+    #     customer_id = 1
+
+    # if request_data.get("assignee") in all_users:
+    #     assignee_id = all_users[request_data.get("assignee")]["id"]
+    # else:
+    #     assignee_id = 1
+
+    # print( assignee_id , " : ", customer_id)
 
     return {
         "Chat_Id": request_data.get("chat_id"),
@@ -271,9 +276,9 @@ def prepare_new_ticket_data(request_data, comments):
         "Issue_Type": request_data.get("issue_type"),
         "Channel": request_data.get("medium"),
         "Customer_Username": request_data.get("user"),
-        "Customer_ID": customer_id,
+        "Customer_ID": customer_id or random.randint(1, 10),
         "Product_Type": request_data.get("product_type"),
-        "Assignee_ID": assignee_id,
+        "Assignee_ID": assignee_id or random.randint(1, 10),
         "Assignee_Username": request_data.get("assignee"),
         "LastModified": datetime.datetime.now().isoformat(),
         "Estimation": request_data.get("estimation"),
@@ -369,6 +374,7 @@ def modify_fields(request):
             ticket.Score = body["score"]
         
         if 'comments' in request.json:
+            print(request.json.get('user'))
             comments = handle_comments(request.json['comments'], request.json.get('user'),ticket_no)
 
         if 'logged_hrs' in request.json:

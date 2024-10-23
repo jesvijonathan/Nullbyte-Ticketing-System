@@ -393,6 +393,7 @@ let update_url = document.baseMyURL + "/update_ticket";
 
 function update_ticket() {
     // request /update_ticket
+    loading.value = true;
     console.log(ticket_data.value)
     fetch(update_url, {
         method: 'POST',
@@ -404,11 +405,12 @@ function update_ticket() {
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
-            alert('Ticket updated successfully');
         })
         .catch((error) => {
             console.error('Error:', error);
             alert('Error updating ticket');
+        }).finally(() => {
+            loading.value = false;
         });
 }
 // https://github.com/jesvijonathan/Nullbyte-Ticketing-System/pull/4

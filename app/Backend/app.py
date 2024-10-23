@@ -248,9 +248,12 @@ def handle_ticket_creation():
     if dirmode:
         print("@@@\n\n\n\n")
         print(result)
-        result=json.loads(result)
-        if result is not  None and result['ticket_id']:
-            result = text_form(request,result['ticket_id'])
+        try:
+            result = result.get_json()
+        except AttributeError:
+            pass 
+        if result is not None and 'ticket_id' in result:
+            result = text_form(request, result['ticket_id'])
         else:
             result = text_form(request)
     return result
