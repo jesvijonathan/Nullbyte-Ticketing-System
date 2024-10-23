@@ -2,6 +2,7 @@ from config import *
 from sqlalchemy import Column, Integer, String, Text, Enum, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
+import bcrypt
 from .database import Base, db_session
 from modules.log import *
 
@@ -326,3 +327,45 @@ class AuthView(Base):
     phone = Column(String)
     role = Column(String)
     user_type = Column(String)
+
+    def serialize(self, keys=None):
+        data = {
+            'user_id': self.user_id,
+            'name': self.name,
+            'username': self.username,
+            'password': self.password,
+            'email': self.email,
+            'phone': self.phone,
+            'role': self.role,
+            'user_type': self.user_type
+        }
+        
+        if keys:
+            return {key: data[key] for key in keys if key in data}
+        return data
+    def validate_password(self,password):
+        #convert password to bcrypt hash and check if it matches the stored hash
+        # bcrypt_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        bcrypt_hash = self.password.encode('utf-8')
+        return bcrypt.checkpw(password.encode('utf-8'), bcrypt_hash)
+        return self.password == password
+    def get_user_type(self):
+        return self.user_type
+    def get_user(self, email):
+        return db_session.query(AuthView).filter_by(email=email).first()
+    def change_password(self, email, password):
+        try:
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            
+            user = db_session.query(AuthView).filter_by(email=email).first()
+            if user.user_type == 'employee':
+                db_session.query(Employee).filter_by(email=email).update({'password': hashed_password})
+            elif user.user_type == 'customer':
+                db_session.query(Customer).filter_by(email=email).update({'password': hashed_password})
+            
+            db_session.commit()
+            return True
+        except Exception as e:
+            db_session.rollback()
+            logger.error(f"Error changing password: {e}")
+            return False

@@ -6,6 +6,7 @@ from .ldap_wrapper import Lwrapper
 from modules.log import *
 from config import *
 # from flask import session
+from modules.db.db_models import AuthView
 
 auth_ldap = Blueprint('auth', __name__)
 lwrapper=Lwrapper()
@@ -27,8 +28,9 @@ def authenticate():
 
     logger.info(f"Authenticating user: {username}")
 
-    if username == ADMIN_CRED['username'] and password == ADMIN_CRED['password']:
-        payload = {'username': ADMIN_CRED['username'], 'ou': [], 'upn': 'administrator@nullbyte.exe'}
+    emptype= normal_auth(username, password)
+    if emptype:
+        payload = {'username': ADMIN_CRED['username'], 'ou': [emptype], 'upn': username}
     elif username == ADMIN_CRED_2['username'] and password == ADMIN_CRED_2['password']:
         payload = {'username': ADMIN_CRED_2['username'], 'ou': [], 'upn': 'nig@nullbyte.exe'}
     elif lwrapper.Authenticate(username, password):
@@ -115,3 +117,14 @@ def list_users():
     except Exception as e:
         print(f"Error while listing users: {str(e)}")
         return jsonify({'error': str(e)}), 500
+    
+
+def normal_auth(email, password):
+    user = AuthView().get_user(email)
+    print(user)
+    if user is not None and user.validate_password(password):
+        print(user.get_user_type())
+        return user.get_user_type()
+    else:
+        return False
+    
