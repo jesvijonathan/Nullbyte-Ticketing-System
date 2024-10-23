@@ -5,7 +5,6 @@ import { onMounted, ref } from 'vue';
 import SidePane from '@/components/SidePane.vue';
 import LoaderToast from '@/components/LoaderToast.vue';
 import { faLeaf } from '@fortawesome/free-solid-svg-icons';
-
 import { useCookies } from 'vue3-cookies';
 
 let bread_path_json = {

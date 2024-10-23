@@ -5,7 +5,6 @@ import { onMounted, ref } from 'vue';
 import SidePane from '@/components/SidePane.vue';
 import LoaderToast from '@/components/LoaderToast.vue';
 import { faLeaf } from '@fortawesome/free-solid-svg-icons';
-
 import { useCookies } from 'vue3-cookies';
 
 let bread_path_json = {
@@ -148,6 +147,8 @@ let mail_json = ref({
     }
 })
 
+
+
 </script>
 
 
@@ -159,7 +160,6 @@ let mail_json = ref({
         <SidePane />
         <div class="main-pane">
             <BreadCrumb :data="bread_path_json" />
-            
             <div class="tile-container">
                 <h1 class="main_title">Mail Inbox<div class="ticket_id">{{ ticket_data.ticket_id }}</div>
                 </h1>

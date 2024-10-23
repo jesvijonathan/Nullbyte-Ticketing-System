@@ -397,8 +397,6 @@ def import_tickets():
     })
 
 
-
-
 @app.route('/sync_bucket')
 def sync_bucket():
     get_jsonl()

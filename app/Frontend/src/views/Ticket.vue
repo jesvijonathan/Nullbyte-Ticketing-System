@@ -8,6 +8,7 @@ import { faLeaf } from '@fortawesome/free-solid-svg-icons';
 import { useRoute } from 'vue-router';
 import Sla from '@/components/Sla.vue';
 import Activity from '@/components/Activity.vue';
+import PullRequestDetails from '@/components/PullRequestDetails.vue';
 
 const urlParams = new URLSearchParams(window.location.search);
 let ticket_id = urlParams.get('id');
@@ -129,10 +130,9 @@ const autoFill = async () => {
 
         const data = await response.json();
         console.log("Ticket data fetched successfully:", data);
-        console.log('before assignment',ticket_data.value)
-        ticket_data.value=data;
-        // Assign the fetched data
-        console.log('after assignment',ticket_data.value)
+        console.log('before assignment', ticket_data.value)
+        ticket_data.value = data;
+        console.log('after assignment', ticket_data.value)
 
         get_attachments_from_data();  // Process attachments
         extract_links();  // Extract links if needed
@@ -278,8 +278,9 @@ let links = ref([]);
 
 function extract_links() {
     const text = ticket_data.value.text;
+    console.log('text:', text);
     const summary = ticket_data.value.summary;
-    const comments = ticket_data.value.comments;
+    const comments = ticket_data.value.comments || [];
     const linksArray = [];
     const link_pattern = /((http|https):\/\/[^\s]+|www\.[^\s]+)/g;
     if (text) {
@@ -294,7 +295,21 @@ function extract_links() {
             linksArray.push(...(comment.text.match(link_pattern) || []));
         }
     });
+
+    let count = 0;
     links.value = [...new Set(linksArray)];
+    links.value.forEach(link => {
+        // https://github.com/jesvijonathan/Nullbyte-Ticketing-System/pull/4
+        console.log('link:', link);
+        if (link.includes('github.com')) {
+            count++;
+            gitlab = link.replace('github.com', 'gitlab.com');
+        }
+    });
+
+    if (count == 0) {
+        gitlab = "";
+    }
 }
 
 let sla_json_data = ref({
@@ -337,9 +352,9 @@ const handleAddComment = (newCommentText) => {
 };
 
 
-function handle_delete(){
+function handle_delete() {
     // request /delete/<ticket_id>
-    
+
     fetch(document.baseMyURL + `/delete/${ticket_id}`, {
         method: 'DELETE',
         headers: {
@@ -356,13 +371,13 @@ function handle_delete(){
             console.error('Error:', error);
             alert('Error deleting ticket');
         });
-    
+
 }
 
-let update_url=document.baseMyURL+ "/update_ticket";
+let update_url = document.baseMyURL + "/update_ticket";
 
 
-function update_ticket(){
+function update_ticket() {
     // request /update_ticket
     console.log(ticket_data.value)
     fetch(update_url, {
@@ -382,7 +397,8 @@ function update_ticket(){
             alert('Error updating ticket');
         });
 }
-
+// https://github.com/jesvijonathan/Nullbyte-Ticketing-System/pull/4
+let gitlab = "";
 </script>
 
 
@@ -394,7 +410,6 @@ function update_ticket(){
         <SidePane />
         <div class="main-pane">
             <BreadCrumb :data="bread_path_json" />
-
             <div class="tile-container ">
                 <h1 class="main_title">{{ ticket_data.ticket_id }}:<div class="ticket_id"> <input class="subject_edit"
                             type="text" v-model="ticket_data.subject"
@@ -497,10 +512,10 @@ function update_ticket(){
             </textarea>
                         </div>
 
-                        <div class="input_cont con_spl" >
+                        <div class="input_cont con_spl">
                             <label for="summary_te" class="inpt_desc_lab">Analysis</label>
-                            <textarea placeholder="Enter your Analysis or Solution" class="input_field inp_desc" id="analysis"
-                                v-model="ticket_data.analysis" @input="autoExpand">
+                            <textarea placeholder="Enter your Analysis or Solution" class="input_field inp_desc"
+                                id="analysis" v-model="ticket_data.analysis" @input="autoExpand">
             </textarea>
                         </div>
 
@@ -542,6 +557,15 @@ function update_ticket(){
                                     }}</a>
                             </div>
                         </div>
+
+                        <div class="input_cont con_spl" >
+                        <div v-if="gitlab" class="git_lab"> 
+                            <label for="links" class="inpt_desc_lab">Gitlab Analyzer</label>
+                            <PullRequestDetails :pr="gitlab" />
+                        </div>
+                        </div>
+
+
 
 
                         <div class="creat_form_cont">
@@ -624,6 +648,9 @@ function update_ticket(){
 </template>
 
 <style scoped>
+.git_lab{
+    margin-top: 1vw; 
+}
 vv {
     width: 20vw;
     height: 0.1vw;
@@ -1523,16 +1550,19 @@ textarea:disabled {
     outline: none;
     border-bottom: 0.1vw solid #46BEAA;
 }
-.save{
+
+.save {
     background-color: rgb(188, 89, 89);
 }
-.jira{
+
+.jira {
     filter: invert(0);
     background-color: rgba(71, 165, 71, 0);
     border: 0.1vw solid #46BEAA;
     color: #000000;
 }
-.jira:hover{
+
+.jira:hover {
     background-color: #46BEAA;
     color: white;
 }
