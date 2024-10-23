@@ -493,6 +493,47 @@ function eval_assignee(){
 }
 
 
+const enhance_text_url = document.baseMyURL + "/text/enhance_text";
+
+function enhance_text(inp_elem) {
+    using_ai.value = true;
+    const str_text = document.getElementById(inp_elem).value;
+    console.log('str_text:', str_text);
+    fetch(enhance_text_url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ "to_enhance_string": str_text }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data.result);
+            // Update the Vue data model (ticket_data.text) instead of directly manipulating the DOM
+            if (data.result) {
+                if (inp_elem == 'desc_te') {
+                    ticket_data.value.text = data.result;
+                } else if (inp_elem == 'summary_te') {
+                    ticket_data.value.summary = data.result;
+                } else if (inp_elem == 'analysis') {
+                    ticket_data.value.analysis = data.result;
+                }
+                autoExpand({ target: document.getElementById(inp_elem) }); 
+            } else {
+                alert('Error enhancing text: ' + data.error);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error enhancing text');
+        }).finally(() => {
+            using_ai.value = false;
+        });
+}
+
+
+
+
 const using_ai = ref(false);
 
 </script>
@@ -601,7 +642,11 @@ const using_ai = ref(false);
                 <div class="both_tog">
                     <div class="first_part">
                         <div class="input_cont">
-                            <label for="desc_te" class="inpt_desc_lab">Description</label>
+                            <label for="desc_te" class="inpt_desc_lab" @click="enhance_text('desc_te')">Description                                
+                                <div class="class_ai_2" @click="eval_assignee()" title="Click to Enhance using AI">
+                                    <!-- add an star/sparkle image -->
+                                    <!-- <img src="https://img.icons8.com/?size=100&id=99559&format=png&color=000000" /> -->
+                                </div></label>
                             <textarea placeholder="Enter your name" class="input_field inp_desc"
                                 :class="{ 'inp_desc_none': !ticket_data.text }" id="desc_te" v-model="ticket_data.text"
                                 @input="autoExpand($event); extract_links()">
@@ -609,21 +654,21 @@ const using_ai = ref(false);
                         </div>
 
                         <div class="input_cont con_spl" v-if="ticket_data.summary">
-                            <label for="summary_te" class="inpt_desc_lab">Summary</label>
+                            <label for="summary_te" class="inpt_desc_lab" title="Click to Enhance using AI" @click="enhance_text('summary_te')">Summary</label>
                             <textarea placeholder="Enter Summary" class="input_field inp_desc" id="summary_te"
                                 v-model="ticket_data.summary" @input="autoExpand" readonly disabled>
             </textarea>
                         </div>
 
                         <div class="input_cont con_spl">
-                            <label for="summary_te" class="inpt_desc_lab">Analysis</label>
+                            <label for="summary_te" class="inpt_desc_lab" title="Click to Enhance using AI" @click="enhance_text('analysis')">Analysis</label>
                             <textarea placeholder="Enter your Analysis or Solution" class="input_field inp_desc"
                                 id="analysis" v-model="ticket_data.analysis" @input="autoExpand">
             </textarea>
                         </div>
 
                         <div class="input_cont con_spl">
-                            <label for="title" class="inpt_desc_lab">Attachments</label>
+                            <label for="title" class="inpt_desc_lab" @click="enhance_text">Attachments</label>
                             <div class="input_cont attach_cont_files">
                                 <div class="input_cont attach_cont">
                                     <input type="file" class="input_field att" id="attachments"
@@ -768,6 +813,19 @@ const using_ai = ref(false);
     transform: scale(0.2);
     background-color: #393939;
     opacity: 1;
+}
+.class_ai_2{   
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.16);
+    width: 0vw;
+    margin-left: 10vw;
+    position: absolute;
+    cursor: pointer;
+    opacity: 0.2;
+    top: 35vh
+    /* top: 18.7vw; */
 }
 .git_lab {
     margin-top: 1vw;
@@ -1402,6 +1460,11 @@ hv {
     font-family: wl2;
     color: #393939;
     margin-top: 0.5vw;
+    cursor: pointer;
+}
+.inpt_desc_lab:hover {
+    color: #46BEAA;
+    text-decoration: underline;
 }
 
 .both_tog {
