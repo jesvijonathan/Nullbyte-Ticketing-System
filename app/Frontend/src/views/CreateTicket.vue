@@ -332,7 +332,7 @@ const show_employee_menu = ref(false);
                                 :style="{
                                     left: '67vw',
                                     top: '60vh',
-                                    width: '23vw'
+                                    width: '23vw',
                                 }"
                                 v-if="show_employee_menu"/>
                             </div>
