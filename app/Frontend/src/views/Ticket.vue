@@ -10,6 +10,7 @@ import Sla from '@/components/Sla.vue';
 import Activity from '@/components/Activity.vue';
 import PullRequestDetails from '@/components/PullRequestDetails.vue';
 import GetEmployees from '@/components/GetEmployees.vue';
+import AiLoaderToast from '@/components/AiLoaderToast.vue';
 
 const urlParams = new URLSearchParams(window.location.search);
 let ticket_id = urlParams.get('id');
@@ -462,11 +463,44 @@ function close_me(){
 }
 const show_employee_menu = ref(false);
 
+
+const eval_url = document.baseMyURL + "/eval_ticket";
+
+function eval_assignee(){
+// pass the ticket json to eval_url and get username from the response
+
+    using_ai.value = true;
+    fetch(eval_url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ticket_data.value),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            ticket_data.value.assignee = data;
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error updating ticket');
+        }).finally(() => {
+            using_ai.value = false;
+        });
+        ;
+
+}
+
+
+const using_ai = ref(false);
+
 </script>
 
 
 <template>
     <LoaderToast :loading="loading" />
+    <AiLoaderToast :loading="using_ai" />
     <!-- <NavigationBarView /> -->
     <NavigationBarView2 />
     <div class="home-container">
@@ -534,6 +568,10 @@ const show_employee_menu = ref(false);
                                 :class="{ 'inp_desc_none': !ticket_data.assignee }" @focus="show_employee_menu = true"  @blur="close_me()" autocomplete="off">
                                 <GetEmployees sty="width: 20vw;" :cur_text="ticket_data.assignee" @select="updateAssignee($event)
                                 " v-if="show_employee_menu"/>
+                                <div class="class_ai" @click="eval_assignee()">
+                                    <!-- add an star/sparkle image -->
+                                    <img src="https://img.icons8.com/?size=100&id=99559&format=png&color=000000" />
+                                </div>
                         </div>
                     </div>
                     <hv></hv>
@@ -713,6 +751,24 @@ const show_employee_menu = ref(false);
 </template>
 
 <style scoped>
+.class_ai{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5vw;
+    transform: scale(0.16);
+    width: 0vw;
+    height: 1vw;
+    margin-left: 13vw;
+    position: absolute;
+    cursor: pointer;
+    opacity: 0.2;
+}
+.class_ai:hover{
+    transform: scale(0.2);
+    background-color: #393939;
+    opacity: 1;
+}
 .git_lab {
     margin-top: 1vw;
 }

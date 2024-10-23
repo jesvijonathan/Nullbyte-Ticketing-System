@@ -548,6 +548,7 @@ def create_jsonl():
 def eval_ticket_employee(ticket):
     employees = get_all_users()
     
+    # Collect employee data for clustering
     employee_data = []
     employee_names = []
     
@@ -572,17 +573,16 @@ def eval_ticket_employee(ticket):
     priority_value = priority_map.get(priority, 1)  # Default to 'medium' if not provided
     
     story_points = int(ticket.get('story_points', 1))  # Default to 1
-    estimation = int(ticket.get('estimation', 1))  # Default to 1 hour
+    estimation = int(ticket.get('estimation', 1))  # Default to 1 day
     
     product_type = ticket.get('product_type', '').lower()
-
     issue_type = ticket.get('issue_type', '').lower()
     
-    ticket_importance = 1  # Default: average ticket
-    if priority_value >= 2 or story_points > 5 or estimation > 8:
-        ticket_importance = 2  # High importance
-    elif priority_value == 0 or story_points <= 2 or estimation <= 2:
+    ticket_importance = 1
+    if priority_value == 0 and story_points <= 2 and estimation <= 10:
         ticket_importance = 0  # Low importance
+    elif priority_value >= 2 or story_points > 5 or estimation > 10:
+        ticket_importance = 2  # High importance
 
     candidates = []
     for idx, label in enumerate(labels):
@@ -598,9 +598,37 @@ def eval_ticket_employee(ticket):
     
     if not candidates:
         candidates = [(employee_names[idx], employee_data[idx]) for idx in range(len(employee_names))]
+    
     print("\n\n\n", candidates, "\n\n\n")
-    best_candidate = max(candidates, key=lambda x: x[1][1])[0]
+
+    if ticket_importance == 0:
+        non_best_candidates = [c for c in candidates if labels[employee_names.index(c[0])] != 2]  # Exclude the 'best' group
+        if non_best_candidates:
+            best_candidate = max(non_best_candidates, key=lambda x: x[1][1])[0]
+        else:
+            best_candidate = max(candidates, key=lambda x: x[1][1])[0]
+    else:
+        best_candidate = max(candidates, key=lambda x: x[1][1])[0]
+
     best_candidate_score = max(candidates, key=lambda x: x[1][1])[1][1]
     print(f"\n\n\n\nBest employee for the ticket: {best_candidate}")
     print(f"Score of the best candidate: {best_candidate_score}")
     return best_candidate
+
+def eval_ticket_employee_vertex(ticket):
+    users_data = get_all_users()
+    user_employee = {}
+    for user in users_data:
+        if users_data[user]['type'] == 'employee':
+            user_employee[user] = users_data[user]
+            print(user_employee)
+    google_ver = wl_vertex.google_vertex_chat(instruction=instructions_assign)
+    response = google_ver.send_message(json.dumps({"ticket_data": ticket, "users_data": user_employee}))
+    
+    for candidate in response.candidates:
+        if candidate.content.parts[0].text == "No suitable candidates found":
+            return "Nil"
+        else:
+            print("FFFFFFFFFFFFF  : ", candidate.content.parts[0].text)
+            return candidate.content.parts[0].text
+    return response
