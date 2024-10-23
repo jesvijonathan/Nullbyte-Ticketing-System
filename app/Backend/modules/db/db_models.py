@@ -134,17 +134,28 @@ class Customer(Base):
             return {key: data[key] for key in keys if key in data}
         return data
     def get_all_customers(self):
+        customer_list= {}
         customers = db_session.query(Customer).all()
-        customers_dict = {}
         for customer in customers:
-            customers_dict[customer.Id] = customer.username
-        return customers_dict
+            customer_data = {}
+            customer_data['Id']= customer.Id
+            customer_data['age']= customer.age
+            customer_data['gender']= customer.gender
+            customer_data['username']= customer.username
+            customer_data['email']= customer.email,
+            customer_data['phone']= customer.phone,
+            customer_data['company']= customer.company
+            customer_data['role']= customer.role
+            customer_data['score']= customer.score
+            customer_list[customer.name]=customer_data
+        return customer_list
 
     def getIDfromUsername(self, username):
         print("Customer Username: ", username)
         customer = db_session.query(Customer).filter_by(username=username).first()
-        print(customer.Id if customer else 1)
+        # print(customer.Id if customer else 1)
         return customer.Id if customer else 1
+        
     def getUserNamefromID(self, id):
         print("ID: ", id)
         customer = db_session.query(Customer).filter_by(Id=id).first()
