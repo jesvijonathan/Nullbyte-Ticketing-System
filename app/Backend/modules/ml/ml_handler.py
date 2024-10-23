@@ -496,4 +496,6 @@ def create_jsonl():
 
     return jsonl_file
 
-    
+
+def eval_ticket_employee():
+    pass

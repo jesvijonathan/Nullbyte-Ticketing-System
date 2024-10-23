@@ -80,7 +80,7 @@ function selectUser(user) {
     text-align: right;
     background-color: transparent;
     position: fixed;
-    width: 14.4vw;
+margin-left: 14.4vw;
 }
 
 .highlight {
