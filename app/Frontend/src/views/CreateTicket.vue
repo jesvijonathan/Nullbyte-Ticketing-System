@@ -66,7 +66,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 let ticket_data = ref({
     "chat_id": uuidv4(),
-    "ticket_id": "SVC-" + uuidv4().replace(/\D/g, '').slice(0, 8),
+    "ticket_id": uuidv4().replace(/\D/g, '').slice(0, 8),
     "user": current_user.value,
     "medium": "portal",
     "connection": "",
@@ -145,7 +145,7 @@ const reset_form = () => {
     loading.value = true;
     ticket_data.value = {
     "chat_id": uuidv4(),
-    "ticket_id": "SVC-" + uuidv4().replace(/\D/g, '').slice(0, 8),
+    // "ticket_id": "SVC-" + uuidv4().replace(/\D/g, '').slice(0, 8),
     "user": current_user.value,
     "medium": "portal",
     "connection": "",
@@ -200,7 +200,7 @@ const submitForm = async () => {
         const result = await response.json();
         console.log("result",result);
         
-        router.push('/ticket/' + ticket_data.value.ticket_id);
+        router.push('/ticket/' + result.ticket_id);
 
     } catch (error) {
         console.error('Error submitting form:', error);

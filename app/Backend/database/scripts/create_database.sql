@@ -8,7 +8,7 @@ FLUSH PRIVILEGES;
 
 CREATE TABLE IF NOT EXISTS customer (
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255),
     age INT,
     gender ENUM('Male', 'Female'),
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -23,11 +23,11 @@ ALTER TABLE customer AUTO_INCREMENT = 0;
 
 CREATE TABLE IF NOT EXISTS employee (
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255),
     age INT,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    gender ENUM('Male', 'Female') NOT NULL,
+    gender ENUM('Male', 'Female'),
     email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(15),
     role VARCHAR(100),
@@ -41,8 +41,8 @@ ALTER TABLE employee AUTO_INCREMENT = 0;
 CREATE TABLE IF NOT EXISTS ticket (
     Ticket_Id INT AUTO_INCREMENT PRIMARY KEY,
     Chat_Id VARCHAR(50),
-    Subject VARCHAR(255) NOT NULL,
-    Summary TEXT NOT NULL,
+    Subject VARCHAR(255),
+    Summary TEXT,
     Analysis TEXT,
     Type VARCHAR(100),
     Description TEXT,
@@ -106,3 +106,5 @@ CREATE TABLE IF NOT EXISTS worklog (
     FOREIGN KEY (Ticket_Id) REFERENCES ticket(Ticket_Id) ON DELETE CASCADE,
     FOREIGN KEY (Worklog_User) REFERENCES employee(id) ON DELETE SET NULL
 );
+
+CREATE VIEW auth_view AS SELECT Id AS user_id, name, username, password, email, phone, role, 'customer' AS user_type FROM customer UNION ALL SELECT Id AS user_id, name, username, password, email, phone, role, 'employee' AS user_type FROM employee;

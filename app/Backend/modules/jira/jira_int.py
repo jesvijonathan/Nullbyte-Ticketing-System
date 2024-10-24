@@ -3,13 +3,9 @@ import os
 import requests
 import datetime
 from enum import Enum
-#from config import *
-JIRA_CRED = dict({
-    'username': os.getenv("JIRA_ADMIN",'jiraadmin'),
-    'password': os.getenv("JIRA_PASS", 'Skibbidi@42069'),
-    'server': os.getenv("JIRA_SERVER", 'http://localhost:8080')
-})
-jira = JIRA(server=JIRA_CRED['server'], basic_auth=(JIRA_CRED['username'], JIRA_CRED['password']))
+from flask import Blueprint, request, make_response, jsonify
+from config import *
+jira = JIRA(server=JIRA_CRED['server'],token_auth=JIRA_CRED['token'])
 
 class IssueType(Enum):
     BUG = "Bug"
@@ -102,45 +98,81 @@ class JiraIntegration:
         return [(issue.key, issue.fields.summary) for issue in issues]
 
 jira_integration = JiraIntegration(jira)
+jiraint=Blueprint('jira',__name__)
+@jiraint.route('/get_projects',methods=['GET'])
+def get_projects():
+    return jira_integration.get_projects()
+@jiraint.route('/create_issue',methods=['POST'])
+def create_issue():
+    project = request.json['project']
+    summary = request.json['summary']
+    description = request.json['description']
+    issuetype = IssueType[request.json['issuetype'].upper()]
+    priority = Priority[request.json['priority'].upper()]
+    issue = jira_integration.create_issue(project, summary, description, issuetype, priority)
+    assignee = request.json.get('assignee')
+    reporter = request.json.get('reporter')
+    attachment = request.json.get('attachment')
+    if attachment:
+        jira_integration.add_attachment(issue.key, attachment)
+    if assignee:
+        jira_integration.assign_issue(issue.key, assignee=assignee)
+    if reporter:
+        jira_integration.assign_issue(issue.key, reporter=reporter)
+    return issue.key
+@jiraint.get('/get_similar_issues')
+def get_similar_issues():
+    keyword = request.args.get('keyword')
+    issues = jira_integration.search_similar_issues(keyword)
+    data = []
+    for x in issues[:10]:
+        data.append(jira_integration.get_content(x[0]))
+    return data
+@jiraint.get('/get_content')
+def get_content():
+    issue_key = request.args.get('issue_key')
+    return jira_integration.get_content(issue_key)
 
-print("\nTest 1: Getting Projects:")
-print(jira_integration.get_projects())
+# print("\nTest 1: Getting Projects:")
+# print(jira_integration.get_projects())
 
-print("\nTest 2: Creating Issue:")
-project = input("Enter the project key: ")
-summary = input("Enter the issue summary: ")
-description = input("Enter the issue description: ")
-issuetype_input = input("Enter the issue type (Bug, Task, Story, Epic): ")
-issuetype = IssueType[issuetype_input.upper()]
-priority_input = input("Enter the priority (Highest, High, Medium, Low, Lowest): ")
-priority = Priority[priority_input.upper()]
+# print("\nTest 2: Creating Issue:")
+# project = input("Enter the project key: ")
+# summary = input("Enter the issue summary: ")
+# description = input("Enter the issue description: ")
+# issuetype_input = input("Enter the issue type (Bug, Task, Story, Epic): ")
+# issuetype = IssueType[issuetype_input.upper()]
+# priority_input = input("Enter the priority (Highest, High, Medium, Low, Lowest): ")
+# priority = Priority[priority_input.upper()]
 
-issue = jira_integration.create_issue(project, summary, description, issuetype, priority)
-print(f"Issue created: {issue}")
+# issue = jira_integration.create_issue(project, summary, description, issuetype, priority)
+# print(f"Issue created: {issue}")
 
-print("\nTest 3: Assign Issue:")
-result = jira_integration.assign_issue(issue.key, assignee='akileswar')
-print(result)
+# print("\nTest 3: Assign Issue:")
+# result = jira_integration.assign_issue(issue.key, assignee='akileswar')
+# print(result)
 
-print("\nTest 4: Assign Reporter:")
-result = jira_integration.assign_issue(issue.key, reporter='rajashree')
-print(result)
+# print("\nTest 4: Assign Reporter:")
+# result = jira_integration.assign_issue(issue.key, reporter='akileswar')
+# print(result)
 
-print("\nTest 5: Add Attachments from URL:")
-attachment_result = jira_integration.add_attachment(issue.key, 'https://cloudinary-marketing-res.cloudinary.com/images/w_1000,c_scale/v1679921049/Image_URL_header/Image_URL_header-png?_i=AA')
-print(attachment_result)
+# print("\nTest 5: Add Attachments from URL:")
+# attachment_result = jira_integration.add_attachment(issue.key, 'https://cloudinary-marketing-res.cloudinary.com/images/w_1000,c_scale/v1679921049/Image_URL_header/Image_URL_header-png?_i=AA')
+# print(attachment_result)
 
-print("\nTest 6: Add Attachments from File:")
-attachment_result = jira_integration.add_attachment(issue.key, './dockerfile')
-print(attachment_result)
+# print("\nTest 6: Add Attachments from File:")
+# attachment_result = jira_integration.add_attachment(issue.key, './dockerfile')
+# print(attachment_result)
 
-print("\nTest 7: Get Attachments from Issue:")
-jira_integration.get_attachment(issue.key)
+# print("\nTest 7: Get Attachments from Issue:")
+# jira_integration.get_attachment(issue.key)
 
-print("\nTest 8: Get Contents from Issue:")
-print(jira_integration.get_content(issue.key))
+# print("\nTest 8: Get Contents from Issue:")
+# print(jira_integration.get_content(issue.key))
 
-print("Test 9: Search Similar Issues")
-results = jira_integration.search_similar_issues(input("Enter search Key: "))
-for result in results:
-    print(f"{result}")
+# print("Test 9: Search Similar Issues")
+# results = jira_integration.search_similar_issues(input("Enter search Key: "))
+# for result in results:
+#     print(f"{result}")
+
+

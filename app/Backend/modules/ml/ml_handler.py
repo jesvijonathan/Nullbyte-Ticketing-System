@@ -43,7 +43,7 @@ class ChatbotHandler:
             self.result["medium"]= "chat"
         self.result["chat_id"]= self.chat_id
         self.result["user"]= payload['upn']
-        self.result["ticket_id"]= "SVC-" + str(random.randint(10000, 99999))
+        self.result["ticket_id"]= str(random.randint(10000, 99999))
         self.attachments = []
         
         self.bot, self.chat= self.initialize_bot(chatbot_fallback)
@@ -149,18 +149,25 @@ class ChatbotHandler:
     def close_chat(self):
         self.result["connection"]= "closed"
         # logic to add details to db here, for later
-        if db_add_closed_chat:
-            try:
-                print("\n\nresult starts here:")
-                res=self.result
-                tid=BotAdmin().create_ticket(res)['id']
-                if[tid]:
-                    self.result["ticket_id"]=str(tid)
-                print(res)
-                print("\n\nresult ends here:")
-            except:
-                print("Error adding ticket to db")
-                pass
+        # if db_add_closed_chat:
+        tick_it = None
+        if sqlmode:
+            print("\n\nresult starts here:")
+            res=self.result
+            tid=BotAdmin().create_ticket(res)["id"]
+            if[tid]:
+                self.result["ticket_id"]=str(tid)
+            print(res)
+            print("\n\nresult ends here:")
+
+
+        print("oooooooooooooo")
+        if dirmode:
+            print(res)
+            BotAdmin().create_ticket_dirmode(res)
+
+
+
         ticket_folder = "./bucket/tickets"
         os.makedirs(ticket_folder, exist_ok=True)
         
@@ -403,14 +410,18 @@ class ChatbotHandler:
             encoded_file, file_name, mime = self.parse_attachment(file_data, file_name)
             if(self.socketio):
                 self.socketio.emit("attachment_saved", {"message": f"Attachment {file_name} received and saved."}, room=self.socket["sid"])
-            
+
     def extract_json_response(self, text_response):
+        # Remove single-line comments and trailing commas before closing braces
         text_response = re.sub(r'//.*?(\r?\n|$)', '\n', text_response)
         text_response = re.sub(r',\s*([}\]])', r'\1', text_response)
-        
-        json_field_pattern = re.compile(r'{\s*["\']?(subject|chat_id|ticket_id|user|medium|text|summary|attachments|product_type|issue_type|priority|story_points|estimation|analysis|reply|assingee|status|created|updated|comments|logged_hrs)["\']?\s*:')
-        json_msg=""
 
+        print(f"Original text response: {text_response}")
+
+        text_response = text_response.replace("'", '"')
+        json_field_pattern = re.compile(r'{\s*["\']?(subject|chat_id|ticket_id|user|medium|text|summary|attachments|product_type|issue_type|priority|story_points|estimation|analysis|reply|assingee|status|created|updated|comments|logged_hrs)["\']?\s*:')
+   
+        json_msg = ""
         if "```json" in text_response:
             start_index = text_response.index("```json") + len("```json")
             end_index = text_response.index("```", start_index)
@@ -423,25 +434,24 @@ class ChatbotHandler:
                 if end_index != -1:
                     json_msg = text_response[start_index:end_index].strip()
                 else:
+                    print("Unable to find closing brace")
                     return None, text_response.strip()
-            # else:
-            #     try:
-            #         json_msg_dict = json.loads(text_response.strip())
-            #         reply_msg = json_msg_dict.get("reply") or default_reply_msg
-            #         return json_msg_dict, reply_msg
-            #     except json.JSONDecodeError as e:
-            #         print(f"JSON decoding error: {e}")
-            #         print(f"Problematic JSON: {text_response}")
-            #         return None, text_response.strip()  
+
+        print(f"Extracted JSON message: {json_msg}")
+
+        json_msg = json_msg.replace("None", "null").strip()
+        if not json_msg:
+            print("Empty or invalid JSON string")
+            return None, text_response.strip()
 
         try:
-            print(json_msg)
+            # Try parsing the cleaned JSON message
             json_msg_dict = json.loads(json_msg)
-            reply_msg = json_msg_dict.get("reply") or default_reply_msg
+            reply_msg = json_msg_dict.get("reply") or "Default reply message"
             return json_msg_dict, reply_msg
         except json.JSONDecodeError as e:
             print(f"JSON decoding error: {e}")
-            print(f"Problematic JSON: {text_response}")
+            print(f"Problematic JSON: {json_msg}")
             return None, text_response.strip()
 
     def find_closing_brace(self, text, start_index):
@@ -460,42 +470,28 @@ class ChatbotHandler:
 import os
 import json 
 def create_jsonl():
-    # Create a JSONL file
-    # Get all JSON files from within chats_folder/* and its subdirectories
-    # Create a JSONL file with all the JSON files and include the directory as a key
-    # Return the JSONL file path
-
-    # Also get all JSON from ticket_folder and its subdirectories, and add to the JSONL file
     json_files = []
     ticket_files = []
 
-    # Get JSON files from chats folder
     for root, dirs, files in os.walk(chats_folder):
         for file in files:
             if file.endswith(".json"):
                 json_files.append((os.path.join(root, file), os.path.basename(root)))
 
-    # Get JSON files from ticket folder
     for root, dirs, files in os.walk(ticket_folder):
         for file in files:
             if file.endswith(".json"):
                 ticket_files.append((os.path.join(root, file), os.path.basename(root)))
 
-    # Combine both chat and ticket JSON files
     json_files.extend(ticket_files)
 
-    # Define the path for the output JSONL file
     jsonl_file = os.path.join(chats_folder, "all_chats.jsonl")
 
-    # Write the JSON objects to the JSONL file
     with open(jsonl_file, "w") as f:
         for file, dir_name in json_files:
             with open(file, "r") as jf:
-                # Load each JSON file content as a Python dictionary
                 data = json.load(jf)
-                # Wrap the JSON data with a new key (directory name) and write it to the JSONL file
                 wrapped_data = {dir_name: data}
-                # Write the wrapped JSON object as a single line in the JSONL file
                 f.write(json.dumps(wrapped_data) + "\n")
 
     return jsonl_file
