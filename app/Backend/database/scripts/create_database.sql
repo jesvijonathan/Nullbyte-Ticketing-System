@@ -8,7 +8,7 @@ FLUSH PRIVILEGES;
 
 CREATE TABLE IF NOT EXISTS customer (
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255),
     age INT,
     gender ENUM('Male', 'Female'),
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -23,14 +23,17 @@ ALTER TABLE customer AUTO_INCREMENT = 0;
 
 CREATE TABLE IF NOT EXISTS employee (
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255),
     age INT,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    gender ENUM('Male', 'Female') NOT NULL,
+    gender ENUM('Male', 'Female'),
     email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(15),
     role VARCHAR(100),
+    team VARCHAR(50),
+    closed_tickets INT,
+    open_tickets INT,
     score INT,
     manager INT DEFAULT NULL,
     gcm INT,
@@ -41,8 +44,8 @@ ALTER TABLE employee AUTO_INCREMENT = 0;
 CREATE TABLE IF NOT EXISTS ticket (
     Ticket_Id INT AUTO_INCREMENT PRIMARY KEY,
     Chat_Id VARCHAR(50),
-    Subject VARCHAR(255) NOT NULL,
-    Summary TEXT NOT NULL,
+    Subject VARCHAR(255),
+    Summary TEXT,
     Analysis TEXT,
     Type VARCHAR(100),
     Description TEXT,
@@ -51,10 +54,12 @@ CREATE TABLE IF NOT EXISTS ticket (
     Issue_Type ENUM('bug', 'error', 'issue', 'story', 'others', 'feature', 'enhancement', 'support','task') DEFAULT 'issue',
     Channel VARCHAR(100),
     Customer_ID INT,
+    Customer_Username VARCHAR(255),
     Product_Type VARCHAR(100),
     Medium VARCHAR(100),
     Team VARCHAR(50),
     Assignee_ID INT,
+    Assignee_Username VARCHAR(255),
     Resolution TEXT,
     Issue_Date DATETIME DEFAULT CURRENT_TIMESTAMP,
     Created DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -106,3 +111,5 @@ CREATE TABLE IF NOT EXISTS worklog (
     FOREIGN KEY (Ticket_Id) REFERENCES ticket(Ticket_Id) ON DELETE CASCADE,
     FOREIGN KEY (Worklog_User) REFERENCES employee(id) ON DELETE SET NULL
 );
+
+CREATE VIEW auth_view AS SELECT Id AS user_id, name, username, password, email, phone, role, 'customer' AS user_type FROM customer UNION ALL SELECT Id AS user_id, name, username, password, email, phone, role, 'employee' AS user_type FROM employee;

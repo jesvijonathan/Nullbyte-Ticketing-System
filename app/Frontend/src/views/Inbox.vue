@@ -5,7 +5,6 @@ import { onMounted, ref } from 'vue';
 import SidePane from '@/components/SidePane.vue';
 import LoaderToast from '@/components/LoaderToast.vue';
 import { faLeaf } from '@fortawesome/free-solid-svg-icons';
-
 import { useCookies } from 'vue3-cookies';
 
 let bread_path_json = {
@@ -18,159 +17,16 @@ const loading = ref(true);
 const get_tickets_url = document.baseMyURL + "/get_tickets";
 
 
-let ticket_data = ref([{
-    "chat_id": "tRAFcELKK5xiAK6FAAAD",
-    "ticket_id": "SVC-000000",
-    "user": "admin",
-    "medium": "",
-    "connection": "closed",
-    "text": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    "subject": "wlpfo Transaction Declined for P025 Value 28",
-    "summary": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    "attachments": [
-        {
-            "name": "Transaction Logs",
-            "type": "text/plain",
-            "url": "https://example.com/logs.txt",
-            "details": "The logs show successful transactions when P025 is 00 and declined transactions when P025 is 28. Errors like \"[ERROR]: P025 invalid\" are present. The logs also contain details of GICC capture, GICC authorization request, compose message, and e-commerce transaction details. Further analysis suggests potential conflicts with specific transaction parameters or conditions related to P025 field validation.",
-            "size": "4382"
-        }
-    ],
-    "product_type": "wlpfo",
-    "issue_type": "bug",
-    "priority": "high",
-    "story_points": "5",
-    "estimation": "8",
-    "analysis": "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
-    "reply": "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
-    "assignee": "developer_1",
-    "status": "closed",
-    "created": "2021-07-15T10:00:00",
-    "updated": "2021-07-15T10:00:00",
-    "comments": [
-        {
-            "comment_id": "1",
-            "user": "developer_1",
-            "text": "I will start investigating the issue with P025 validation in wlpfo. I'll update you with my findings and progress.",
-            "date": "2021-07-15T10:30:00"
-        }
-    ],
-    "logged_hrs": [
-        {
-            "user": "developer_1",
-            "logged": "2",
-            "date": "2021-07-15T10:30:00"
-        },
-        {
-            "user": "developer_1",
-            "logged": "3",
-            "date": "2021-07-16T10:30:00"
-        }
-    ]
-},
-{
-    "chat_id": "tRAFcELKK5xiAK6FAAAD",
-    "ticket_id": "SVC-11111",
-    "user": "raj",
-    "medium": "",
-    "connection": "closed",
-    "text": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    "subject": "rajash wlpfo Transaction Declined for P025 Value 28",
-    "summary": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    "attachments": [
-        {
-            "name": "Transaction Logs",
-            "type": "text/plain",
-            "url": "https://example.com/logs.txt",
-            "details": "The logs show successful transactions when P025 is 00 and declined transactions when P025 is 28. Errors like \"[ERROR]: P025 invalid\" are present. The logs also contain details of GICC capture, GICC authorization request, compose message, and e-commerce transaction details. Further analysis suggests potential conflicts with specific transaction parameters or conditions related to P025 field validation.",
-            "size": "4382"
-        }
-    ],
-    "product_type": "wlpfo",
-    "issue_type": "bug",
-    "priority": "high",
-    "story_points": "5",
-    "estimation": "8",
-    "analysis": "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
-    "reply": "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
-    "assignee": "admin",
-    "status": "open",
-    "created": "2021-07-15T10:00:00",
-    "updated": "2021-07-15T10:00:00",
-    "comments": [
-        {
-            "comment_id": "1",
-            "user": "developer_1",
-            "text": "I will start investigating the issue with P025 validation in wlpfo. I'll update you with my findings and progress.",
-            "date": "2021-07-15T10:30:00"
-        }
-    ],
-    "logged_hrs": [
-        {
-            "user": "developer_1",
-            "logged": "2",
-            "date": "2021-07-15T10:30:00"
-        },
-        {
-            "user": "developer_1",
-            "logged": "3",
-            "date": "2021-07-16T10:30:00"
-        }
-    ]
-},
-{
-    "chat_id": "tRAFcELKK5xiAK6FAAAD",
-    "ticket_id": "SVC-11111",
-    "user": "akil",
-    "medium": "",
-    "connection": "closed",
-    "text": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    "subject": "wlpfo Transaction Declined for P025 Value 28",
-    "summary": "wlpfo is declining transactions where the P025 field is set to 28, while transactions with P025 value 00 are being approved. The logs indicate an issue within the transaction processing logic related to the P025 field. Clarification is required for the correct values for P025.",
-    "attachments": [
-        {
-            "name": "Transaction Logs",
-            "type": "text/plain",
-            "url": "https://example.com/logs.txt",
-            "details": "The logs show successful transactions when P025 is 00 and declined transactions when P025 is 28. Errors like \"[ERROR]: P025 invalid\" are present. The logs also contain details of GICC capture, GICC authorization request, compose message, and e-commerce transaction details. Further analysis suggests potential conflicts with specific transaction parameters or conditions related to P025 field validation.",
-            "size": "4382"
-        }
-    ],
-    "product_type": "wlpfo",
-    "issue_type": "bug",
-    "priority": "high",
-    "story_points": "5",
-    "estimation": "8",
-    "analysis": "The issue likely stems from incorrect validation rules or logic for the P025 field within wlpfo. A code review and debugging of the transaction processing module, focusing on P025 handling, are recommended. Testing with various P025 values and different transaction scenarios will help isolate the problem. A potential workaround could involve temporarily disabling the specific P025 validation rule, if feasible, until a permanent fix is implemented.",
-    "reply": "A ticket has been created to investigate the issue with wlpfo declining transactions for P025 value 28. We will analyze the provided logs and investigate the root cause of the problem. We'll keep you updated on the progress and provide a solution as soon as possible.",
-    "assignee": "developer_1",
-    "status": "open",
-    "created": "2021-07-15T10:00:00",
-    "updated": "2021-07-15T10:00:00",
-    "comments": [
-        {
-            "comment_id": "1",
-            "user": "developer_1",
-            "text": "I will start investigating the issue with P025 validation in wlpfo. I'll update you with my findings and progress.",
-            "date": "2021-07-15T10:30:00"
-        }
-    ],
-    "logged_hrs": [
-        {
-            "user": "developer_1",
-            "logged": "2",
-            "date": "2021-07-15T10:30:00"
-        },
-        {
-            "user": "developer_1",
-            "logged": "3",
-            "date": "2021-07-16T10:30:00"
-        }
-    ]
-}
+let ticket_data = ref([
 ]);
 
-onMounted(() => {
+
+
+
+
+let get_tickets = document.baseMyURL+"/get_tickets";
+
+onMounted(async () => {
 
     loading.value = true;
     console.log('mounted');
@@ -185,6 +41,21 @@ onMounted(() => {
     console.log(ticket_data.value);
     let category = window.location.search.split('=')[1];
 
+    const response = await fetch(get_tickets);
+        const data = await response.json();
+        // console.log("jesvi ::::", data)
+        Object.keys(data).forEach(ticket_id => {
+            console.log("jesvi ::::", data[ticket_id])
+            if (data[ticket_id].medium == 'mail') {
+            const ticket_info = data[ticket_id];
+            const tmp_tick = ticket_info.closed_chat || ticket_info;
+            console.log("jesvi ::::", tmp_tick)
+            ticket_data.value.push(tmp_tick);
+            }
+        });
+
+      console.log("#####jesvi :", ticket_data.value)
+
     loading.value = false;
 });
 
@@ -195,6 +66,38 @@ function open_ticket(ticket_id) {
 
 const { cookies } = useCookies();
 const current_user = cookies.get('user');
+
+
+
+// {
+//     "analysis": "The performance issue could stem from various factors introduced by the latest installation, such as database changes, new features, or configuration modifications.  Analyzing logs and performance metrics will be crucial to identifying the bottleneck.",
+//     "assignee": "unassigned",
+//     "attachments": [],
+//     "channel": "closed",
+//     "chat_id": "j43BQYyGMTLiOJybAAAN",
+//     "comments": [],
+//     "created": "2024-10-23T06:26:47",
+//     "estimation": 0,
+//     "issue_type": "bug",
+//     "last_modified": "2024-10-23T06:26:47",
+//     "medium": "chat",
+//     "priority": "medium",
+//     "product_type": "wlpfo",
+//     "reopens": 0,
+//     "resolution": null,
+//     "score": 0,
+//     "status": "open",
+//     "story_points": 3,
+//     "subject": "WLPFO Performance Degradation After Latest Installation",
+//     "summary": "WLPFO performance has degraded after the latest installation, impacting user experience.  Additional information is needed to identify the root cause and implement a solution.",
+//     "team": null,
+//     "text": "The user reported a significant slowdown in WLPFO performance following the recent installation.  Further details are required to pinpoint the affected tasks and quantify the performance decrease.",
+//     "ticket_id": "7",
+//     "type": null,
+//     "user": "unassigned",
+//     "worklogs": []
+// }
+
 
 if (!current_user) {
     console.log('cookie not found');
@@ -262,14 +165,14 @@ let mail_json = ref({
                 </h1>
 
                 <div class="ticket_list">
-                    <div v-for="(mail, index) in mail_json" :key="index" class="cat_section" @click="open_ticket(mail.ticket_id)">
+                    <div v-for="(mail, index) in ticket_data" :key="index" class="cat_section" @click="open_ticket(mail.ticket_id)" >
                         <div class="cat_section_bar">
                             {{ index }}
-                            <div class="from_">{{ mail.from }}</div>
+                            <div class="from_">{{ mail.user }}</div>
                             <div class="subjj_">{{ mail.subject }}</div>
                             <div :style="{ color: mail.status === 'open' ? 'green' : 'red' }"> {{ mail.status }}</div>
                             
-                            <div>{{ new Date(mail.updated).toLocaleString() }}</div>
+                            <div>{{ new Date(mail.created).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '').replace(' ', ' ') }}</div>
                             <div v-if="mail.action && mail.action === current_user" class="btnsort_" @click="open_ticket(mail.ticket_id)">
                                 Approve
                             </div>
@@ -307,10 +210,13 @@ let mail_json = ref({
 .from_{
     max-width: 4vw;
     min-width: 4vw;
+    overflow: hidden;   
 }
 .subjj_{
     max-width: 35vw;
     min-width: 35vw;
+    
+    overflow: hidden;   
 }
 .cat_search {
     display: flex;
@@ -320,6 +226,8 @@ let mail_json = ref({
     justify-content: space-between;
     align-items: center;
     gap: 1vw;
+    
+    overflow: hidden;   
 }
 
 .btnsort {

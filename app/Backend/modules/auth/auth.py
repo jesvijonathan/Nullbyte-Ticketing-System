@@ -6,6 +6,7 @@ from .ldap_wrapper import Lwrapper
 from modules.log import *
 from config import *
 # from flask import session
+from modules.db.db_models import AuthView, get_all_users
 
 auth_ldap = Blueprint('auth', __name__)
 lwrapper=Lwrapper()
@@ -27,12 +28,30 @@ def authenticate():
 
     logger.info(f"Authenticating user: {username}")
 
-    if username == ADMIN_CRED['username'] and password == ADMIN_CRED['password']:
-        payload = {'username': ADMIN_CRED['username'], 'ou': [], 'upn': 'administrator@nullbyte.exe'}
+    emptype= normal_auth(username, password)
+    if emptype:
+        payload = {'username': ADMIN_CRED['username'].lower(), 'ou': [emptype], 'upn': username}
     elif username == ADMIN_CRED_2['username'] and password == ADMIN_CRED_2['password']:
-        payload = {'username': ADMIN_CRED_2['username'], 'ou': [], 'upn': 'nig@nullbyte.exe'}
-    elif lwrapper.Authenticate(username, password):
-        payload = lwrapper.getPayload(username)
+        payload = {'username': ADMIN_CRED_2['username'].lower(), 'ou': [], 'upn': 'nig@nullbyte.exe'}
+    else:
+        users_data = get_all_users()
+        logedd=False
+        for user in users_data:
+            print("\n\n\n\n\n")
+            print(users_data[user], user)
+            user_data = users_data[user]
+            if user_data['email'].lower() == username.lower():
+                payload = {'username': user.lower(), 'ou': [user_data['type']], 'upn': user.lower()}
+                username = user.lower()
+                logedd = True
+            elif user.lower() == username.lower():
+                payload = {'username': user.lower(), 'ou': [user_data['type']], 'upn': user.lower()}
+                logedd = True
+        if not logedd:
+            return make_response(jsonify({'error': 'Invalid credentials'}), 401)
+
+    # elif lwrapper.Authenticate(username, password):
+        # payload = lwrapper.getPayload(username)
 
     payload['iat'] = datetime.datetime.now(datetime.timezone.utc)
     payload['exp'] = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=JWT_EXP_DELTA_SECONDS)
@@ -44,13 +63,14 @@ def authenticate():
         response = make_response(jsonify({'token': token, 'message': 'Authentication successful'}), 201)
         for cookie in request.cookies:
             response.set_cookie(cookie, '', expires=0)
+        print("usrname : ", username.lower())
         response.set_cookie('session', token, httponly=False, secure=False, samesite='None', expires=None)
-        response.set_cookie('user', username, httponly=False, secure=False,samesite='None', expires=None)
+        response.set_cookie('user', username.lower(), httponly=False, secure=False,samesite='None', expires=None)
         if username in users_token:
             del users[users_token[username]]
         users_token[username] = token
         users[token] = {
-            'username': username,
+            'username': username.lower(),
             'added': payload.get('iat'),
             'exp': payload.get('exp'),
         }
@@ -115,3 +135,14 @@ def list_users():
     except Exception as e:
         print(f"Error while listing users: {str(e)}")
         return jsonify({'error': str(e)}), 500
+    
+
+def normal_auth(email, password):
+    user = AuthView().get_user(email)
+    print(user)
+    if user is not None and user.validate_password(password):
+        print(user.get_user_type())
+        return user.get_user_type()
+    else:
+        return False
+    

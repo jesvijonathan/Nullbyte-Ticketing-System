@@ -51,10 +51,11 @@ DATABASE_NAME = os.getenv("DATABASE_NAME", "nullbyte")
 DATABASE_URL = f"mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 
 
-
-db_add_closed_chat = False
-noSql =True
+sqlmode= True
+dirmode=False
 useCloudSql = False
+enable_jira = True
+enable_mailbot = False
 baseMyURL = "http://localhost:5000"
 
 
@@ -132,6 +133,9 @@ json format:
 "enhance": "", receive the text/summary/analysis and enhance the message with better words and better explanation & considering all parameters. 
 }
 """
+instructions_assign="""Assign the ticket to the most suitable user based on the ticket details (e.g., story points, estimation, priority, issue type, product type) and the user's skill level. Return one user who can handle the ticket effectively, considering that lower-level tickets should go to juniors and higher-level tickets to senior engineers.
+return <string: username>
+"""
 google_credentials = os.getenv("GOOGLE_CREDENTIALS", "").strip()
 if not google_credentials or google_credentials == "null":
     try:
@@ -189,7 +193,6 @@ if os.name == 'nt':
 
 # Jira Configs
 JIRA_CRED = dict({
-    'username': os.getenv("JIRA_ADMIN",'jiraadmin'),
-    'password': os.getenv("JIRA_PASS", 'Skibbidi@42069'),
-    'server': os.getenv("JIRA_SERVER", 'http://localhost:8080')
+    'server':  os.getenv("JIRA_SERVER", '<server url>'),
+    'token': os.getenv("JIRA_SERVER_TOKEN", '<jira token>')
 })

@@ -6,6 +6,7 @@ import SidePane from '@/components/SidePane.vue';
 import LoaderToast from '@/components/LoaderToast.vue';
 import AiLoaderToast from '@/components/AiLoaderToast.vue';
 import { faLeaf } from '@fortawesome/free-solid-svg-icons';
+import GetEmployees from '@/components/GetEmployees.vue';
 
 import { useRouter } from 'vue-router';
 
@@ -66,7 +67,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 let ticket_data = ref({
     "chat_id": uuidv4(),
-    "ticket_id": "SVC-" + uuidv4().replace(/\D/g, '').slice(0, 8),
+    "ticket_id": uuidv4().replace(/\D/g, '').slice(0, 8),
     "user": current_user.value,
     "medium": "portal",
     "connection": "",
@@ -81,7 +82,7 @@ let ticket_data = ref({
     "estimation": "",
     "analysis": "",
     "reply": "",
-    "assingee": "",
+    "assignee": "",
     "status": "open",
     "created": (new Date()).toISOString(),
     "updated": (new Date()).toISOString(),
@@ -145,7 +146,7 @@ const reset_form = () => {
     loading.value = true;
     ticket_data.value = {
     "chat_id": uuidv4(),
-    "ticket_id": "SVC-" + uuidv4().replace(/\D/g, '').slice(0, 8),
+    // "ticket_id": "SVC-" + uuidv4().replace(/\D/g, '').slice(0, 8),
     "user": current_user.value,
     "medium": "portal",
     "connection": "",
@@ -160,7 +161,7 @@ const reset_form = () => {
     "estimation": "",
     "analysis": "",
     "reply": "",
-    "assingee": "",
+    "assignee": "",
     "status": "open",
     "created": (new Date()).toISOString(),
     "updated": (new Date()).toISOString(),
@@ -200,7 +201,7 @@ const submitForm = async () => {
         const result = await response.json();
         console.log("result",result);
         
-        router.push('/ticket/' + ticket_data.value.ticket_id);
+        router.push('/ticket/' + result.ticket_id);
 
     } catch (error) {
         console.error('Error submitting form:', error);
@@ -252,6 +253,16 @@ const submitForm = async () => {
 //     }
 // };
 
+
+function updateAssignee(event){
+    ticket_data.value.assignee = event;
+    show_employee_menu.value = false;
+}
+function close_me(){
+    show_employee_menu = false
+}
+const show_employee_menu = ref(false);
+
 </script>
 
 <template>
@@ -265,7 +276,7 @@ const submitForm = async () => {
             <BreadCrumb :data="bread_path_json" />
 
             <div class="tile-container ">
-                <h1 class="main_title">Create Ticket<div class="ticket_id">{{ ticket_data.ticket_id }}</div></h1>
+                <h1 class="main_title">Create Ticket<div class="ticket_id">SVC-{{ ticket_data.ticket_id }}</div></h1>
                 <div class="creat_form_cont">
                     <div class="input_cont_2 attach_cont">
 
@@ -313,9 +324,17 @@ const submitForm = async () => {
                                     id="created_by" v-model="ticket_data.user">
                             </div>
                             <div class="input_cont">
-                                <label for="assingee">Assigned To</label>
+                                <label for="assignee">Assigned To</label>
                                 <input type="text" placeholder="Enter the name of the person" class="input_field"
-                                    id="assingee" v-model="ticket_data.assingee">
+                                    id="assignee" v-model="ticket_data.assignee" @focus="show_employee_menu = true"  @blur="close_me()" autocomplete="off">
+                                <GetEmployees :cur_text="ticket_data.assignee" @select="updateAssignee($event)" 
+                                :tot="false"
+                                :style="{
+                                    left: '67vw',
+                                    top: '60vh',
+                                    width: '23vw',
+                                }"
+                                v-if="show_employee_menu"/>
                             </div>
                         </div>
 
@@ -364,8 +383,8 @@ const submitForm = async () => {
 
                             </div>
                             <div class="input_cont">
-                                <label for="assingee">Status</label>
-                                <select  class="input_field" id="assingee" v-model="ticket_data.status" default="open">
+                                <label for="assignee">Status</label>
+                                <select  class="input_field" id="assignee" v-model="ticket_data.status" default="open">
                                     <option value="open">Open</option>
                                     <option value="closed">Closed</option>
                                     <option value="pending">Pending</option>

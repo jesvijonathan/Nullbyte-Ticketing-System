@@ -15,9 +15,11 @@ from werkzeug.utils import secure_filename
 from vertexai.generative_models import  Part
 from mimetypes import guess_extension
 import mimetypes
-from modules.db.db_models import Attachment
+from modules.db.db_models import Attachment, get_all_users
 import re
 from modules.bucket import *
+from sklearn.cluster import KMeans
+import numpy as np
 
 # chatbot handler for socketio and manager
 class ChatbotHandler:
@@ -43,7 +45,7 @@ class ChatbotHandler:
             self.result["medium"]= "chat"
         self.result["chat_id"]= self.chat_id
         self.result["user"]= payload['upn']
-        self.result["ticket_id"]= "SVC-" + str(random.randint(10000, 99999))
+        self.result["ticket_id"]= str(random.randint(10000, 99999))
         self.attachments = []
         
         self.bot, self.chat= self.initialize_bot(chatbot_fallback)
@@ -149,18 +151,28 @@ class ChatbotHandler:
     def close_chat(self):
         self.result["connection"]= "closed"
         # logic to add details to db here, for later
-        if db_add_closed_chat:
-            try:
-                print("\n\nresult starts here:")
-                res=self.result
-                tid=BotAdmin().create_ticket(res)['id']
-                if[tid]:
-                    self.result["ticket_id"]=str(tid)
-                print(res)
-                print("\n\nresult ends here:")
-            except:
-                print("Error adding ticket to db")
-                pass
+        # if db_add_closed_chat:
+        tick_it = None
+        if sqlmode:
+            print("\n\nresult starts here:")
+            res=self.result
+            print(res)
+            tres=BotAdmin().create_ticket(res)
+            print(tres)
+            tid=tres["id"]
+            if[tid]:
+                self.result["ticket_id"]=str(tid)
+            print(res)
+            print("\n\nresult ends here:")
+
+
+        print("oooooooooooooo")
+        if dirmode:
+            print(res)
+            BotAdmin().create_ticket_dirmode(res)
+
+
+
         ticket_folder = "./bucket/tickets"
         os.makedirs(ticket_folder, exist_ok=True)
         
@@ -334,6 +346,10 @@ class ChatbotHandler:
          
     
     def handle_response(self, text_response):
+        # if self.bot == "wl_llama":
+        #     # json_msg_dict, reply_msg = self.extract_json_response_2(text_response)
+        #     json_msg_dict, reply_msg = self.extract_json_response(text_response)
+        # else:     
         json_msg_dict, reply_msg = self.extract_json_response(text_response)
         print("@@@@@@@@@@@@@2", json_msg_dict, "\n\n", reply_msg)
     
@@ -403,14 +419,57 @@ class ChatbotHandler:
             encoded_file, file_name, mime = self.parse_attachment(file_data, file_name)
             if(self.socketio):
                 self.socketio.emit("attachment_saved", {"message": f"Attachment {file_name} received and saved."}, room=self.socket["sid"])
-            
+
     def extract_json_response(self, text_response):
+            text_response = re.sub(r'//.*?(\r?\n|$)', '\n', text_response)
+            text_response = re.sub(r',\s*([}\]])', r'\1', text_response)
+            
+            json_field_pattern = re.compile(r'{\s*["\']?(subject|chat_id|ticket_id|user|medium|text|summary|attachments|product_type|issue_type|priority|story_points|estimation|analysis|reply|assingee|status|created|updated|comments|logged_hrs)["\']?\s*:')
+
+            if "```json" in text_response:
+                start_index = text_response.index("```json") + len("```json")
+                end_index = text_response.index("```", start_index)
+                json_msg = text_response[start_index:end_index].strip()
+            else:
+                match = json_field_pattern.search(text_response)
+                if match:
+                    start_index = match.start()
+                    end_index = self.find_closing_brace(text_response, start_index)
+                    if end_index != -1:
+                        json_msg = text_response[start_index:end_index].strip()
+                    else:
+                        return None, text_response.strip()
+                # else:
+                #     try:
+                #         json_msg_dict = json.loads(text_response.strip())
+                #         reply_msg = json_msg_dict.get("reply") or default_reply_msg
+                #         return json_msg_dict, reply_msg
+                #     except json.JSONDecodeError as e:
+                #         print(f"JSON decoding error: {e}")
+                #         print(f"Problematic JSON: {text_response}")
+                #         return None, text_response.strip()  
+
+            try:
+                print(json_msg)
+                json_msg_dict = json.loads(json_msg)
+                reply_msg = json_msg_dict.get("reply") or default_reply_msg
+                return json_msg_dict, reply_msg
+            except json.JSONDecodeError as e:
+                print(f"JSON decoding error: {e}")
+                print(f"Problematic JSON: {text_response}")
+                return None, text_response.strip()
+
+    def extract_json_response_2(self, text_response):
+        # Remove single-line comments and trailing commas before closing braces
         text_response = re.sub(r'//.*?(\r?\n|$)', '\n', text_response)
         text_response = re.sub(r',\s*([}\]])', r'\1', text_response)
-        
-        json_field_pattern = re.compile(r'{\s*["\']?(subject|chat_id|ticket_id|user|medium|text|summary|attachments|product_type|issue_type|priority|story_points|estimation|analysis|reply|assingee|status|created|updated|comments|logged_hrs)["\']?\s*:')
-        json_msg=""
 
+        print(f"Original text response: {text_response}")
+
+        text_response = text_response.replace("'", '"')
+        json_field_pattern = re.compile(r'{\s*["\']?(subject|chat_id|ticket_id|user|medium|text|summary|attachments|product_type|issue_type|priority|story_points|estimation|analysis|reply|assingee|status|created|updated|comments|logged_hrs)["\']?\s*:')
+   
+        json_msg = ""
         if "```json" in text_response:
             start_index = text_response.index("```json") + len("```json")
             end_index = text_response.index("```", start_index)
@@ -423,25 +482,24 @@ class ChatbotHandler:
                 if end_index != -1:
                     json_msg = text_response[start_index:end_index].strip()
                 else:
+                    print("Unable to find closing brace")
                     return None, text_response.strip()
-            # else:
-            #     try:
-            #         json_msg_dict = json.loads(text_response.strip())
-            #         reply_msg = json_msg_dict.get("reply") or default_reply_msg
-            #         return json_msg_dict, reply_msg
-            #     except json.JSONDecodeError as e:
-            #         print(f"JSON decoding error: {e}")
-            #         print(f"Problematic JSON: {text_response}")
-            #         return None, text_response.strip()  
+
+        print(f"Extracted JSON message: {json_msg}")
+
+        json_msg = json_msg.replace("None", "null").strip()
+        if not json_msg:
+            print("Empty or invalid JSON string")
+            return None, text_response.strip()
 
         try:
-            print(json_msg)
+            # Try parsing the cleaned JSON message
             json_msg_dict = json.loads(json_msg)
-            reply_msg = json_msg_dict.get("reply") or default_reply_msg
+            reply_msg = json_msg_dict.get("reply") or "Default reply message"
             return json_msg_dict, reply_msg
         except json.JSONDecodeError as e:
             print(f"JSON decoding error: {e}")
-            print(f"Problematic JSON: {text_response}")
+            print(f"Problematic JSON: {json_msg}")
             return None, text_response.strip()
 
     def find_closing_brace(self, text, start_index):
@@ -460,44 +518,117 @@ class ChatbotHandler:
 import os
 import json 
 def create_jsonl():
-    # Create a JSONL file
-    # Get all JSON files from within chats_folder/* and its subdirectories
-    # Create a JSONL file with all the JSON files and include the directory as a key
-    # Return the JSONL file path
-
-    # Also get all JSON from ticket_folder and its subdirectories, and add to the JSONL file
     json_files = []
     ticket_files = []
 
-    # Get JSON files from chats folder
     for root, dirs, files in os.walk(chats_folder):
         for file in files:
             if file.endswith(".json"):
                 json_files.append((os.path.join(root, file), os.path.basename(root)))
 
-    # Get JSON files from ticket folder
     for root, dirs, files in os.walk(ticket_folder):
         for file in files:
             if file.endswith(".json"):
                 ticket_files.append((os.path.join(root, file), os.path.basename(root)))
 
-    # Combine both chat and ticket JSON files
     json_files.extend(ticket_files)
 
-    # Define the path for the output JSONL file
     jsonl_file = os.path.join(chats_folder, "all_chats.jsonl")
 
-    # Write the JSON objects to the JSONL file
     with open(jsonl_file, "w") as f:
         for file, dir_name in json_files:
             with open(file, "r") as jf:
-                # Load each JSON file content as a Python dictionary
                 data = json.load(jf)
-                # Wrap the JSON data with a new key (directory name) and write it to the JSONL file
                 wrapped_data = {dir_name: data}
-                # Write the wrapped JSON object as a single line in the JSONL file
                 f.write(json.dumps(wrapped_data) + "\n")
 
     return jsonl_file
 
+
+def eval_ticket_employee(ticket):
+    employees = get_all_users()
     
+    # Collect employee data for clustering
+    employee_data = []
+    employee_names = []
+    
+    for employee_name, employee in employees.items():
+        if employee['type'] != 'employee':
+            continue
+
+        experience = employee.get('experience', 0)
+        score = employee.get('score', 0)
+        gcm = employee.get('gcm', 0)
+        
+        employee_data.append([experience, score, gcm])
+        employee_names.append(employee_name)
+    
+    employee_data = np.array(employee_data)
+    
+    kmeans = KMeans(n_clusters=3, random_state=42).fit(employee_data)
+    labels = kmeans.labels_  # Labels for each employee
+    
+    priority_map = {'low': 0, 'medium': 1, 'high': 2, 'critical': 3}
+    priority = ticket.get('priority', '').lower()
+    priority_value = priority_map.get(priority, 1)  # Default to 'medium' if not provided
+    
+    story_points = int(ticket.get('story_points', 1))  # Default to 1
+    estimation = int(ticket.get('estimation', 1))  # Default to 1 day
+    
+    product_type = ticket.get('product_type', '').lower()
+    issue_type = ticket.get('issue_type', '').lower()
+    
+    ticket_importance = 1
+    if priority_value == 0 and story_points <= 2 and estimation <= 10:
+        ticket_importance = 0  # Low importance
+    elif priority_value >= 2 or story_points > 5 or estimation > 10:
+        ticket_importance = 2  # High importance
+
+    candidates = []
+    for idx, label in enumerate(labels):
+        if label == ticket_importance:
+            employee = employees[employee_names[idx]]
+            if product_type in employee.get('role', '').lower():
+                candidates.append((employee_names[idx], employee_data[idx]))
+
+    if not candidates:
+        for idx, label in enumerate(labels):
+            if label == ticket_importance:
+                candidates.append((employee_names[idx], employee_data[idx]))
+    
+    if not candidates:
+        candidates = [(employee_names[idx], employee_data[idx]) for idx in range(len(employee_names))]
+    
+    print("\n\n\n", candidates, "\n\n\n")
+
+    if ticket_importance == 0:
+        non_best_candidates = [c for c in candidates if labels[employee_names.index(c[0])] != 2]  # Exclude the 'best' group
+        if non_best_candidates:
+            best_candidate = max(non_best_candidates, key=lambda x: x[1][1])[0]
+        else:
+            best_candidate = max(candidates, key=lambda x: x[1][1])[0]
+    else:
+        best_candidate = max(candidates, key=lambda x: x[1][1])[0]
+
+    best_candidate_score = max(candidates, key=lambda x: x[1][1])[1][1]
+    print(f"\n\n\n\nBest employee for the ticket: {best_candidate}")
+    print(f"Score of the best candidate: {best_candidate_score}")
+    return best_candidate
+
+def eval_ticket_employee_vertex(ticket):
+    users_data = get_all_users()
+    user_employee = {}
+    for user in users_data:
+        if users_data[user]['type'] == 'employee':
+            user_employee[user] = users_data[user]
+            print(user_employee)
+    google_ver = wl_vertex.google_vertex_chat(instruction=instructions_assign)
+    response = google_ver.send_message(json.dumps({"ticket_data": ticket, "users_data": user_employee}))
+    
+    for candidate in response.candidates:
+        if candidate.content.parts[0].text == "No suitable candidates found":
+            return "Nil"
+        else:
+            print("FFFFFFFFFFFFF  : ", candidate.content.parts[0].text)
+            return candidate.content.parts[0].text
+    return response

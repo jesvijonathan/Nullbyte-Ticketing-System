@@ -8,6 +8,9 @@ import { faLeaf } from '@fortawesome/free-solid-svg-icons';
 import { useRoute } from 'vue-router';
 import Sla from '@/components/Sla.vue';
 import Activity from '@/components/Activity.vue';
+import PullRequestDetails from '@/components/PullRequestDetails.vue';
+import GetEmployees from '@/components/GetEmployees.vue';
+import AiLoaderToast from '@/components/AiLoaderToast.vue';
 
 const urlParams = new URLSearchParams(window.location.search);
 let ticket_id = urlParams.get('id');
@@ -17,10 +20,17 @@ if (!ticket_id) {
     ticket_id = route.params.id;
 }
 
+let service_tag = "SVC-";
+
+
+function service_tag_assign() {
+    // add logix here later
+}
+
 let bread_path_json = {
     "NULLBYTE": "/",
     "TICKETS": "/tickets",
-    [`${ticket_id}`]: "/ticket?id=${ticket_id}",
+    [`${service_tag}${ticket_id}`]: "/ticket?id=${ticket_id}",
 };
 
 // const attachments = ref([]);
@@ -70,7 +80,7 @@ let ticket_data = ref({
     "estimation": "1",
     "analysis": "",
     "reply": "",
-    "assingee": "",
+    "assignee": "",
     "status": "open",
     "created": "",
     "updated": "",
@@ -106,6 +116,11 @@ onMounted(() => {
     // }
 
     extract_links();
+    setTimeout(() => {
+        autoExpand({ target: document.getElementById('desc_te') });
+        autoExpand({ target: document.getElementById('summary_te') });
+        autoExpand({ target: document.getElementById('analysis') });
+    }, 500);
     // sla_json_data.value.estimated = ticket_data.value.estimation;
 });
 
@@ -129,10 +144,9 @@ const autoFill = async () => {
 
         const data = await response.json();
         console.log("Ticket data fetched successfully:", data);
-        console.log('before assignment',ticket_data.value)
-        ticket_data.value=data;
-        // Assign the fetched data
-        console.log('after assignment',ticket_data.value)
+        console.log('before assignment', ticket_data.value)
+        ticket_data.value = data;
+        console.log('after assignment', ticket_data.value)
 
         get_attachments_from_data();  // Process attachments
         extract_links();  // Extract links if needed
@@ -163,13 +177,15 @@ const reset_form = () => {
         "estimation": "1",
         "analysis": "",
         "reply": "",
-        "assingee": "",
+        "assignee": "",
         "status": "open",
         "created": ticket_data.value.created,
         "updated": "",
         "comments": ticket_data.value.comments,
         "logged_hrs": []
     };
+
+    service_tag = "SVC-";
 
     attachments.value = [];
     loading.value = false;
@@ -191,9 +207,9 @@ function autoExpand(event) {
 
 }
 
-
 // Reactive attachment list
 const attachments = ref([]);
+const newAttachments = ref([]);
 // get attachments from ticket_data.attachments
 // attachments.value = ticket_data.value.attachments;
 // example : 
@@ -258,6 +274,22 @@ const handleFileChange = (event) => {
         details: null
 
     }));
+    loading.value = true;
+    const files = Array.from(event.target.files);
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            attachments.value.push({
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                data: btoa(e.target.result)
+            });
+        };
+        reader.readAsDataURL(file); // or reader.readAsArrayBuffer(file) if needed
+    });
+    event.target.value = '';
+    loading.value = false;
 
     attachments.value = [...attachments.value, ...newAttachments];
     check_padd();
@@ -278,8 +310,9 @@ let links = ref([]);
 
 function extract_links() {
     const text = ticket_data.value.text;
+    console.log('text:', text);
     const summary = ticket_data.value.summary;
-    const comments = ticket_data.value.comments;
+    const comments = ticket_data.value.comments || [];
     const linksArray = [];
     const link_pattern = /((http|https):\/\/[^\s]+|www\.[^\s]+)/g;
     if (text) {
@@ -294,7 +327,21 @@ function extract_links() {
             linksArray.push(...(comment.text.match(link_pattern) || []));
         }
     });
+
+    let count = 0;
     links.value = [...new Set(linksArray)];
+    links.value.forEach(link => {
+        // https://github.com/jesvijonathan/Nullbyte-Ticketing-System/pull/4
+        console.log('link:', link);
+        if (link.includes('github.com')) {
+            count++;
+            gitlab = link.replace('github.com', 'gitlab.com');
+        }
+    });
+
+    if (count == 0) {
+        gitlab = "";
+    }
 }
 
 let sla_json_data = ref({
@@ -313,6 +360,7 @@ function total_logged_hrs() {
 
 
 import { useCookies } from 'vue3-cookies';
+import { reach } from 'yup';
 const { cookies } = useCookies();
 const current_user = cookies.get('user');
 
@@ -337,9 +385,9 @@ const handleAddComment = (newCommentText) => {
 };
 
 
-function handle_delete(){
+function handle_delete() {
     // request /delete/<ticket_id>
-    
+
     fetch(document.baseMyURL + `/delete/${ticket_id}`, {
         method: 'DELETE',
         headers: {
@@ -356,14 +404,15 @@ function handle_delete(){
             console.error('Error:', error);
             alert('Error deleting ticket');
         });
-    
+
 }
 
-let update_url=document.baseMyURL+ "/update_ticket";
+let update_url = document.baseMyURL + "/update_ticket";
 
 
-function update_ticket(){
+function update_ticket() {
     // request /update_ticket
+    loading.value = true;
     console.log(ticket_data.value)
     fetch(update_url, {
         method: 'POST',
@@ -375,29 +424,139 @@ function update_ticket(){
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
-            alert('Ticket updated successfully');
         })
         .catch((error) => {
             console.error('Error:', error);
             alert('Error updating ticket');
+        }).finally(() => {
+            loading.value = false;
         });
 }
+// https://github.com/jesvijonathan/Nullbyte-Ticketing-System/pull/4
+let gitlab = "";
+
+function handle_jira() {
+    // request /jira/<ticket_id>
+    console.log('ticket_data.value:', ticket_data.value);
+    fetch(document.baseMyURL + `/jira/create_issue`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ticket_data.value),
+        mode: 'cors', // Ensure CORS is enabled
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        window.location.href = data.url;
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('Error moving ticket to Jira');
+    });
+}
+function updateAssignee(event){
+    ticket_data.value.assignee = event;
+    show_employee_menu.value = false;
+}
+function close_me(){
+    show_employee_menu = false
+}
+const show_employee_menu = ref(false);
+
+
+const eval_url = document.baseMyURL + "/eval_ticket";
+
+function eval_assignee(){
+// pass the ticket json to eval_url and get username from the response
+
+    using_ai.value = true;
+    fetch(eval_url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ticket_data.value),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            ticket_data.value.assignee = data;
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error updating ticket');
+        }).finally(() => {
+            using_ai.value = false;
+        });
+        ;
+
+}
+
+
+const enhance_text_url = document.baseMyURL + "/text/enhance_text";
+
+function enhance_text(inp_elem) {
+    using_ai.value = true;
+    const str_text = document.getElementById(inp_elem).value;
+    console.log('str_text:', str_text);
+    fetch(enhance_text_url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ "to_enhance_string": str_text }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data.result);
+            // Update the Vue data model (ticket_data.text) instead of directly manipulating the DOM
+            if (data.result) {
+                if (inp_elem == 'desc_te') {
+                    ticket_data.value.text = data.result;
+                } else if (inp_elem == 'summary_te') {
+                    ticket_data.value.summary = data.result;
+                } else if (inp_elem == 'analysis') {
+                    ticket_data.value.analysis = data.result;
+                }
+                autoExpand({ target: document.getElementById(inp_elem) }); 
+            } else {
+                alert('Error enhancing text: ' + data.error);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error enhancing text');
+        }).finally(() => {
+            using_ai.value = false;
+        });
+}
+
+
+
+
+const using_ai = ref(false);
 
 </script>
 
 
 <template>
     <LoaderToast :loading="loading" />
+    <AiLoaderToast :loading="using_ai" />
     <!-- <NavigationBarView /> -->
     <NavigationBarView2 />
     <div class="home-container">
         <SidePane />
         <div class="main-pane">
             <BreadCrumb :data="bread_path_json" />
-
             <div class="tile-container ">
-                <h1 class="main_title">{{ ticket_data.ticket_id }}:<div class="ticket_id"> <input class="subject_edit"
-                            type="text" v-model="ticket_data.subject"
+                <h1 class="main_title">{{ service_tag }}{{ ticket_data.ticket_id }}:<div class="ticket_id"> <input
+                            class="subject_edit" type="text" v-model="ticket_data.subject"
                             :class="{ 'inp_desc_none': !ticket_data.subject }">
                     </div>
                 </h1>
@@ -452,8 +611,14 @@ function update_ticket(){
                         <div class="tinfo_text">
                             <div>Assigned To&nbsp;&nbsp;:</div>&nbsp;
                             <input type="text" placeholder="Add Username" class="input_field drop_inpt drop_input_tex"
-                                id="assingee" v-model="ticket_data.assingee"
-                                :class="{ 'inp_desc_none': !ticket_data.assingee }">
+                                id="assignee" v-model="ticket_data.assignee"
+                                :class="{ 'inp_desc_none': !ticket_data.assignee }" @focus="show_employee_menu = true"  @blur="close_me()" autocomplete="off">
+                                <GetEmployees sty="width: 20vw;" :cur_text="ticket_data.assignee" @select="updateAssignee($event)
+                                " v-if="show_employee_menu"/>
+                                <div class="class_ai" @click="eval_assignee()">
+                                    <!-- add an star/sparkle image -->
+                                    <img src="https://img.icons8.com/?size=100&id=99559&format=png&color=000000" />
+                                </div>
                         </div>
                     </div>
                     <hv></hv>
@@ -483,7 +648,11 @@ function update_ticket(){
                 <div class="both_tog">
                     <div class="first_part">
                         <div class="input_cont">
-                            <label for="desc_te" class="inpt_desc_lab">Description</label>
+                            <label for="desc_te" class="inpt_desc_lab" @click="enhance_text('desc_te')">Description                                
+                                <div class="class_ai_2" @click="eval_assignee()" title="Click to Enhance using AI">
+                                    <!-- add an star/sparkle image -->
+                                    <!-- <img src="https://img.icons8.com/?size=100&id=99559&format=png&color=000000" /> -->
+                                </div></label>
                             <textarea placeholder="Enter your name" class="input_field inp_desc"
                                 :class="{ 'inp_desc_none': !ticket_data.text }" id="desc_te" v-model="ticket_data.text"
                                 @input="autoExpand($event); extract_links()">
@@ -491,21 +660,21 @@ function update_ticket(){
                         </div>
 
                         <div class="input_cont con_spl" v-if="ticket_data.summary">
-                            <label for="summary_te" class="inpt_desc_lab">Summary</label>
+                            <label for="summary_te" class="inpt_desc_lab" title="Click to Enhance using AI" @click="enhance_text('summary_te')">Summary</label>
                             <textarea placeholder="Enter Summary" class="input_field inp_desc" id="summary_te"
                                 v-model="ticket_data.summary" @input="autoExpand" readonly disabled>
             </textarea>
                         </div>
 
-                        <div class="input_cont con_spl" >
-                            <label for="summary_te" class="inpt_desc_lab">Analysis</label>
-                            <textarea placeholder="Enter your Analysis or Solution" class="input_field inp_desc" id="analysis"
-                                v-model="ticket_data.analysis" @input="autoExpand">
+                        <div class="input_cont con_spl">
+                            <label for="summary_te" class="inpt_desc_lab" title="Click to Enhance using AI" @click="enhance_text('analysis')">Analysis</label>
+                            <textarea placeholder="Enter your Analysis or Solution" class="input_field inp_desc"
+                                id="analysis" v-model="ticket_data.analysis" @input="autoExpand">
             </textarea>
                         </div>
 
                         <div class="input_cont con_spl">
-                            <label for="title" class="inpt_desc_lab">Attachments</label>
+                            <label for="title" class="inpt_desc_lab" @click="enhance_text">Attachments</label>
                             <div class="input_cont attach_cont_files">
                                 <div class="input_cont attach_cont">
                                     <input type="file" class="input_field att" id="attachments"
@@ -543,6 +712,15 @@ function update_ticket(){
                             </div>
                         </div>
 
+                        <div class="input_cont con_spl">
+                            <div v-if="gitlab" class="git_lab">
+                                <label for="links" class="inpt_desc_lab">Gitlab Analyzer</label>
+                                <PullRequestDetails :pr="gitlab" />
+                            </div>
+                        </div>
+
+
+
 
                         <div class="creat_form_cont">
                             <div class="input_cont_2 attach_cont">
@@ -575,7 +753,7 @@ function update_ticket(){
 
 
                                 <div class="input_cont_2 but_con al_but">
-                                    <button class="btn jira">Move To Jira</button>
+                                    <button class="btn jira" @click="handle_jira">Move To Jira</button>
                                     <button class="btn_cancel save" @click="update_ticket">
                                         <img src="https://img.icons8.com/ios/50/000000/save.png">
                                     </button>
@@ -624,6 +802,41 @@ function update_ticket(){
 </template>
 
 <style scoped>
+.class_ai{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5vw;
+    transform: scale(0.16);
+    width: 0vw;
+    height: 1vw;
+    margin-left: 13vw;
+    position: absolute;
+    cursor: pointer;
+    opacity: 0.2;
+}
+.class_ai:hover{
+    transform: scale(0.2);
+    background-color: #393939;
+    opacity: 1;
+}
+.class_ai_2{   
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.16);
+    width: 0vw;
+    margin-left: 10vw;
+    position: absolute;
+    cursor: pointer;
+    opacity: 0.2;
+    top: 35vh
+    /* top: 18.7vw; */
+}
+.git_lab {
+    margin-top: 1vw;
+}
+
 vv {
     width: 20vw;
     height: 0.1vw;
@@ -1253,6 +1466,11 @@ hv {
     font-family: wl2;
     color: #393939;
     margin-top: 0.5vw;
+    cursor: pointer;
+}
+.inpt_desc_lab:hover {
+    color: #46BEAA;
+    text-decoration: underline;
 }
 
 .both_tog {
@@ -1523,16 +1741,19 @@ textarea:disabled {
     outline: none;
     border-bottom: 0.1vw solid #46BEAA;
 }
-.save{
+
+.save {
     background-color: rgb(188, 89, 89);
 }
-.jira{
+
+.jira {
     filter: invert(0);
     background-color: rgba(71, 165, 71, 0);
     border: 0.1vw solid #46BEAA;
     color: #000000;
 }
-.jira:hover{
+
+.jira:hover {
     background-color: #46BEAA;
     color: white;
 }

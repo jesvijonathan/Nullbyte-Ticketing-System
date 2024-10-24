@@ -14,7 +14,7 @@ FIELDS TERMINATED BY ','
 ENCLOSED BY '"' 
 LINES TERMINATED BY '\n' 
 IGNORE 1 ROWS
-(name, age, gender, username, password, email, phone, role, score, @manager, gcm, experience)
+(name, age, gender, username, password, email, phone, role, score, @manager, team, open_tickets, closed_tickets, gcm, experience)
 SET manager = NULLIF(@manager, '');
 
 -- LOAD DATA INFILE '/var/lib/mysql-files/ticket_table.csv'

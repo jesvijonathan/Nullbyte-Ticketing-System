@@ -25,3 +25,9 @@ body{
     font-style: normal;
     font-size: 1.5vw;
   }
+
+.srcode {
+    font-family: "Source Code Pro", monospace;
+    font-optical-sizing: auto;
+    font-style: normal;
+}

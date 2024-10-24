@@ -1,0 +1,42 @@
+USE nullbyte;
+
+INSERT INTO customer (name, age, gender, username, password, email, phone, company, role, score) VALUES
+('Unassigned', 0, 'Male', 'unassigned', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'unassigned@nullbyte.com', NULL, 'unassigned', 'unassigned', 0),
+('Ras Das', 23, 'Female', 'ras.das', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'ras.das@nullbyte.exe', '6969420911', 'ICICI', 'Technical Staff', 3),
+('Alice Johnson', 30, 'Female', 'alice.johnson', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'alice.johnson@example.com', '1234567890', 'Tech Corp', 'Customer', 85),
+('Bob Smith', 28, 'Male', 'bob.smith', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'bob.smith@example.com', '1234567891', 'Innovate LLC', 'Customer', 90),
+('Charlie Brown', 35, 'Male', 'charlie.brown', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'charlie.brown@example.com', '1234567892', 'NextGen Inc', 'Customer', 78),
+('Daisy White', 22, 'Female', 'daisy.white', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'daisy.white@example.com', '1234567893', 'Future Solutions', 'Customer', 88),
+('Ethan Hunt', 40, 'Male', 'ethan.hunt', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'ethan.hunt@example.com', '1234567894', 'Prime Services', 'Customer', 95),
+('Fiona Green', 29, 'Female', 'fiona.green', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'fiona.green@example.com', '1234567895', 'Global Enterprises', 'Customer', 80),
+('George Black', 45, 'Male', 'george.black', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'george.black@example.com', '1234567896', 'Visionary Tech', 'Customer', 70),
+('Hannah Brown', 33, 'Female', 'hannah.brown', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'hannah.brown@example.com', '1234567897', 'Smart Solutions', 'Customer', 82),
+('Ian Wright', 27, 'Male', 'ian.wright', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'ian.wright@example.com', '1234567898', 'Dynamica Industries', 'Customer', 87),
+('Julia Roberts', 31, 'Female', 'julia.roberts', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'julia.roberts@example.com', '1234567899', 'Innovation Hub', 'Customer', 92);
+
+INSERT INTO employee (name, age, gender, username, password, email, phone, role, score, manager, gcm, experience) VALUES
+('Unassigned', 0, 'Male', 'unassigned', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'unassigned.name.dev@nullbyte.exe', '9876543210', 'unassigned', 0, 1, 0, 1),
+('Admin', 78, 'Male', 'admin', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'administrator.admin.mgmt@nullbyte.exe', '2345678901', 'Admin', 0, 1, 0, 0),
+('Jesvi Jonathan', 22, 'Male', 'jesvi.jonathan', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'jesvi.jonathan.dev@nullbyte.exe', '7010493945', 'Development', 95, 3, 2, 2),
+('Akileswar Prathapkumar', 22, 'Male', 'akileswar.prathapkumar', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'akileswar.prathapkumar.dev@nullbyte.exe', '8345678912', 'Development', 92, 2, 2, 2),
+('Alice Smith', 30, 'Female', 'alice.smith', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'alice.smith.dev@nullbyte.com', '5678901234', 'Development', 85, 2, 1, 5),
+('Bob Jhonson', 28, 'Male', 'bob.johnson', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'bob.johnson.dev@nullbyte.exe', '1234567891', 'Development', 90, 1, 2, 3),
+('Charlie Brown', 35, 'Male', 'charlie.brown', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'charlie.brown.svc@nullbyte.exe', '6789012345', 'Service', 78, 1, 3, 8),
+('Daisy White', 22, 'Female', 'daisy.white', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'daisy.white.ext@nullbyte.exe', '7890123456', 'External', 88, 2, 4, 2),
+('Diana Prince', 24, 'Female', 'diana.prince', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'diana.prince.svc@nullbyte.exe', '9876512345', 'Service', 70, 2, 4, 9),
+('Ethan Hunt', 40, 'Male', 'ethan.hunt', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'ethan.hunt.mgmt@nullbyte.exe', '4567890123', 'Management', 95, 1, 5, 10),
+('Eve Adams', 27, 'Female', 'eve.adams', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'eve.adams.mgmt@nullbyte.exe', '9123456789', 'Management', 65, 1, 3, 3),
+('Fiona Green', 29, 'Female', 'fiona.green', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'fiona.green.svc@nullbyte.exe', '8901234567', 'Service', 80, 2, 6, 4),
+('Frank Castle', 34, 'Male', 'frank.castle', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'frank.castle.mgmt@nullbyte.exe', '9988776655', 'Management', 82, 2, 4, 5),
+('George Black', 45, 'Male', 'george.black', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'george.black.dev@nullbyte.exe', '9012345678', 'Development', 70, 1, 3, 12),
+('Grace Hopper', 45, 'Male', 'grace.hopper', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'grace.hopper.svc@nullbyte.exe', '8899001122', 'Service', 90, 1, 1, 15),
+('Hank Pym', 33, 'Male', 'hank.pym', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'hank.pym.ext@nullbyte.exe', '7766554433', 'Scrum leader', 58, 1, 3, 2),
+('Hannah Brown', 33, 'Female', 'hannah.brown', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'hannah.brown.mgmt@nullbyte.exe', '1234567890', 'Management', 82, 1, 6, 7),
+('Ian Wright', 27, 'Male', 'ian.wright', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'ian.wright.svc@nullbyte.exe', '1357924680', 'Service', 87, 2, 5, 3),
+('Jesvi Jonathan', 21, 'Male', 'jesvi.jonathan', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'jesvi.jonathan.dev@nullbyte.exe', '9654321876', 'Development', 75, 2, 4, 3),
+('Julia Roberts', 31, 'Female', 'julia.roberts', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'julia.roberts.mgmt@nullbyte.exe', '2468013579', 'Management', 92, 1, 4, 6),
+('Karan Mehta', 28, 'Male', 'karan.mehta', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'karan.mehta.dev@nullbyte.exe', '8765432101', 'Development', 75, 2, 4, 5),
+('Nikhil Sharma', 26, 'Female', 'nikhil.sharma', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'nikhil.sharma.svc@nullbyte.exe', '8765123450', 'Analyst', 65, 2, 3, 3),
+('Rajashree', 23, 'Female', 'rajashree.dinakran', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'rajashree.dinakran.dev@nullbyte.exe', '4204209119', 'Associate Engineer', 93, 1, 2, 2),
+('Rashmi Abdulrahim', 77, 'Female', 'rashmi.abdulrahim', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'rashmi.abdulrahim.ext@nullbyte.exe', '7865432190', 'Manager', 80, 1, 5, 22),
+('Sanya Verma', 32, 'Female', 'sanya.verma', '$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi', 'anya.verma.mgmt@nullbyte.exe', '9876543210', 'Team Lead', 85, 2, 5, 6);

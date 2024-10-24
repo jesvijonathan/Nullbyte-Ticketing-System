@@ -7,10 +7,11 @@ import datetime
 import time
 from google.api_core.exceptions import ResourceExhausted
 import json
+from modules.mailbot.mailbot import MailBot
 from modules.auth.auth import auth_ldap, jwt_required, cleanup_user
 from modules.text import text
-from modules.ml.ml_handler import ChatbotHandler, create_jsonl
-from modules.ticket import ticket
+from modules.ml.ml_handler import ChatbotHandler, create_jsonl, eval_ticket_employee, eval_ticket_employee_vertex, BotAdmin
+from modules.ticket import create_ticket, modify_fields,ticket,delete_ticket as delete_ticket_sql, get_ticket as get_ticket_sql,get_all_tickets
 from config import *
 from modules.log import *
 import base64
@@ -25,6 +26,8 @@ import pickle
 import threading
 import pandas as pd
 import re
+from modules.db.database import db_session
+
 
 # Flask configurations
 app = Flask(__name__)
@@ -39,12 +42,12 @@ app.register_blueprint(auth_ldap, url_prefix='/sso')
 app.register_blueprint(ticket, url_prefix='/ticket')
 app.register_blueprint(text, url_prefix='/text')
 
+if enable_jira:
+    from modules.jira.jira_int import jiraint
+    app.register_blueprint(jiraint, url_prefix='/jira')
 @app.route('/')
 def home():
     return render_template('index.html', token_param="")
-
-
-
 
 # dummy route to test json data from ./dataset/test.json
 @app.route('/test', methods=['GET'])
@@ -54,6 +57,14 @@ def test():
     return jsonify(data)
 
 @app.route('/delete/<ticket_id>', methods=['DELETE'])
+def handle_delete_ticket(ticket_id):
+    result=None
+    if dirmode:
+        result = delete_ticket(ticket_id)
+    if sqlmode:
+        result = delete_ticket_sql(ticket_id)
+    return result
+    
 def delete_ticket(ticket_id):
     ticket_path = os.path.join(ticket_folder, ticket_id)
     result={}
@@ -75,6 +86,14 @@ import requests
 
 @app.route('/get_ticket', methods=['GET'])
 @app.route('/get_ticket/<ticket_id>', methods=['GET'])
+def handle_get_ticket(ticket_id=None):
+    result=None
+    if sqlmode:
+        result = get_ticket_sql(ticket_id)
+    if dirmode:
+        result = get_ticket(ticket_id)
+    return result
+
 def get_ticket(ticket_id=None):
     if ticket_id is None:
         ticket_id = request.args.get('ticket_id')
@@ -113,7 +132,15 @@ def get_ticket(ticket_id=None):
 
 
 @app.route('/update_ticket', methods=['POST'])
-def update_ticket():
+def handle_update_ticket():
+    result=None
+    if sqlmode:
+        result = modify_fields(request)
+    if dirmode:
+        result = update_ticket(request)
+    return result
+
+def update_ticket(request):
     ticket_data = request.json
     ticket_id = ticket_data.get('ticket_id')
     if not ticket_id:
@@ -132,6 +159,34 @@ def update_ticket():
                 return jsonify(data)
     return jsonify({"error": "Ticket not found"}), 404
 
+@app.route('/get_employees', methods=['GET'])
+def get_employee():
+    return db_models.Employee().get_all_employees()
+
+@app.route('/get_customers', methods=['GET'])
+def get_customer():
+    return db_models.Customer().get_all_customers()
+
+@app.route('/get_users', methods=['GET'])
+def get_users():
+    return db_models.get_all_users()
+
+@app.route('/eval_ticket', methods=['POST'])
+def eval_ticket():
+    ticket = request.json
+    result = eval_ticket_employee_vertex(ticket)
+    # result = eval_ticket_employee(ticket)
+    print("aaaaaaaa : ", result)
+    return jsonify(result)
+
+@app.route('/eval_ticket_reg', methods=['POST'])
+def eval_ticket_reg():
+    ticket = request.json
+    result = eval_ticket_employee(ticket)
+    print("aaaaaaaa : ", result)
+    return jsonify(result)
+
+
 @app.route('/get_incomplete_ticket', methods=['GET'])
 def get_incomplete_ticket():
     with open('dataset/ticket_not.json') as f:
@@ -146,6 +201,13 @@ def get_autofill():
 
 @app.route('/get_tickets', methods=['GET'])
 @app.route('/get_tickets/<int:limit>', methods=['GET'])
+def handle_get_tickets(limit=20):
+    result=None
+    if sqlmode:
+        result = get_all_tickets(limit)
+    if dirmode and result is None:
+        result = get_tickets(limit)
+    return result
 def get_tickets(limit=20):
     tickets = {}
     for ticket in os.listdir(ticket_folder):
@@ -194,19 +256,44 @@ def get_jsonl():
             load_jsonl.append(json.loads(line))
     return jsonify(load_jsonl)
 
-
 @app.route('/text_form', methods=['POST'])
-def text_form():
+def handle_ticket_creation():
+    result=None
+    if sqlmode:
+        result = create_ticket(request)
+        print("@@@@@@@@@@@@@@! : ",result)
+    if dirmode:
+        try:
+            result = result.get_json()
+        except AttributeError:
+            try:
+                result = json.loads(result)
+            except json.JSONDecodeError:
+                pass
+        print("\n\n\n", result, "\n\n\n")
+        if result is not None and 'ticket_id' in result:
+            result = text_form(request, result['ticket_id'])
+        else:
+            result = text_form(request)
+    return result
+
+# @app.route('/text_form', methods=['POST'])
+def text_form(request,ticket_id=None):
+    print("Ticket ID:", ticket_id)
     form_data = request.json 
     print(json.dumps(form_data, indent=4))
     token = request.cookies.get('session')
     attachments = []  
     attachments_list = form_data.get('attachments', [])
-    ticket_id = form_data.get('ticket_id')
+    # ticket_id = form_data.get('ticket_id')
     if not ticket_id:
-        ticket_id = "SVC-" + str(random.randint(10000, 99999))
-
+        ticket_id = str(random.randint(10000, 99999))
+        form_data['ticket_id'] = ticket_id
+    else:
+        form_data['ticket_id'] = ticket_id
+    print("Ticket ID:", ticket_id)
     folder_this = os.path.join(ticket_folder, ticket_id)
+    print("Folder:", folder_this)
     if attachments_list:
         attachment_count = 0
         for attachment in attachments_list:
@@ -258,7 +345,7 @@ def convert_to_json(csv_file,user="unknown_user"):
         row = row.apply(lambda x: re.sub(r"\s+", " ", str(x)).strip())
         ticket_data = {
             "chat_id": "",
-            "ticket_id": "SVC-" + str(random.randint(10000, 99999)),
+            "ticket_id":str(random.randint(10000, 99999)),
             "user": str(row.get("Assigned to", "")).replace(" ", "").lower() or user,
             "medium": "other",
             "connection": "closed",
@@ -289,6 +376,12 @@ def convert_to_json(csv_file,user="unknown_user"):
             ticket_data["created"] = datetime.datetime.now().isoformat()
 
         ticket_data["updated"] = ticket_data["created"]
+        if sqlmode:
+            tid = BotAdmin.create_ticket(ticket_data)
+            ticket_data["ticket_id"] = tid
+            BotAdmin.create_ticket_dirmode(ticket_data)
+        else:
+            pass
         json_data.append(ticket_data)
 
     return json_data
@@ -317,14 +410,15 @@ def import_tickets():
                 unsuccessful_tickets.append({"file": filename, "error": "File is not a CSV"})
                 continue
             json_data = convert_to_json(csv_file_path, user)
-            for ticket in json_data:
-                ticket_id = ticket.get('ticket_id')
-                ticket_path = os.path.join(ticket_folder, str(ticket_id))
-                os.makedirs(ticket_path, exist_ok=True)
-                ticket_file = os.path.join(ticket_path, "data.json")
-                with open(ticket_file, "w") as f:
-                    json.dump(ticket, f)
-                total_tickets.append(ticket)
+            if dirmode:
+                for ticket in json_data:
+                    ticket_id = ticket.get('ticket_id')
+                    ticket_path = os.path.join(ticket_folder, str(ticket_id))
+                    os.makedirs(ticket_path, exist_ok=True)
+                    ticket_file = os.path.join(ticket_path, "data.json")
+                    with open(ticket_file, "w") as f:
+                        json.dump(ticket, f)
+                    total_tickets.append(ticket)
 
         except Exception as e:
             unsuccessful_tickets.append({"file": file.filename, "error": str(e)})
@@ -336,8 +430,6 @@ def import_tickets():
         "total_tickets": total_tickets,
         "unsuccessful_tickets": unsuccessful_tickets
     })
-
-
 
 
 @app.route('/sync_bucket')
@@ -475,7 +567,16 @@ if tmp_folders_cleanup:
                 except Exception as e:
                     print(f"Failed to delete {file_path}. Reason: {e}")
 
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
+        
+
 load_obj()
 
 if __name__ == '__main__':
+    if enable_mailbot:
+        mail_bot = MailBot()
+        flask_thread = threading.Thread(target=lambda: mail_bot.poll_inbox())
+        flask_thread.start()
     socketio.run(app, debug=True, host="0.0.0.0", port=5000)

@@ -1,25 +1,25 @@
-name,age,gender,username,password,email,phone,role,score,manager,gcm,experience
-Unassigned,0,Male,unassigned,unassigned_password,unassigned.name.dev@nullbyte.exe,9876543210,unassigned,0,1,0,1
-Admin,78,Male,admin,admin_password,administrator.admin.mgmt@nullbyte.exe,2345678901,Admin,0,1,0,0
-Akileswar Prathapkumar,22,Male,akileswar.prathapkumar,akileswar_password,akileswar.prathapkumar.dev@nullbyte.exe,8345678912,Development,92,2,2,2
-Alice Smith,30,Female,alice.smith,alice_password,alice.smith.dev@nullbyte.com,5678901234,Development,85,2,1,5
-Bob Jhonson,28,Male,bob.johnson,bob_password,bob.johnson.dev@nullbyte.exe,1234567891,Development,90,1,2,3
-Charlie Brown,35,Male,charlie.brown,charlie_password,charlie.brown.svc@nullbyte.exe,6789012345,Service,78,1,3,8
-Daisy White,22,Female,daisy.white,daisy_password,daisy.white.ext@nullbyte.exe,7890123456,External,88,2,4,2
-Diana Prince,24,Female,diana.prince,diana_password,diana.prince.svc@nullbyte.exe,9876512345,Service,70,2,4,9
-Ethan Hunt,40,Male,ethan.hunt,ethan_password,ethan.hunt.mgmt@nullbyte.exe,4567890123,Management,95,1,5,10
-Eve Adams,27,Female,eve.adams,eve_password,eve.adams.mgmt@nullbyte.exe,9123456789,Management,65,1,3,3
-Fiona Green,29,Female,fiona.green,fiona_password,fiona.green.svc@nullbyte.exe,8901234567,Service,80,2,6,4
-Frank Castle,34,Male,frank.castle,frank_password,frank.castle.mgmt@nullbyte.exe,9988776655,Management,82,2,4,5
-George Black,45,Male,george.black,george_password,george.black.dev@nullbyte.exe,9012345678,Development,70,1,3,12
-Grace Hopper,45,Male,grace.hopper,grace_password,grace.hopper.svc@nullbyte.exe,8899001122,Service,90,1,1,15
-Hank Pym,33,Male,hank.pym,hank_password,hank.pym.ext@nullbyte.exe,7766554433,Scrum leader,58,1,3,2
-Hannah Brown,33,Female,hannah.brown,hannah_password,hannah.brown.mgmt@nullbyte.exe,1234567890,Management,82,1,6,7
-Ian Wright,27,Male,ian.wright,ian_password,ian.wright.svc@nullbyte.exe,1357924680,Service,87,2,5,3
-Jesvi Jonathan,21,Male,jesvi.jonathan,jesvi_password,jesvi.jonathan.dev@nullbyte.exe,9654321876,Development,75,2,4,3
-Julia Roberts,31,Female,julia.roberts,julia_password,julia.roberts.mgmt@nullbyte.exe,2468013579,Management,92,1,4,6
-Karan Mehta,28,Male,karan.mehta,karan_password,karan.mehta.dev@nullbyte.exe,8765432101,Development,75,2,4,5
-Nikhil Sharma,26,Female,nikhil.sharma,nikhil_password,nikhil.sharma.svc@nullbyte.exe,8765123450,Analyst,65,2,3,3
-Rajashree,23,Female,rajashree.dinakran,rajashree_password,rajashree.dinakran.dev@nullbyte.exe,4204209119,Associate Engineer,93,1,2,2
-Rashmi Abdulrahim,77,Female,rashmi.abdulrahim,rashmi_password,rashmi.abdulrahim.ext@nullbyte.exe,7865432190,Manager,80,1,5,22
-Sanya Verma,32,Female,sanya.verma,sanya_password,anya.verma.mgmt@nullbyte.exe,9876543210,Team Lead,85,2,5,6
+name,age,gender,username,password,email,phone,role,score,manager,team,open_tickets,closed_tickets,gcm,experience
+Unassigned,0,Male,unassigned,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,unassigned.name.dev@nullbyte.exe,9876543210,unassigned,0,1,wlpfo,1,435,0,1
+Admin,78,Male,admin,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,administrator.admin.mgmt@nullbyte.exe,2345678901,Admin,0,1,pass,2,335,0,0
+Akileswar Prathapkumar,22,Male,akileswar.prathapkumar,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,akileswar.prathapkumar.dev@nullbyte.exe,8345678912,Development,92,2,gaas,3,54,2,2
+Alice Smith,30,Female,alice.smith,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,alice.smith.dev@nullbyte.com,5678901234,Development,85,2,product,4,343,1,5
+Bob Jhonson,28,Male,bob.johnson,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,bob.johnson.dev@nullbyte.exe,1234567891,Development,90,1,wlsi,3,345,2,3
+Charlie Brown,35,Male,charlie.brown,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,charlie.brown.svc@nullbyte.exe,6789012345,Service,78,1,webgui,3,234,3,8
+Daisy White,22,Female,daisy.white,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,daisy.white.ext@nullbyte.exe,7890123456,External,88,2,db,5,345,4,2
+Diana Prince,24,Female,diana.prince,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,diana.prince.svc@nullbyte.exe,9876512345,Service,70,2,wlpfo,5,235,4,9
+Ethan Hunt,40,Male,ethan.hunt,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,ethan.hunt.mgmt@nullbyte.exe,4567890123,Management,95,1,pass,3,524,5,10
+Eve Adams,27,Female,eve.adams,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,eve.adams.mgmt@nullbyte.exe,9123456789,Management,65,1,gaas,3,524,3,3
+Fiona Green,29,Female,fiona.green,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,fiona.green.svc@nullbyte.exe,8901234567,Service,80,2,product,1,452,6,4
+Frank Castle,34,Male,frank.castle,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,frank.castle.mgmt@nullbyte.exe,9988776655,Management,82,2,wlsi,1,242,4,5
+George Black,45,Male,george.black,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,george.black.dev@nullbyte.exe,9012345678,Development,70,1,webgui,3,345,3,12
+Grace Hopper,45,Male,grace.hopper,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,grace.hopper.svc@nullbyte.exe,8899001122,Service,90,1,db,4,345,1,15
+Hank Pym,33,Male,hank.pym,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,hank.pym.ext@nullbyte.exe,7766554433,Scrum leader,58,1,wlpfo,5,113,3,2
+Hannah Brown,33,Female,hannah.brown,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,hannah.brown.mgmt@nullbyte.exe,1234567890,Management,82,1,pass,3,175,6,7
+Ian Wright,27,Male,ian.wright,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,ian.wright.svc@nullbyte.exe,1357924680,Service,87,2,gaas,4,343,5,3
+Jesvi Jonathan,21,Male,jesvi.jonathan,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,jesvi.jonathan.dev@nullbyte.exe,9654321876,Development,75,2,product,3,423,4,3
+Julia Roberts,31,Female,julia.roberts,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,julia.roberts.mgmt@nullbyte.exe,2468013579,Management,92,1,wlsi,5,232,4,6
+Karan Mehta,28,Male,karan.mehta,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,karan.mehta.dev@nullbyte.exe,8765432101,Development,75,2,webgui,3,434,4,5
+Nikhil Sharma,26,Female,nikhil.sharma,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,nikhil.sharma.svc@nullbyte.exe,8765123450,Analyst,65,2,db,4,323,3,3
+Rajashree,23,Female,rajashree.dinakran,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,rajashree.dinakran.dev@nullbyte.exe,4204209119,Associate Engineer,93,1,wlpfo,22,343,2,2
+Rashmi Abdulrahim,77,Female,rashmi.abdulrahim,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,rashmi.abdulrahim.ext@nullbyte.exe,7865432190,Manager,80,1,pass,4,44,5,22
+Sanya Verma,32,Female,sanya.verma,$2b$12$tzkBjICHDqm2z0/xxkMceO3effM27rhIHL9uXzn7c6s0HNh2NIdBi,anya.verma.mgmt@nullbyte.exe,9876543210,Team Lead,85,2,gaas,2,434,5,6
