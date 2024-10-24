@@ -136,19 +136,12 @@ const looper = 800;
         <div class="title jos">About Us</div>
         <div class="description">
             <p>
-                This is a simple Vue 3 project that uses the HTML5 Canvas API and GSAP for the animation. The project is
-                inspired by the <a href="https://codepen.io/akm2/pen/rHIsa" target="_blank"
-                    rel="noopener noreferrer">Particle Text Animation</a> by <a href="https://codepen.io/akm2"
-                    target="_blank" rel="noopener noreferrer">Akimitsu Hamamuro</a>.
-            </p>
-            <p>
-                The project uses a PNG image to create the particle effect. The image is split into pixels, and each
-                pixel is represented by a particle. The particles are then animated to move from their original position
-                to their final position.
-            </p>
-            <p>
-                The project also includes a simple text animation that displays the text "Google", "Worldline", and
-            </p>
+               We’re a group of four developers working together at Worldline Global Services on some pretty cool projects. 
+               Our team includes Jesvi Jonathan, Akileswar Prathapkumar,  Rashmi Abdulrahim, and Rajashree Dinakaran. 
+               We bring different strengths to the table, and together, we handle everything from coding to problem-solving. </p>
+            <p> Whether it’s tackling tricky bugs, optimizing systems, or coming up with new features, we work together to get things done. 
+               Each of us plays a unique role, but it’s our teamwork that really makes things happen. 
+               We’re always learning, growing, and pushing the boundaries of what we can do as a team."</p>
         </div>
     </div>
 
@@ -157,17 +150,11 @@ const looper = 800;
         <div class="title ">The Team</div>
         <div class="description jos">
             <p>
-                This is a simple Vue 3 project that uses the HTML5 Canvas API and GSAP for the animation. The project is
-                inspired by the <a href="https://codepen.io/akm2/pen/rHIsa" target="_blank"
-                    rel="noopener noreferrer">Particle Text Animation</a> by <a href="https://codepen.io/akm2"
-                    target="_blank" rel="noopener noreferrer">Akimitsu Hamamuro</a>.
-                The project uses a PNG image to create the particle effect. The image is split into pixels, and each
-                pixel is represented by a particle.
+               Started as a team of four developers, we have been working together on some pretty cool projects.
             </p>
 
             <p>
-                The project also includes a simple text animation that displays the text "Google", "Worldline", and
-                "Nullbyte" repeatedly.
+                We took part in the Google Cloud Next 2021 Hackathon.
             </p>
         </div>
 
@@ -180,38 +167,38 @@ const looper = 800;
                 <div class="profname">Jesvi Jonathan</div>
                 <div class="profdesc">
                     <p>WGS > MS > WLPFO > MARCOPOLO</p>
-                    <p>Trainee Engineer (W136629)</p>
+                    <p>Trainee Engineer</p>
                     <p>Musician & loves to code</p>
                 </div>
             </div>
             <div class="profcon">
 
                 <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" style="width:100%">
-                <div class="profname">John Doe</div>
+                <div class="profname">Akileswar PrathapKumar  </div>
                 <div class="profdesc">
-                    <p>CEO & Founder</p>
-                    <p>Some text..</p>
-                    <p>Some text..</p>
+                    <p>WGS > MS > WLPFO > MARCOPOLO</p>
+                    <p>Trainee Engineer</p>
+                    <p>Cofee & Code</p>
                 </div>
             </div>
             <div class="profcon">
 
                 <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" style="width:100%">
-                <div class="profname">John Doe</div>
+                <div class="profname">Rashmi Abdulrahim</div>
                 <div class="profdesc">
-                    <p>CEO & Founder</p>
-                    <p>Some text..</p>
-                    <p>Some text..</p>
+                    <p>WGS > MS > WLPFO > MARCOPOLO</p>
+                    <p>Associate Engineer </p>
+                    <p>Docker4Life</p>
                 </div>
             </div>
             <div class="profcon">
 
                 <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" style="width:100%">
-                <div class="profname">John Doe</div>
+                <div class="profname">Rajashree Dinakaran</div>
                 <div class="profdesc">
-                    <p>CEO & Founder</p>
-                    <p>Some text..</p>
-                    <p>Some text..</p>
+                    <p>WGS > MS > WLPFO > MARCOPOLO</p>
+                    <p>Associate Engineer</p>
+                    <p>Architect Pro Max</p>
                 </div>
             </div>
 
@@ -226,27 +213,20 @@ const looper = 800;
         <div class="title">The Making</div>
 <div class="imgdes">
     <div class="description jos">
-            <p>
-                This is a simple Vue 3 project that uses the HTML5 Canvas API and GSAP for the animation. The project is
-                inspired by the <a href="https://codepen.io/akm2/pen/rHIsa" target="_blank"
-                    rel="noopener noreferrer">Particle Text Animation</a> by <a href="https://codepen.io/akm2"
-                    target="_blank" rel="noopener noreferrer">Akimitsu Hamamuro</a>.
-            </p>
-            <p>
-                The project uses a PNG image to create the particle effect. The image is split into pixels, and each
-                pixel is represented by a particle. The particles are then animated to move from their original position
-                to their final position.
-            </p>
-            <br>
-            <p>
-                The project also includes a simple text animation that displays the text "Google", "Worldline", and
-                "Nullbyte" repeatedly.
-            </p>
-            <p>
-                The project also includes a simple text animation that displays the text "Google", "Worldline", and
-                "Nullbyte" repeatedly. The project also includes a simple text animation that displays the text "Google", "Worldline", and
-                "Nullbyte
-            </p>
+    <p>
+        Our NullByte Triaging System uses Generative AI and automation to streamline ticket management and improve service efficiency. 
+        Users submit queries via LLM-based chat, email, or a portal, which are triaged by a Google Cloud AI-powered model. 
+    </p>
+    <br>
+    <p>
+        Integrated with tools like JIRA, PagerDuty, and Serviceline, it offers a unified ticketing experience. 
+        The solution is scalable, with automated triggers, Active Directory, and Gen-AI capabilities for optimal performance and reliability.
+        Leverage machine learning with Cloud GPUs to process complex inputs like text  images and documents to analyse queries in a natural way.
+    </p> 
+    <br><p>
+        With the help of AI ,we can automatically assign and respond to tickets,  boosting productivity and improving its categorization accuracy over time, 
+        all in a single click Created a powerful skill-based routing system that links the tickets to employees based on their knowledge and previous performance.
+    </p> 
         </div>
         
         
@@ -260,21 +240,37 @@ const looper = 800;
     <div class="section">
         <div class="title">Techstack</div>
         <div class="description jos">
-          <p>
-            This is a simple Vue 3 project that uses the HTML5 Canvas API and GSAP for the animation. The project is inspired by the <a href="https://codepen.io/akm2/pen/rHIsa" target="_blank" rel="noopener noreferrer">Particle Text Animation</a> by <a href="https://codepen.io/akm2" target="_blank" rel="noopener noreferrer">Akimitsu Hamamuro</a>.
-          </p>
+            <!-- TECH STACK : PYTHON , VUE JS , MYSQL,  Multimodal Models ,Compute Engine , Cloud GPU , Cloud SQL ,  -->
+<!-- Cloud Run , Cloud Storage ,Ollama,ACTIVE DIRECTORY. -->
+            <p>
+            We have incorporated all the latest tech stack for this project of ours to come up with the best outcome.</p>
 
 <div class="techlis">
     <ul>
             <li>Vue 3</li>
-            <li>HTML5 Canvas API</li>
-            <li>GSAP</li>
+            <li>PYTHON</li>
+            <li>MYSQL</li>
           </ul>
           
     <ul>
-            <li>Vue 3</li>
-            <li>HTML5 Canvas API</li>
-            <li>GSAP</li>
+            <li>Multimodal Models</li>
+            <li>Compute Engine</li>
+            <li>Cloud GPU</li>
+          </ul>
+
+          <ul>
+            <li>Cloud SQL</li>
+            <li>Cloud Run</li>
+            <li>ACTIVE DIRECTORY</li>
+          </ul>
+
+          <ul>
+            <li>Ollama</li>
+            <li>Vertex API</li>
+            <li>GCS Bucket</li>
+          </ul>
+          <ul>
+            <li>Many More..</li>
           </ul>
           </div>
 
@@ -389,9 +385,9 @@ hv{
 }
 .prof {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
-    gap: 3vw;
+    gap: 1vw;
 }
 
 .profcon {
@@ -418,6 +414,7 @@ hv{
     padding: 1vw;
     padding-top: 0vw;
     opacity: 0.7;
+    text-wrap: nowrap;
     /* padding-top: 4vw; */
 }
 
