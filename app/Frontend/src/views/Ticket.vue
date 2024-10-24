@@ -437,22 +437,28 @@ let gitlab = "";
 
 function handle_jira() {
     // request /jira/<ticket_id>
-        console.log('ticket_data.value:', ticket_data.value);
-        fetch(document.baseMyURL + `/jira/create_issue`, {
+    console.log('ticket_data.value:', ticket_data.value);
+    fetch(document.baseMyURL + `/jira/create_issue`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(ticket_data.value),
+        mode: 'cors', // Ensure CORS is enabled
     })
-        .then(response => response.json())
-        .then(data => {
-            window.location.href=data.url;
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert('Error moving ticket to Jira');
-        });
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        window.location.href = data.url;
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('Error moving ticket to Jira');
+    });
 }
 function updateAssignee(event){
     ticket_data.value.assignee = event;

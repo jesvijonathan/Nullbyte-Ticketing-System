@@ -10,7 +10,7 @@ import json
 from modules.mailbot.mailbot import MailBot
 from modules.auth.auth import auth_ldap, jwt_required, cleanup_user
 from modules.text import text
-from modules.ml.ml_handler import ChatbotHandler, create_jsonl, eval_ticket_employee, eval_ticket_employee_vertex
+from modules.ml.ml_handler import ChatbotHandler, create_jsonl, eval_ticket_employee, eval_ticket_employee_vertex, BotAdmin
 from modules.ticket import create_ticket, modify_fields,ticket,delete_ticket as delete_ticket_sql, get_ticket as get_ticket_sql,get_all_tickets
 from config import *
 from modules.log import *
@@ -376,6 +376,12 @@ def convert_to_json(csv_file,user="unknown_user"):
             ticket_data["created"] = datetime.datetime.now().isoformat()
 
         ticket_data["updated"] = ticket_data["created"]
+        if sqlmode:
+            tid = BotAdmin.create_ticket(ticket_data)
+            ticket_data["ticket_id"] = tid
+            BotAdmin.create_ticket_dirmode(ticket_data)
+        else:
+            pass
         json_data.append(ticket_data)
 
     return json_data
@@ -404,14 +410,15 @@ def import_tickets():
                 unsuccessful_tickets.append({"file": filename, "error": "File is not a CSV"})
                 continue
             json_data = convert_to_json(csv_file_path, user)
-            for ticket in json_data:
-                ticket_id = ticket.get('ticket_id')
-                ticket_path = os.path.join(ticket_folder, str(ticket_id))
-                os.makedirs(ticket_path, exist_ok=True)
-                ticket_file = os.path.join(ticket_path, "data.json")
-                with open(ticket_file, "w") as f:
-                    json.dump(ticket, f)
-                total_tickets.append(ticket)
+            if dirmode:
+                for ticket in json_data:
+                    ticket_id = ticket.get('ticket_id')
+                    ticket_path = os.path.join(ticket_folder, str(ticket_id))
+                    os.makedirs(ticket_path, exist_ok=True)
+                    ticket_file = os.path.join(ticket_path, "data.json")
+                    with open(ticket_file, "w") as f:
+                        json.dump(ticket, f)
+                    total_tickets.append(ticket)
 
         except Exception as e:
             unsuccessful_tickets.append({"file": file.filename, "error": str(e)})

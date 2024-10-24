@@ -346,10 +346,11 @@ class ChatbotHandler:
          
     
     def handle_response(self, text_response):
-        if self.bot == "wl_llama" and self.result["medium"]  == "chat":
-            json_msg_dict, reply_msg = self.extract_json_response_2(text_response)
-        else:     
-            json_msg_dict, reply_msg = self.extract_json_response(text_response)
+        # if self.bot == "wl_llama":
+        #     # json_msg_dict, reply_msg = self.extract_json_response_2(text_response)
+        #     json_msg_dict, reply_msg = self.extract_json_response(text_response)
+        # else:     
+        json_msg_dict, reply_msg = self.extract_json_response(text_response)
         print("@@@@@@@@@@@@@2", json_msg_dict, "\n\n", reply_msg)
     
         if json_msg_dict:
@@ -424,7 +425,6 @@ class ChatbotHandler:
             text_response = re.sub(r',\s*([}\]])', r'\1', text_response)
             
             json_field_pattern = re.compile(r'{\s*["\']?(subject|chat_id|ticket_id|user|medium|text|summary|attachments|product_type|issue_type|priority|story_points|estimation|analysis|reply|assingee|status|created|updated|comments|logged_hrs)["\']?\s*:')
-            json_msg=""
 
             if "```json" in text_response:
                 start_index = text_response.index("```json") + len("```json")
