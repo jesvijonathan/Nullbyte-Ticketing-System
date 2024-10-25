@@ -425,7 +425,7 @@ class ChatbotHandler:
             text_response = re.sub(r',\s*([}\]])', r'\1', text_response)
             
             json_field_pattern = re.compile(r'{\s*["\']?(subject|chat_id|ticket_id|user|medium|text|summary|attachments|product_type|issue_type|priority|story_points|estimation|analysis|reply|assingee|status|created|updated|comments|logged_hrs)["\']?\s*:')
-
+            json_msg=None
             if "```json" in text_response:
                 start_index = text_response.index("```json") + len("```json")
                 end_index = text_response.index("```", start_index)
