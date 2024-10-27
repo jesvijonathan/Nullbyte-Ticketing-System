@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { gsap } from 'gsap';
 import logo1 from '@/assets/p1.png';
 import logo2 from '@/assets/p2.png';
@@ -125,8 +125,191 @@ onMounted(() => {
         });
     };
 
+    if (isMobile_()) {
+    // insert into style tag
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .abt1 {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            width: 99vw !important;
+            height: 100% !important;
+            transform: translate(-50%, -50%) rotate(-4deg) scale(2.1) !important;
+            overflow: clip !important;
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            align-content: center !important;
+            justify-content: center !important;
+            align-items: center !important;
+            animation: scale 10s infinite alternate !important;
+        }
+
+        @keyframes scale {
+            0% {
+                transform: translate(-50%, -50%) rotate(4deg) scale(2.1) !important;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) rotate(0deg) scale(2.2) !important;
+            }
+        }
+
+        .confeti {
+            /* display: none !important; */
+        }
+
+        .sonf_msg {
+            font-size: 7vw !important;
+            margin: 0 !important;
+        }
+
+        #scene {
+            margin-top: 45vh !important;
+            width: 60vw !important;
+            height: 20vw !important;
+            margin-bottom: 40vw !important;
+        }
+
+        .title {
+            font-size: 10vw !important;
+            transform: none !important;
+            text-align: center !important;
+            padding: 0 !important;
+            margin-bottom: 8vw !important;
+        }
+
+        .section {
+            margin: 2vw 8vw !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            margin-bottom: 10vw !important;
+        }
+
+        .description * {
+            font-size: 4vw !important;
+            font-weight: 400 !important;
+            text-align: justify !important;
+        }
+
+        .prof {
+            width: 100vw !important;
+            flex-wrap: nowrap !important;
+            gap: 0vw !important;
+            margin-top: 0 !important;
+            transform: none !important;
+            display: flex !important;
+            justify-content: center !important;
+            flex-direction: column !important;
+            align-content: center !important;
+            align-items: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            gap: 0 !important;
+            padding-top: 12vw !important;
+        }
+
+        .profcon {
+            width: 45vw !important;
+            padding: 4vw 12vw !important;
+            border-radius: 3vw !important;
+            border: 0.2vw solid var(--wl) !important;
+            transform: scale(0.8) !important;
+            margin: 0 !important;
+        }
+
+        .profcon img {
+            filter: grayscale(0) brightness(1) !important;
+            width: 45vw !important;
+            border-color: teal !important;
+        }
+
+        .profname {
+            font-size: 6.5vw !important;
+            color: rgb(0, 42, 42) !important;
+        }
+
+        .profdesc {
+            font-size: 2.8vw !important;
+        }
+
+        .profcon:active {
+            background-color: var(--wl) !important;
+            color: white !important;
+            box-shadow: 0 0 0 0.5vw var(--wl) !important; 
+        }
+
+        .techlis {
+            display: flex !important;
+            flex-direction: row !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            justify-content: space-evenly !important;
+            flex-wrap: wrap !important;
+            align-items: stretch !important;
+            align-content: center !important;
+            gap: 8vw !important;
+        }
+
+        .techlis ul {
+            display: none !important;
+        }
+
+        hv {
+            font-size: 3vw !important;
+/*            margin-top: 21vw !important;*/
+        }
+
+        .thanks {
+            margin: 3vw !important;
+            font-size: 4vw !important;
+            margin-top: 10vw !important;
+        }
+
+        .logotape {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 9vw !important;
+            flex-direction: column !important;
+            flex-wrap: nowrap !important;
+            align-content: center !important;
+            margin-top: 21vw !important;
+        }
+
+        .logotape img {
+            height: 3vw !important;
+        }
+
+        .emdcredd {
+            margin-top: 10vw !important;
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-content: center !important;
+            justify-content: center !important;
+            transform: scale(0.7) !important;
+        }
+
+        .foot {
+            display: flex !important;
+            font-size: 4vw !important;
+            gap: 4vw !important;
+        }
+
+        .nulllfont {
+            font-size: 6vw !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+
     setInterval(changeImage, 4000);
     setInterval(() => {
+    
         // change opacuty of the confeti to 0 and after 1 second display none
         document.querySelector('.confeti').style.opacity = 0;
         setTimeout(() => {
@@ -136,14 +319,20 @@ onMounted(() => {
     }, 4000);
 });
 
+const isMobile_ = () => {
+  return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+console.log(isMobile_());
+
 
 const looper = 800;
 </script>
 
 <template>
     <div class="confeti">
-        <img :src=conf alt="Avatar" style="width: 100vw; height: 100vh;">
-        <div class="sonf_msg">We Won The Hackathon🏆</div>
+        <img class="cnfff" :src=conf alt="Avatar" style="width: 100vw; height: 100vh;">
+        <div class="sonf_msg">🏆</div>
     </div>
     <canvas id="scene"></canvas>
     <div class="abt1">
@@ -663,5 +852,7 @@ canvas {
 
 
 
-   
+  .cnfff{
+        opacity: 0.5;
+    }
 </style>
