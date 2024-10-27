@@ -167,8 +167,8 @@ onMounted(() => {
 
         #scene {
             margin-top: 45vh !important;
-            width: 60vw !important;
-            height: 20vw !important;
+            width: 65vw !important;
+            height: 30vw !important;
             margin-bottom: 40vw !important;
         }
 
@@ -212,12 +212,12 @@ onMounted(() => {
         }
 
         .profcon {
-            width: 45vw !important;
-            padding: 4vw 12vw !important;
-            border-radius: 3vw !important;
-            border: 0.2vw solid var(--wl) !important;
-            transform: scale(0.8) !important;
-            margin: 0 !important;
+width: 45vw !important;
+    padding: 7vw 12vw !important;
+    border-radius: 3vw !important;
+    border: 0.2vw solid #2035323d !important;
+    transform: scale(0.8) !important;
+    margin: 0 !important;
         }
 
         .profcon img {
@@ -452,7 +452,7 @@ const looper = 800;
             <!-- TECH STACK : PYTHON , VUE JS , MYSQL,  Multimodal Models ,Compute Engine , Cloud GPU , Cloud SQL ,  -->
 <!-- Cloud Run , Cloud Storage ,Ollama,ACTIVE DIRECTORY. -->
             <p>
-            We have incorporated all the latest tech stack for this project of ours to come up with the best outcome.</p>
+            We have incorporated all the latest tech stack for this project of ours to come up with the best outcome. For more information check the projects <a style="text-decoration: underline;" target="_blank" href="https://github.com/jesvijonathan/Nullbyte-Ticketing-System">Github Repo</a></p>
 
 <div class="techlis">
     <ul>
