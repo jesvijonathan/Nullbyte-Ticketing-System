@@ -5,6 +5,11 @@ import logo1 from '@/assets/p1.png';
 import logo2 from '@/assets/p2.png';
 import logo3 from '@/assets/p3.png';
 
+import pp0 from '@/assets/p0.jpeg';
+import pp1 from '@/assets/pp1.jpg';
+import pp2 from '@/assets/pp2.jpg';
+import pp3 from '@/assets/pp3.jpg';
+
 const images = [logo1, logo2, logo3];
 let currentImageIndex = 0;
 const png = new Image();
@@ -160,47 +165,47 @@ const looper = 800;
 
 
         <div class="prof">
+        <a class="profcon" target="_blank" href="https://www.linkedin.com/in/jesvijonathan/">
 
-            <div class="profcon">
-
-                <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" style="width:100%">
+                <img :src=pp0 alt="Avatar" style="width:100%">
                 <div class="profname">Jesvi Jonathan</div>
                 <div class="profdesc">
-                    <p>WGS > MS > WLPFO > MARCOPOLO</p>
-                    <p>Trainee Engineer</p>
-                    <p>Musician & loves to code</p>
+                    <p>Worldline > MS > WLPFO</p>
+                    <p>Trainee Engineer</p><br>
+                    <p class="tops">PROFESSIONAL TEXT EDITOR</p>
                 </div>
-            </div>
-            <div class="profcon">
+            </a>
+            <a class="profcon" target="_blank" href="https://www.linkedin.com/in/akileswar/">
 
-                <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" style="width:100%">
+                <img :src=pp1 alt="Avatar" style="width:100%">
                 <div class="profname">Akileswar PrathapKumar  </div>
                 <div class="profdesc">
-                    <p>WGS > MS > WLPFO > MARCOPOLO</p>
-                    <p>Trainee Engineer</p>
-                    <p>Code & Coffee </p>
+                    <p>Worldline > MS > WLPFO</p>
+                    <p>Trainee Engineer</p><br>
+                    <p class="tops">THE DEPLOYER PRO MAX</p>
                 </div>
-            </div>
-            <div class="profcon">
+            </a>
+            <a class="profcon" target="_blank" href="https://www.linkedin.com/in/rashmi2001/">
 
-                <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" style="width:100%">
+                <img :src=pp3 alt="Avatar" style="width:100%">
                 <div class="profname">Rashmi Abdulrahim</div>
                 <div class="profdesc">
-                    <p>WGS > MS > WLPFO > MARCOPOLO</p>
-                    <p>Associate Engineer </p>
-                    <p>Docker4Life</p>
+                    <p>Worldline > MS > WLPFO</p>
+                    <p>Associate Engineer </p><br>
+                    <p class="tops">Did Absolutely Nothing :)</p>
                 </div>
-            </div>
-            <div class="profcon">
+            </a>
+            <a class="profcon" target="_blank" href="https://www.linkedin.com/in/rajashree-g-d-5907821b1/">
 
-                <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" style="width:100%">
+                <img :src=pp2 alt="Avatar" style="width:100%">
                 <div class="profname">Rajashree Dinakaran</div>
                 <div class="profdesc">
-                    <p>WGS > MS > WLPFO > MARCOPOLO</p>
+                    <p>Worldline > MS > WLPFO</p>
                     <p>Associate Engineer</p>
-                    <p>Architect Pro Max</p>
+                    <br>
+                    <p class="tops">Did Absolutely Nothing :)</p>
                 </div>
-            </div>
+            </a>
 
 
         </div>
@@ -306,6 +311,10 @@ const looper = 800;
 </template>
 
 <style scoped>
+.tops{
+    font-weight: 900;
+    font-family: wl2;
+}
 hv{
     height: 0.2vw;
     text-align: center;
@@ -386,35 +395,55 @@ hv{
 .prof {
     display: flex;
     flex-wrap: nowrap;
-    justify-content: center;
-    gap: 1vw;
+    gap: 2vw;
+    flex-direction: row;
+    align-content: space-between;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0vw;
+    width: 60vw;
+    transform: scale(0.9) translateX(5vw);
 }
 
 .profcon {
-    margin-top: 5vw;
+    margin-top: 3vw;
     height: 20vw;
     width: 12vw;
     cursor: pointer;
-}
-
-.profcon:hover {
-    filter: brightness(1.1);
+    /* overflow: clip; */
 }
 
 .profcon img {
-    border-radius: 0.3vw
+    border-radius: 0.6vw;
+    height: 12vw;
+    width: 12vw;
+    transition: 0.2s;
+    filter: grayscale(0.2) brightness(1);
+    border: 0.2vw solid rgb(0, 0, 0);
+    
 }
+
+.profcon:hover .profname{
+    text-decoration: underline;
+
+}
+.profcon:hover img {
+    filter: grayscale(0) brightness(1.1);
+}
+
+
 
 .profname {
     font-size: 1.4vw;
-    font-weight: 200;
+    font-weight: 500;
     font-family: "Jersey 10", sans-serif;
     text-align: center;
     color: black;
-    padding: 1vw;
+    font-style: oblique;
     padding-top: 0vw;
     opacity: 0.7;
     text-wrap: nowrap;
+    padding-bottom: 0.6vw;
     /* padding-top: 4vw; */
 }
 
