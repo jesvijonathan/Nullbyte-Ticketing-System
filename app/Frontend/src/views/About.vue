@@ -10,6 +10,8 @@ import pp1 from '@/assets/pp1.jpg';
 import pp2 from '@/assets/pp2.jpg';
 import pp3 from '@/assets/pp3.jpg';
 
+import conf from '@/assets/conf.gif';
+
 const images = [logo1, logo2, logo3];
 let currentImageIndex = 0;
 const png = new Image();
@@ -124,6 +126,14 @@ onMounted(() => {
     };
 
     setInterval(changeImage, 4000);
+    setInterval(() => {
+        // change opacuty of the confeti to 0 and after 1 second display none
+        document.querySelector('.confeti').style.opacity = 0;
+        setTimeout(() => {
+            document.querySelector('.confeti').style.display = 'none';
+
+        }, 1000);
+    }, 4000);
 });
 
 
@@ -131,6 +141,10 @@ const looper = 800;
 </script>
 
 <template>
+    <div class="confeti">
+        <img :src=conf alt="Avatar" style="width: 100vw; height: 100vh;">
+        <div class="sonf_msg">We Won the 2024 Hackathon 🏆</div>
+    </div>
     <canvas id="scene"></canvas>
     <div class="abt1">
         <p v-for="(text, index) in Array(looper).fill(['Google', 'Worldline', 'Nullbyte']).flat()" :key="index">{{ text }}</p>
@@ -138,8 +152,9 @@ const looper = 800;
 
 
     <div class="section">
-        <div class="title jos">About Us</div>
-        <div class="description">
+        <div class="title "
+        >About Us</div>
+        <div class="description ">
             <p>
                We’re a group of four developers working together at Worldline Global Services on some pretty cool projects. 
                Our team includes Jesvi Jonathan, Akileswar Prathapkumar,  Rashmi Abdulrahim, and Rajashree Dinakaran. 
@@ -153,13 +168,13 @@ const looper = 800;
 
     <div class="section">
         <div class="title ">The Team</div>
-        <div class="description jos">
+        <div class="description ">
             <p>
-               Started as a team of four developers, we have been working together on some pretty cool projects.
+               Started as a team of four developers, we have been working together on some pretty cool projects &
             </p>
 
             <p>
-                We took part in the Worldline Google Cloud 2024 Hackathon.
+                We decided to take part in the Worldline Google Cloud 2024 Hackathon.
             </p>
         </div>
 
@@ -172,7 +187,7 @@ const looper = 800;
                 <div class="profdesc">
                     <p>Worldline > MS > WLPFO</p>
                     <p>Trainee Engineer</p><br>
-                    <p class="tops">PROFESSIONAL TXT EDITOR</p>
+                    <p class="tops">PROFESSIONAL HARDCODER</p>
                 </div>
             </a>
             <a class="profcon" target="_blank" href="https://www.linkedin.com/in/akileswar/">
@@ -215,9 +230,9 @@ const looper = 800;
 
 
     <div class="section">
-        <div class="title">The Making</div>
+        <div class="title ">The Making</div>
 <div class="imgdes">
-    <div class="description jos">
+    <div class="description ">
     <p>
         Our NullByte Triaging System uses Generative AI and automation to streamline ticket management and improve service efficiency. 
         Users submit queries via LLM-based chat, email, or a portal, which are triaged by a Google Cloud AI-powered model. 
@@ -243,8 +258,8 @@ const looper = 800;
     </div>
 
     <div class="section">
-        <div class="title">Techstack</div>
-        <div class="description jos">
+        <div class="title ">Techstack</div>
+        <div class="description ">
             <!-- TECH STACK : PYTHON , VUE JS , MYSQL,  Multimodal Models ,Compute Engine , Cloud GPU , Cloud SQL ,  -->
 <!-- Cloud Run , Cloud Storage ,Ollama,ACTIVE DIRECTORY. -->
             <p>
@@ -255,6 +270,7 @@ const looper = 800;
             <li>Vue 3</li>
             <li>PYTHON</li>
             <li>MYSQL</li>
+            <li>Linux</li>
           </ul>
           
     <ul>
@@ -311,6 +327,47 @@ const looper = 800;
 </template>
 
 <style scoped>
+.sonf_msg{
+    display: flex;
+    z-index: 100;
+    justify-content: center;
+    /* align-items: center; */
+    font-size: 3vw;
+    font-weight: 900;
+    font-family: "Jersey 10", sans-serif;
+    text-align: center;
+    color: rgba(0, 0, 0, 1);
+    padding: 1vw;
+    padding-top: 18vw;
+    /* opacity: 0.7; */
+    /* padding-top: 4vw; */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: scale 5s infinite alternate;
+}
+
+@keyframes scale {
+    0% {
+        transform: translate(-50%, -50%) rotate(4deg) scale(1.1);
+        color: rgba(0, 0, 0, 0.5);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) rotate(0deg) scale(1.2);
+        color: rgba(0, 0, 0, 0.8);
+    }
+}
+.confeti{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
+    transition: 0.5s;
+}
 .tops{
     font-weight: 900;
     font-family: wl2;
