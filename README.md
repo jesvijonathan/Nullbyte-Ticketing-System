@@ -7,8 +7,8 @@ The **Nullbyte Triaging System** is a cutting-edge project developed for the **G
 <br><br>
 
 <div style="display: flex; justify-content: space-around; align-items: center;">
-    <img src="https://raw.githubusercontent.com/jesvijonathan/Nullbyte-Ticketing-System/refs/heads/main/app/Frontend/src/assets/Nullbyte.svg" alt="Nullbyte Ticketing System" style="transform: scale(2);">
-    <img src="https://raw.githubusercontent.com/jesvijonathan/Nullbyte-Ticketing-System/refs/heads/main/app/Frontend/src/assets/p2.png" alt="Nullbyte Ticketing System" style="transform: scale(2);">
+    <img src="https://raw.githubusercontent.com/jesvijonathan/Nullbyte-Ticketing-System/refs/heads/main/app/Frontend/src/assets/Nullbyte.svg" alt="Nullbyte Ticketing System" style="transform: scale(2);">ㅤㅤ
+    <img src="https://raw.githubusercontent.com/jesvijonathan/Nullbyte-Ticketing-System/refs/heads/main/app/Frontend/src/assets/p2.png" alt="Nullbyte Ticketing System" style="transform: scale(2);">ㅤㅤ
     <img src="https://raw.githubusercontent.com/jesvijonathan/Nullbyte-Ticketing-System/refs/heads/main/app/Frontend/src/assets/p1.png" alt="Nullbyte Ticketing System" style="transform: scale(2);">
 </div>
 <br><br>
