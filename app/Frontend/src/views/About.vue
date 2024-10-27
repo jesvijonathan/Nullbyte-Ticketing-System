@@ -327,23 +327,20 @@ const looper = 800;
 </template>
 
 <style scoped>
-.sonf_msg{
+.sonf_msg {
     display: flex;
     z-index: 100;
     justify-content: center;
-    /* align-items: center; */
     font-size: 3vw;
     font-weight: 900;
     font-family: "Jersey 10", sans-serif;
     text-align: center;
     color: rgba(0, 0, 0, 1);
     padding: 1vw;
-    padding-top: 18vw;
-    /* opacity: 0.7; */
-    /* padding-top: 4vw; */
     position: absolute;
-    top: 50%;
+    top: 70%;
     left: 50%;
+    margin-left: 1vw;
     transform: translate(-50%, -50%);
     animation: scale 5s infinite alternate;
 }
@@ -353,7 +350,6 @@ const looper = 800;
         transform: translate(-50%, -50%) rotate(4deg) scale(1.1);
         color: rgba(0, 0, 0, 0.5);
     }
-
     50% {
         transform: translate(-50%, -50%) rotate(0deg) scale(1.2);
         color: rgba(0, 0, 0, 0.8);
@@ -663,4 +659,8 @@ canvas {
     opacity: 0.6;
      color: var(--wl); 
   } */
+
+
+
+   
 </style>
