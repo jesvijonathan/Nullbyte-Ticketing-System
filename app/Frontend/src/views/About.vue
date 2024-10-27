@@ -154,7 +154,7 @@ const looper = 800;
             </p>
 
             <p>
-                We took part in the Google Cloud Next 2021 Hackathon.
+                We took part in the Worldline Google Cloud 2024 Hackathon.
             </p>
         </div>
 
@@ -178,7 +178,7 @@ const looper = 800;
                 <div class="profdesc">
                     <p>WGS > MS > WLPFO > MARCOPOLO</p>
                     <p>Trainee Engineer</p>
-                    <p>Cofee & Code</p>
+                    <p>Code & Coffee </p>
                 </div>
             </div>
             <div class="profcon">
