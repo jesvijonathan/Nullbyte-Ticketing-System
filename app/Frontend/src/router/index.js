@@ -16,10 +16,12 @@ const router = createRouter({
         breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }]
       },
       beforeEnter: (to, from, next) => {
-        const authStore = useAuthStore();
-        const isAuthenticated = authStore.isAuthenticated;
-        if (!isAuthenticated) {
-          next('/login');
+        // const authStore = useAuthStore();
+        // const isAuthenticated = authStore.isAuthenticated;
+        // if (!isAuthenticated) {
+          if (true) {
+          // next('/login');
+          next('/about');
         } else {
           next();
         }
