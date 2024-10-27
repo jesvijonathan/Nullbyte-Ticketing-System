@@ -46,12 +46,12 @@ onMounted(async () => {
         // console.log("jesvi ::::", data)
         Object.keys(data).forEach(ticket_id => {
             console.log("jesvi ::::", data[ticket_id])
-            if (data[ticket_id].medium == 'mail') {
+            // if (data[ticket_id].medium == 'chat') {
             const ticket_info = data[ticket_id];
             const tmp_tick = ticket_info.closed_chat || ticket_info;
             console.log("jesvi ::::", tmp_tick)
             ticket_data.value.push(tmp_tick);
-            }
+            // }
         });
 
       console.log("#####jesvi :", ticket_data.value)

@@ -54,7 +54,7 @@ DATABASE_URL = f"mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_H
 sqlmode= True
 dirmode=False
 useCloudSql = False
-enable_jira = True
+enable_jira = False
 enable_mailbot = False
 baseMyURL = "http://localhost:5000"
 
