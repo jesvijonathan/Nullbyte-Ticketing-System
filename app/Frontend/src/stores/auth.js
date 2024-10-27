@@ -13,7 +13,7 @@ export const useAuthStore = defineStore({
             upn:user ? jwtDecode(user.token).upn:[]
         };
     },
-    getters: {
+    getters: {  
         isAuthenticated: (state) => !!state.user
     },
     actions: {

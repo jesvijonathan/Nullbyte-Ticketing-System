@@ -1,14 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from "../stores/auth";
 
-let move_to_login = true; // Set this to false to skip automatic redirection to login
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/dashboard'
+      // redirect: '/dashboard'
+      redirect: '/about'
     },
     {
       path: '/dashboard',
@@ -18,8 +17,10 @@ const router = createRouter({
         breadcrumb: [{ name: 'Dashboard', path: '/dashboard' }]
       },
       beforeEnter: (to, from, next) => {
-        if (true) {
-          next('/about');
+        const authStore = useAuthStore();
+        const isAuthenticated = authStore.isAuthenticated;
+        if (!isAuthenticated) {
+          next('/login');
         } else {
           next();
         }
@@ -29,23 +30,25 @@ const router = createRouter({
       path: '/create_ticket',
       name: 'create_ticket',
       component: () => import('../views/CreateTicket.vue'),
+
     },
     {
       path: '/list_tickets',
       name: 'list_tickets',
       component: () => import('../views/ViewTickets.vue'),
-    },
-    {
+
+    }, {
       path: '/tickets',
       name: 'tickets',
       component: () => import('../views/TicketMenu.vue'),
+
     },
     {
       path: '/ticket/:id?',
       name: 'ticket',
       component: () => import('../views/Ticket.vue'),
       props: route => ({ id: route.params.id || route.query.id }),
-    },
+        },
     {
       path: '/service',
       name: 'service',
@@ -82,6 +85,7 @@ const router = createRouter({
         requiresAuth: true
       }
     },
+
     {
       path: '/llama',
       name: 'Chatbot Llama',
@@ -123,16 +127,16 @@ const router = createRouter({
       name: 'logout',
       component: () => {
         const authStore = useAuthStore();
-        
+
         // Perform logout from auth store
         authStore.logout();
-    
+
         // Delete 'user' and 'session' cookies
         document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    
+
         // Optionally, you can also redirect after logout
-        window.location.href = '/login';
+        window.location.href = '/login'; // or wherever you want to redirect the user
       },
       meta: { requiresAuth: true }
     },
@@ -149,12 +153,13 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   const isAuthenticated = authStore.isAuthenticated;
 
-  // Check for requiresAuth and move_to_login flag
-  if (to.meta.requiresAuth && !isAuthenticated && move_to_login) {
-    next({ name: 'login' });
-  } else {
-    next();
-  }
+  next();
+  // if (to.meta.requiresAuth && !isAuthenticated) {
+  //   next({ name: 'login' });
+  // } else {
+    
+  //   next();
+  // }
 });
 
 export default router;
