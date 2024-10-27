@@ -143,7 +143,7 @@ const looper = 800;
 <template>
     <div class="confeti">
         <img :src=conf alt="Avatar" style="width: 100vw; height: 100vh;">
-        <div class="sonf_msg">We Won the 2024 Hackathon 🏆</div>
+        <div class="sonf_msg">We Won The Hackathon🏆</div>
     </div>
     <canvas id="scene"></canvas>
     <div class="abt1">
@@ -207,7 +207,7 @@ const looper = 800;
                 <div class="profdesc">
                     <p>Worldline > MS > WLPFO</p>
                     <p>Associate Engineer </p><br>
-                    <p class="tops">Did Absolutely Nothing :)</p>
+                    <p class="tops">?</p>
                 </div>
             </a>
             <a class="profcon" target="_blank" href="https://www.linkedin.com/in/rajashree-g-d-5907821b1/">
@@ -218,7 +218,7 @@ const looper = 800;
                     <p>Worldline > MS > WLPFO</p>
                     <p>Associate Engineer</p>
                     <br>
-                    <p class="tops">Did Absolutely Nothing :)</p>
+                    <p class="tops">The Reader</p>
                 </div>
             </a>
 
@@ -331,8 +331,8 @@ const looper = 800;
     display: flex;
     z-index: 100;
     justify-content: center;
-    font-size: 3vw;
-    font-weight: 900;
+    font-size: 2.8vw;
+    font-weight: 500;
     font-family: "Jersey 10", sans-serif;
     text-align: center;
     color: rgba(0, 0, 0, 1);
