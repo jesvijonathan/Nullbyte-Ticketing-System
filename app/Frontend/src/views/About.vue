@@ -172,7 +172,7 @@ const looper = 800;
                 <div class="profdesc">
                     <p>Worldline > MS > WLPFO</p>
                     <p>Trainee Engineer</p><br>
-                    <p class="tops">PROFESSIONAL TEXT EDITOR</p>
+                    <p class="tops">PROFESSIONAL TXT EDITOR</p>
                 </div>
             </a>
             <a class="profcon" target="_blank" href="https://www.linkedin.com/in/akileswar/">
@@ -402,24 +402,38 @@ hv{
     align-items: center;
     margin-top: 0vw;
     width: 60vw;
-    transform: scale(0.9) translateX(5vw);
+    transform: scale(0.9) translateX(6vw);
+    
+        width: initial;
+    transform: scale(0.9);
+    gap: 4vw;
+    margin-top: 2vw;
 }
 
 .profcon {
     margin-top: 3vw;
-    height: 20vw;
-    width: 12vw;
+    width: 10vw;
     cursor: pointer;
     /* overflow: clip; */
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
 }
 
 .profcon img {
     border-radius: 0.6vw;
-    height: 12vw;
-    width: 12vw;
-    transition: 0.2s;
-    filter: grayscale(0.2) brightness(1);
-    border: 0.2vw solid rgb(0, 0, 0);
+    /* height: 12vw; */
+    width: 100%;
+    transition: 0.1s;
+    filter: grayscale(0.4) brightness(1);
+    border: 0.2vw solid rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    image-rendering: auto;
     
 }
 
@@ -444,6 +458,7 @@ hv{
     opacity: 0.7;
     text-wrap: nowrap;
     padding-bottom: 0.6vw;
+    margin-top: 1vw;
     /* padding-top: 4vw; */
 }
 
