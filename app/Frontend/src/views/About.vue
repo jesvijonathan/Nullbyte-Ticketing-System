@@ -187,7 +187,7 @@ const looper = 800;
                 <div class="profdesc">
                     <p>Worldline > MS > WLPFO</p>
                     <p>Trainee Engineer</p><br>
-                    <p class="tops">PROFESSIONAL HARDCODER</p>
+                    <p class="tops">THE HARDCODER ⚡</p>
                 </div>
             </a>
             <a class="profcon" target="_blank" href="https://www.linkedin.com/in/akileswar/">
@@ -197,7 +197,7 @@ const looper = 800;
                 <div class="profdesc">
                     <p>Worldline > MS > WLPFO</p>
                     <p>Trainee Engineer</p><br>
-                    <p class="tops">THE DEPLOYER PRO MAX</p>
+                    <p class="tops">THE DEPLOYER 👨‍💻</p>
                 </div>
             </a>
             <a class="profcon" target="_blank" href="https://www.linkedin.com/in/rashmi2001/">
@@ -207,7 +207,7 @@ const looper = 800;
                 <div class="profdesc">
                     <p>Worldline > MS > WLPFO</p>
                     <p>Associate Engineer </p><br>
-                    <p class="tops">?</p>
+                    <p class="tops">THE SKIBIDI 👨🏿</p>
                 </div>
             </a>
             <a class="profcon" target="_blank" href="https://www.linkedin.com/in/rajashree-g-d-5907821b1/">
@@ -218,7 +218,7 @@ const looper = 800;
                     <p>Worldline > MS > WLPFO</p>
                     <p>Associate Engineer</p>
                     <br>
-                    <p class="tops">The Reader</p>
+                    <p class="tops">THE NARRATOR 🎤 </p>
                 </div>
             </a>
 
