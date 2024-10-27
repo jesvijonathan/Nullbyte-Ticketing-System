@@ -166,10 +166,10 @@ onMounted(() => {
         }
 
         #scene {
-            margin-top: 45vh !important;
+            margin-top: 40vh !important;
             width: 65vw !important;
             height: 30vw !important;
-            margin-bottom: 40vw !important;
+            margin-bottom: 45vw !important;
         }
 
         .title {
