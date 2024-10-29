@@ -47,7 +47,7 @@ virtualenv
 Werkzeug==3.0.4
 wsproto==1.2.0
 jira[cli]
-waitress==3.0.0
+waitress==3.0.1
 cloud-sql-python-connector[pymysql]
 bcrypt
 pandas
