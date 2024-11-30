@@ -44,7 +44,7 @@ simple-websocket==1.0.0
 soupsieve==2.6
 urllib3==2.2.3
 virtualenv
-Werkzeug==3.0.4
+Werkzeug==3.0.6
 wsproto==1.2.0
 jira[cli]
 waitress==3.0.0
