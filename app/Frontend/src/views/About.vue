@@ -397,6 +397,10 @@ const looper = 800;
                     <p>Worldline > MS > WLPFO</p>
                     <p>Associate Engineer </p><br>
                     <p class="tops">THE SKIBIDI 👨🏿</p>
+                    <script>
+                        document.querySelector('.tops').textContent = ['THE SKIBIDI 👨🏿', 'ᴉpᴉqᴉʞS ǝɥʇ', ''][Math.floor(Math.random() * 3)];
+                    </script>
+
                 </div>
             </a>
             <a class="profcon" target="_blank" href="https://www.linkedin.com/in/rajashree-g-d-5907821b1/">
