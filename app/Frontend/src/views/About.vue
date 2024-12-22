@@ -101,6 +101,12 @@ const changeImage = () => {
 };
 
 onMounted(() => {
+    document.getElementById('tops').textContent = [
+        'THE SKIBIDI 👨🏿',
+        'ᴉpᴉqᴉʞS ǝɥʇ',
+        '',
+      ][Math.floor(Math.random() * 3)];
+    
     canvas = document.getElementById("scene");
     ctx = canvas.getContext("2d");
 
@@ -396,11 +402,7 @@ const looper = 800;
                 <div class="profdesc">
                     <p>Worldline > MS > WLPFO</p>
                     <p>Associate Engineer </p><br>
-                    <p class="tops">THE SKIBIDI 👨🏿</p>
-                    <script>
-                        document.querySelector('.tops').textContent = ['THE SKIBIDI 👨🏿', 'ᴉpᴉqᴉʞS ǝɥʇ', ''][Math.floor(Math.random() * 3)];
-                    </script>
-
+                    <p id="tops_skib">THE SKIBIDI 👨🏿</p>
                 </div>
             </a>
             <a class="profcon" target="_blank" href="https://www.linkedin.com/in/rajashree-g-d-5907821b1/">
