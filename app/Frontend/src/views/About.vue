@@ -103,12 +103,26 @@ const changeImage = () => {
 onMounted(() => {
     const topsElement = document.getElementById('tops_skib');
     if (topsElement) {
-        topsElement.textContent = [
-            'THE SKIBIDI 👨🏿',
-            '👨🏿 ᴉpᴉqᴉʞS ǝɥʇ',
-            '📢',
-            'asdadasd 👠'
-        ][Math.floor(Math.random() * 4)];
+        const texts = [
+            { text: 'THE SKIBIDI 👨🏿', weight: 0.2 },
+            { text: 'THE ᴉpᴉqᴉʞS 👻', weight: 0.3 },
+            { text: '📢', weight: 0.6 },
+            { text: 'THE ASDASDASD 🍁', weight: 0.4 },
+            { text: 'THE SLIDESHOW MAVEN 🎬', weight: 0.7}, 
+        ];
+
+        const getRandomText = () => {
+            const totalWeight = texts.reduce((sum, item) => sum + item.weight, 0);
+            let random = Math.random() * totalWeight;
+            for (const item of texts) {
+            if (random < item.weight) {
+                return item.text;
+            }
+            random -= item.weight;
+            }
+        };
+
+        topsElement.textContent = getRandomText();
     }
     console.log('onload');
     console.log(topsElement);
@@ -408,7 +422,7 @@ const looper = 800;
                 <div class="profdesc">
                     <p>Worldline > MS > WLPFO</p>
                     <p>Associate Engineer </p><br>
-                    <p id="tops_skib">THE SKIBIDI 👨🏿</p>
+                    <p id="tops_skib" class="tops">PPT Pro Max</p>
                 </div>
             </a>
             <a class="profcon" target="_blank" href="https://www.linkedin.com/in/rajashree-g-d-5907821b1/">
