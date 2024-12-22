@@ -108,7 +108,7 @@ onMounted(() => {
             '👨🏿 ᴉpᴉqᴉʞS ǝɥʇ',
             '📢',
             'asdadasd 👠'
-        ][Math.floor(Math.random() * 3)];
+        ][Math.floor(Math.random() * 4)];
     }
     console.log('onload');
     console.log(topsElement);
