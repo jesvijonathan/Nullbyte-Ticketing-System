@@ -101,12 +101,18 @@ const changeImage = () => {
 };
 
 onMounted(() => {
-    document.getElementById('tops').textContent = [
-        'THE SKIBIDI 👨🏿',
-        'ᴉpᴉqᴉʞS ǝɥʇ',
-        '',
-      ][Math.floor(Math.random() * 3)];
-    
+    const topsElement = document.getElementById('tops_skib');
+    if (topsElement) {
+        topsElement.textContent = [
+            'THE SKIBIDI 👨🏿',
+            '👨🏿 ᴉpᴉqᴉʞS ǝɥʇ',
+            '📢',
+            'asdadasd 👠'
+        ][Math.floor(Math.random() * 3)];
+    }
+    console.log('onload');
+    console.log(topsElement);
+
     canvas = document.getElementById("scene");
     ctx = canvas.getContext("2d");
 
