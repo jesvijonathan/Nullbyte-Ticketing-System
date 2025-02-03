@@ -104,11 +104,11 @@ onMounted(() => {
     const topsElement = document.getElementById('tops_skib');
     if (topsElement) {
         const texts = [
-            { text: 'THE SKIBIDI 👨🏿', weight: 0.2 },
-            { text: 'THE ᴉpᴉqᴉʞS 👻', weight: 0.3 },
-            { text: '📢', weight: 0.6 },
-            { text: 'THE ASDASDASD 🍁', weight: 0.4 },
-            { text: 'THE SLIDESHOW MAVEN 🎬', weight: 0.7}, 
+            { text: 'THE SKIBIDI 👨🏿', weight: 1 },
+            { text: 'THE ᴉpᴉqᴉʞS 👻', weight: 0 },
+            { text: '📢', weight: 0 },
+            { text: 'THE ASDASDASD 🍁', weight: 0 },
+            { text: 'THE SLIDESHOW MAVEN 🎬', weight: 0}, 
         ];
 
         const getRandomText = () => {
